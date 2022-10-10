@@ -2,8 +2,8 @@ const mongoose = require ('mongoose');
 
 const userSchema = mongoose.Schema ({
   pseudo : { type : String, required : true },
-  imageUrl : { type : String, required : true },
-  theme : { type : String, required : true },
+  imageUrl : { type : String, default : "http://localhost:3000/images/Donald.png1665064469847.png", required : true },
+  theme : { type : String, default : "Original", required : true },
   email : { type : String, required : true, unique : true },
   password : { type : String, required : true },
   creationDate : { type : Date, default : Date.now, required : true },

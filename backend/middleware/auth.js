@@ -2,14 +2,15 @@ const jwt = require('jsonwebtoken');
 const rules = require('../validation/rules');
 const auth = require('../validation/data/auth');
 const TokenModel = require ('../models/Tokens');
+const functions = require('../functions');
 
 exports.classicAuth = (req, res, next) => {
   const invalidToken = !rules.valid(auth.tokenToValidate, req.headers.authorization);
-  if (invalidToken) return res.status(401).json({ message: "Unauthorized request."});
+  if (invalidToken) return functions.response(res, 401);
   const revokedToken = req.headers.authorization;
   TokenModel.findOne({ token: revokedToken })
     .then((revokedToken)=> {
-      if (revokedToken !== null) return res.status(401).json({ message: "Unauthorized request."});
+      if (revokedToken !== null) return functions.response(res, 401);
       const token = req.headers.authorization.split(' ')[1];
       try {
         const decodedToken = jwt.verify(token, 'HARIBO_C_EST_BEAU_LA_VIE');
@@ -21,19 +22,19 @@ exports.classicAuth = (req, res, next) => {
         };
         next();
       } catch (error) {
-        res.status(401).json({ message: "Unauthorized request."});
+        functions.response(res, 401);
       }
     })
-    .catch(error => { res.status(500).json({ message: "Server error."}); })
+    .catch(error => functions.response(res, 500))
 };
 
 exports.adminAuth = (req, res, next) => {
   const invalidToken = !rules.valid(auth.tokenToValidate, req.headers.authorization);
-  if (invalidToken) return res.status(403).json({ message: "Forbidden request."});
+  if (invalidToken) return functions.response(res, 403);
   const revokedToken = req.headers.authorization;
   TokenModel.findOne({ token: revokedToken })
     .then((revokedToken)=> {
-      if (revokedToken !== null) return res.status(403).json({ message: "Forbidden request." });
+      if (revokedToken !== null) return functions.response(res, 403);
       const token = req.headers.authorization.split(' ')[1];
       try {
         const decodedToken = jwt.verify(token, 'HARIBO_C_EST_BEAU_LA_VIE');
@@ -46,8 +47,8 @@ exports.adminAuth = (req, res, next) => {
         };
         next();
       } catch (error) {
-        res.status(403).json({ message: "Forbidden request." });
+        functions.response(res, 403);
       }
     })
-    .catch(error => { res.status(500).json({ message: "Server error."}); })
+    .catch(error => functions.response(res, 500))
 };

@@ -1,6 +1,7 @@
 const multer = require('multer');
 const rules = require('../validation/rules');
 const multerData = require('../validation/data/multer');
+const functions = require('../functions');
 
 const mimetypes = {
   'image/jpg': 'jpg',
@@ -33,10 +34,8 @@ const upload = multer({ storage : storage, fileFilter : uploadFilter, limits : {
 
 module.exports = (req, res, next) => {
   upload(req, res, error => {
-    if (error || req.invalidFile) return res.status(400).json({ message : "Bad request." });
-    else {
-      next();
-    }
+    if (error || req.invalidFile) return functions.response(res, 400);
+    next();
   })
 };
 

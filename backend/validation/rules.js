@@ -1,4 +1,5 @@
 const validationRules = (thing) => {
+  if (thing.required === false && thing.value === undefined) return true
   if (typeof thing.value !== thing.expectedType) return false
   if (thing.expectedType === "string"){
     try {
