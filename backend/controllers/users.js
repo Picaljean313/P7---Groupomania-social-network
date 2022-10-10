@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const functions = require ('../functions');
 const login = require ('../validation/data/login');
 const signup = require ('../validation/data/signup');
+const createOneUser = require('../validation/data/createOneUser');
 const rules = require ('../validation/rules');
 
 exports.signup = (req, res, next) => {
@@ -95,7 +96,58 @@ exports.logout = (req, res, next) => {
 };
 
 exports.createOneUser = (req, res, next) => {
-
+  const includedFile = req.file ? true : false;
+  if (includedFile) {
+    const includedUserBody = req.body.user ? true : false;
+    if (!includedUserBody) return functions.unlinkFile(req, res, 400);
+    const validUserFormData = rules.valid(createOneUser.userFormDataToValidate, req.body.user);
+    if (!validUserFormData) return functions.unlinkFile(req, res, 400);
+    const validUserJson = rules.valid(createOneUser.userJsonDataToValidate, JSON.parse(req.body.user)); 
+    if (!validUserJson) return functions.unlinkFile(req, res, 400);
+    const userObject = JSON.parse(req.body.user);
+    UsersModel.findOne({ email: userObject.email })
+      .then(user => {
+        if (user !== null) return functions.unlinkFile(req, res, 400);
+        bcrypt.hash(userObject.password, 10)
+          .then(hash => {
+            const user = new UsersModel({
+              pseudo : userObject.pseudo,
+              imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+              theme : userObject.theme,
+              email : userObject.email,
+              password : hash,
+              isAdmin : userObject.isAdmin
+            });
+            user.save()
+              .then(()=> res.status(201).json({ message : "Account created." }))
+              .catch(error => functions.unlinkFile(req, res, 500));
+          })
+          .catch(error => functions.unlinkFile(req, res, 500));
+      })
+      .catch(error => functions.unlinkFile(req, res, 500));
+  } else {
+    const validUserJson = rules.valid(createOneUser.userJsonDataToValidate, req.body); 
+    if (!validUserJson) return functions.response(res, 400);
+    UsersModel.findOne({ email: req.body.email })
+      .then(user => {
+        if (user !== null) return functions.response(res, 400);
+        bcrypt.hash(req.body.password, 10)
+          .then(hash => {
+            const user = new UsersModel({
+              pseudo : req.body.pseudo,
+              theme : req.body.theme,
+              email : req.body.email,
+              password : hash,
+              isAdmin : req.body.isAdmin
+            });
+            user.save()
+              .then(()=> res.status(201).json({ message : "Account created." }))
+              .catch(error => functions.response(res, 500));
+          })
+          .catch(error => functions.response(res, 500));
+      })
+      .catch(error => functions.response(res, 500));
+  }
 };
 
 exports.getAllUsers = (req, res, next) => {
