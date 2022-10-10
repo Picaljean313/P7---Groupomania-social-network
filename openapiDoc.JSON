@@ -1,0 +1,2330 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Groupomania social network",
+    "description": "This is the documentation of Groupomania social network API.",
+    "termsOfService": "http://groupomania.com/terms/",
+    "contact": {
+      "name": "API support",
+      "url": "http://groupomania.com/contact/",
+      "email": "contactAPI@groupomania.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [{
+    "url": "http://localhost:{port}/{basePath}",
+    "variables": {
+      "port": {
+        "default": "3000"
+      },
+      "basePath": {
+        "default": "api"
+      }
+    }
+  }],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Operations about users"
+    },
+    {
+      "name": "posts",
+      "description": "Operations about posts"
+    },
+    {
+      "name": "comments",
+      "description": "Operations about comments"
+    },
+    {
+      "name": "reactions",
+      "description": "Operations about reactions"
+    },
+    {
+      "name": "reports",
+      "description": "Operations about reports"
+    }
+  ],
+  "paths": {
+    "/users/signup": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Sign up.",
+        "description": "User creates his own account. Form-data is required if user put an image file. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "operationId": "signup",
+        "requestBody": {
+          "description": "User account properties. For more details, go to 'UserSignupJson' or 'UserSignupFormdata' schema.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userSignupJson"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/userSignupFormdata"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Account created."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Log in.",
+        "description": "User logs in his own account.",
+        "operationId": "login",
+        "requestBody": {
+          "description": "User email and password.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Log out.",
+        "description": "User logs out.",
+        "operationId": "logout",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Token to revoke created."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Create an account.",
+        "description": "Admin creates an account which can be an admin one. Form-data is required if admin put an image file. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "operationId": "createOneUser",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "User account properties. For more details, go to 'UserPostJson' or 'UserPostFormdata' schema.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userPostJson"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/userPostFormdata"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Account created."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "get": {
+        "tags": ["users"],
+        "summary": "Get all users.",
+        "description": "Admin gets all user accounts.",
+        "operationId": "getAllUsers",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "lastUserId",
+            "in": "query",
+            "description": "Get all users who are after this user Id in the database.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Get a limited amount of users.",
+            "schema": {
+              "type": "number",
+              "example": 5
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "schema": {
+              "type": "string",
+              "example": "asc"
+            }
+          },
+          {
+            "name": "activity",
+            "in": "query",
+            "description": "Get users activities.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["users"],
+        "summary": "Delete all acounts.",
+        "description": "Admin deletes all user acounts, except his own.",
+        "operationId": "deleteAllAccounts",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get one account.",
+        "description": "User gets properties of his own account, or admin gets properties of a user account.",
+        "operationId": "getOneUser",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of user to return.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            },
+            "required": true
+          },
+          {
+            "name": "activity",
+            "in": "query",
+            "description": "Get user activity.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "put": {
+        "tags": ["users"],
+        "summary": "Modify one account.",
+        "description": "User modifies properties of his own account, or admin modifies properties of a user account. Form-data is required if an image file is added. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "operationId": "modifyOneUser",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of user to modify.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "User account properties modifications. For more details, go to 'UserPutJson' or 'UserPutFormdata' schemas. At least one of the 'user' object properties or an image is needed. 'isAdmin' property change will be taken into consideration only if it is made by an admin.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userPutJson"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/userPutFormdata"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["users"],
+        "summary": "Delete one account.",
+        "description": "User deletes his own account or admin deletes a user account.",
+        "operationId": "deleteOneUser",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of user to delete.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/posts": {
+      "post": {
+        "tags": ["posts"],
+        "summary": "Create a post.",
+        "description": "User creates a post. Form-data is required if an image file is added. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "operationId": "createOnePost",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Post properties. For more details, go to 'PostJson' or 'PostFormdata' schemas.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postJson"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/postFormdata"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Post created."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get all posts.",
+        "description": "User gets all posts.",
+        "operationId": "getAllPosts",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "lastPostId",
+            "in": "query",
+            "description": "Get all posts which are after this post Id in the database.",
+            "schema": {
+              "type": "string",
+              "example": "632efd854148fdc69cd7e652"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Get a limited amount of posts.",
+            "schema": {
+              "type": "number",
+              "example": 3
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "schema": {
+              "type": "string",
+              "example": "asc"
+            }
+          },
+          {
+            "name": "fromUserId",
+            "in": "query",
+            "description": "Get all posts from a specific user.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            }
+          },
+          {
+            "name": "reactions",
+            "in": "query",
+            "description": "Get reactions of the posts.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "description": "Get comments of the posts.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "commentReactions",
+            "in": "query",
+            "description": "Get reactions of the posts comments.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/post"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["posts"],
+        "summary": "Delete all posts.",
+        "description": "Admin deletes all posts.",
+        "operationId": "deleteAllPosts",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/posts/{postId}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get one post.",
+        "description": "User gets properties of a post.",
+        "operationId": "getOnePost",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "Id of post to return.",
+            "schema": {
+              "type": "string",
+              "example": "632efd854148fdc69cd7e652"
+            },
+            "required": true
+          },
+          {
+            "name": "reactions",
+            "in": "query",
+            "description": "Get reactions of the post.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "description": "Get comments of the post.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "commentReactions",
+            "in": "query",
+            "description": "Get reactions of the post comments.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/post"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "put": {
+        "tags": ["posts"],
+        "summary": "Modify one post.",
+        "description": "User modifies a post of his own, or admin modifies a post. Form-data is required if an image file is added. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "operationId": "modifyOnePost",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "Id of post to modify.",
+            "schema": {
+              "type": "string",
+              "example": "632efd854148fdc69cd7e652"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Post properties modifications. For more details, go to 'PostJson' or 'PostFormdata' schemas. At least 'post' object 'content' property or an image is needed.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postJson"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/postFormdata"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["posts"],
+        "summary": "Delete one post.",
+        "description": "User deletes a post of his own, or admin deletes a post.",
+        "operationId": "deleteOnePost",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "Id of post to delete.",
+            "schema": {
+              "type": "string",
+              "example": "632efd854148fdc69cd7e652"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/comments": {
+      "post": {
+        "tags": ["comments"],
+        "summary": "Create a comment.",
+        "description": "User creates a comment.",
+        "operationId": "createOneComment",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Comment properties.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/commentPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "get": {
+        "tags": ["comments"],
+        "summary": "Get all comments.",
+        "description": "User gets all comments.",
+        "operationId": "getAllComments",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "lastCommentId",
+            "in": "query",
+            "description": "Get all comments which are after this comment Id in the database.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4148fdc69cd7e654"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Get a limited amount of comments.",
+            "schema": {
+              "type": "number",
+              "example": 6
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "schema": {
+              "type": "string",
+              "example": "desc"
+            }
+          },
+          {
+            "name": "fromUserId",
+            "in": "query",
+            "description": "Get all comments from a specific user.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            }
+          },
+          {
+            "name": "fromPostId",
+            "in": "query",
+            "description": "Get all comments from a specific post.",
+            "schema": {
+              "type": "string",
+              "example": "632efd854148fdc69cd7e652"
+            }
+          },
+          {
+            "name": "reactions",
+            "in": "query",
+            "description": "Get reactions of the comments.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items":{
+                    "$ref": "#/components/schemas/comment"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["comments"],
+        "summary": "Delete all comments.",
+        "description": "Admin deletes all comments.",
+        "operationId": "deleteAllComments",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/comments/{commentId}": {
+      "get": {
+        "tags": ["comments"],
+        "summary": "Get one comment.",
+        "description": "User gets properties of a comment.",
+        "operationId": "getOneComment",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "Id of comment to return.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4148fdc69cd7e654"
+            },
+            "required": true
+          },
+          {
+            "name": "reactions",
+            "in": "query",
+            "description": "Get reactions of the comment.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "put": {
+        "tags": ["comments"],
+        "summary": "Modify one comment.",
+        "description": "User modifies a comment of his own, or admin modifies a comment.",
+        "operationId": "modifyOneComment",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "Id of comment to modify.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4148fdc69cd7e654"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "New properties of the comment.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/commentPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["comments"],
+        "summary": "Delete one comment.",
+        "description": "User deletes a comment of his own, or admin deletes a comment.",
+        "operationId": "deleteOneComment",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "Id of comment to delete.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4148fdc69cd7e654"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/reactions": {
+      "post": {
+        "tags": ["reactions"],
+        "summary": "Create a reaction.",
+        "description": "User creates a reaction.",
+        "operationId": "createOneReaction",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Reaction properties. Exactly one of 'postId' or 'commentId' must be completed.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/reactionPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "reaction created."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "get": {
+        "tags": ["reactions"],
+        "summary": "Get all reactions.",
+        "description": "User gets all reactions.",
+        "operationId": "getAllReactions",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "lastReactionId",
+            "in": "query",
+            "description": "Get all reactions which are after this reaction Id in the database.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb7848fdc69cd7e654"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Get a limited amount of reactions.",
+            "schema": {
+              "type": "number",
+              "example": 2
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "schema": {
+              "type": "string",
+              "example": "desc"
+            }
+          },
+          {
+            "name": "fromUserId",
+            "in": "query",
+            "description": "Get all reactions from a specific user.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            }
+          },
+          {
+            "name": "fromPostId",
+            "in": "query",
+            "description": "Get all reactions from a specific post.",
+            "schema": {
+              "type": "string",
+              "example": "632efd854148fdc69cd7e652"
+            }
+          },
+          {
+            "name": "fromCommentId",
+            "in": "query",
+            "description": "Get all reactions from a specific comment.",
+            "schema": {
+              "type": "string",
+              "example": "632efd838148fdc69cd7e652"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/reaction"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["reactions"],
+        "summary": "Delete all reactions.",
+        "description": "Admin deletes all reactions.",
+        "operationId": "deleteAllReactions",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/reactions/{reactionId}": {
+      "get": {
+        "tags": ["reactions"],
+        "summary": "Get one reaction.",
+        "description": "User gets properties of a reaction.",
+        "operationId": "getOneReaction",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "reactionId",
+            "in": "path",
+            "description": "Id of reaction to return.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4148fdc69cd7e784"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/reaction"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "put": {
+        "tags": ["reactions"],
+        "summary": "Modify one reaction.",
+        "description": "User modifies a reaction of his own, or admin modifies a reaction.",
+        "operationId": "modifyOneReaction",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "reactionId",
+            "in": "path",
+            "description": "Id of reaction to modify.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4148fdc69cd7e784"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "New properties of the reaction.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/reactionPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["reactions"],
+        "summary": "Delete one reaction.",
+        "description": "User deletes his own reaction, or admin deletes a reaction.",
+        "operationId": "deleteOneReaction",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "reactionId",
+            "in": "path",
+            "description": "Id of reaction to delete.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4148fdc69cd7e784"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/reports": {
+      "post": {
+        "tags": ["reports"],
+        "summary": "Create a report.",
+        "description": "User creates a report.",
+        "operationId": "createOneReport",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Report properties. Exactly one of 'postId' or 'commentId' must be completed.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/reportPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Report created."
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "get": {
+        "tags": ["reports"],
+        "summary": "Get all reports.",
+        "description": "Admin gets all reports.",
+        "operationId": "getAllReports",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "lastReportId",
+            "in": "query",
+            "description": "Get all reports which are after this report Id in the database.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb7848fdc69cd7e654"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Get a limited amount of reports.",
+            "schema": {
+              "type": "number",
+              "example": 3
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "schema": {
+              "type": "string",
+              "example": "asc"
+            }
+          },
+          {
+            "name": "fromUserId",
+            "in": "query",
+            "description": "Get all reports from a specific user.",
+            "schema": {
+              "type": "string",
+              "example": "632dc722c75414645a459eb2"
+            }
+          },
+          {
+            "name": "fromPostId",
+            "in": "query",
+            "description": "Get all reports from a specific post.",
+            "schema": {
+              "type": "string",
+              "example": "632efd854148fdc69cd7e652"
+            }
+          },
+          {
+            "name": "fromCommentId",
+            "in": "query",
+            "description": "Get all reports from a specific comment.",
+            "schema": {
+              "type": "string",
+              "example": "632efd838148fdc69cd7e652"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/report"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["reports"],
+        "summary": "Delete all reports.",
+        "description": "Admin deletes all reports.",
+        "operationId": "deleteAllReports",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/reports/{reportId}": {
+      "get": {
+        "tags": ["reports"],
+        "summary": "Get one report.",
+        "description": "Admin gets properties of a report.",
+        "operationId": "getOneReport",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "reportId",
+            "in": "path",
+            "description": "Id of report to return.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4198fdc69cd7e784"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/report"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["reports"],
+        "summary": "Delete one report.",
+        "description": "Admin deletes a report.",
+        "operationId": "deleteOneReport",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "User token. Must be an admin one.",
+            "schema": {
+              "$ref": "#/components/schemas/bearerToken"
+            },
+            "required": true
+          },
+          {
+            "name": "reportId",
+            "in": "path",
+            "description": "Id of report to delete.",
+            "schema": {
+              "type": "string",
+              "example": "632efdbb4198fdc69cd7e784"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok."
+          },
+          "403": {
+            "description": "Forbidden request."
+          },
+          "404": {
+            "description": "Invalid Id."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "user": {
+        "title": "User",
+        "description": "User schema.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "632dc722c75414645a459eb2"
+          },
+          "pseudo": {
+            "type": "string",
+            "example": "Bob Marley"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "http://groupomania.com/images/imageDeBobMarley.jpg"
+          },
+          "theme": {
+            "type": "string",
+            "example": "nuancesDeGris"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "monEmail@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "MotDePasse"
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "2022-09-24T12:53:15.814+00:00"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": false
+          },
+          "activity": {
+            "type": "object",
+              "properties": {
+              "posts": {
+                "type": "number",
+                "example": 5
+              },
+              "comments": {
+                "type": "number",
+                "example": 3
+              },
+              "reactions": {
+                "type": "number",
+                "example": 8
+              }
+            }
+          }
+        },
+        "required": [
+          "_id",
+          "pseudo",
+          "imageUrl",
+          "theme",
+          "email",
+          "password",
+          "creationDate",
+          "isAdmin"
+        ]
+      },
+      "post": {
+        "title": "Post",
+        "description": "Post schema. At least one of 'content' or 'imageUrl' is required.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "632efd854148fdc69cd7e652"
+          },
+          "content": {
+            "type": "string",
+            "example": "Voici une image."
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "images/monImage.jpg"
+          },
+          "userId": {
+            "type": "string",
+            "example": "632dc722c75414645a459eb2"
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "2022-09-24T12:53:15.814+00:00"
+          },
+          "reactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/reaction"
+            }
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/comment"
+            }
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "creationDate"
+        ]
+      },
+      "comment": {
+        "title": "Comment",
+        "description": "Comment schema.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "632efdbb4148fdc69cd7e654"
+          },
+          "content": {
+            "type": "string",
+            "example": "Bravo !"
+          },
+          "postId": {
+            "type": "string",
+            "example": "632efd854148fdc69cd7e652"
+          },
+          "userId": {
+            "type": "string",
+            "example": "632dc722c75414645a459eb2"
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "2022-09-24T12:53:15.814+00:00"
+          },
+          "reactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/reaction"
+            }
+          }
+        },
+        "required": [
+          "_id",
+          "content",
+          "postId",
+          "userId",
+          "creationDate"
+        ]
+      },
+      "reaction": {
+        "title": "Reaction",
+        "description": "Reaction schema. Exactly one of 'postId' or 'commentId' must be completed.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "632efdbb4148fdc69cd7e784"
+          },
+          "type": {
+            "type": "string",
+            "example": "Like"
+          },
+          "postId": {
+            "type": "string",
+            "example": ""
+          },
+          "commentId": {
+            "type": "string",
+            "example": "632efdbb4148fdc69cd7e654"
+          },
+          "userId": {
+            "type": "string",
+            "example": "632dc722c75414645a459eb2"
+          }
+        },
+        "required": [
+          "_id",
+          "type",
+          "userId"
+        ]
+      },
+      "report": {
+        "title": "Report",
+        "description": "Report schema. Exactly one of 'postId' or 'commentId' must be completed.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "632efdbb4458fdc69cd7e784"
+          },
+          "postId": {
+            "type": "string",
+            "example": "632efd854148fdc69cd7e652"
+          },
+          "commentId": {
+            "type": "string",
+            "example": ""
+          },
+          "userId": {
+            "type": "string",
+            "example": "632dc722c75414645a459eb2"
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "2022-09-24T12:53:15.814+00:00"
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "creationDate"
+        ]
+      },
+      "userSignupJson": {
+        "title": "UserSignupJson",
+        "description": "User schema used when user creates an account without any image.",
+        "type": "object",
+        "properties": {
+          "pseudo": {
+            "type": "string",
+            "example": "Bob Marley"
+          },
+          "theme": {
+            "type": "string",
+            "example": "nuancesDeGris"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "monEmail@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "MotDePasse"
+          }
+        },
+        "required": [
+          "pseudo",
+          "email",
+          "password"
+        ]
+      },
+      "userSignupFormdata": {
+        "title": "UserSignupFormdata",
+        "description": "User schema used when user creates an account with an image. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "pseudo": {
+                "type": "string",
+                "example": "Bob Marley"
+              },
+              "theme": {
+                "type": "string",
+                "example": "nuancesDeGris"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "example": "monEmail@example.com"
+              },
+              "password": {
+                "type": "string",
+                "example": "MotDePasse"
+              }
+            },
+            "required": [
+              "pseudo",
+              "email",
+              "password"
+            ]
+          },
+          "image": {
+            "type": "string",
+            "example": "MonImage.jpg"
+          }
+        },
+        "required": [
+          "user",
+          "image"
+        ]
+      },
+      "userPostJson": {
+        "title": "UserPostJson",
+        "description": "User schema used when admin creates an account without any image.",
+        "type": "object",
+        "properties": {
+          "pseudo": {
+            "type": "string",
+            "example": "Bob Marley"
+          },
+          "theme": {
+            "type": "string",
+            "example": "nuancesDeGris"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "monEmail@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "MotDePasse"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "pseudo",
+          "email",
+          "password"
+        ]
+      },
+      "userPostFormdata": {
+        "title": "UserPostFormdata",
+        "description": "User schema used when admin creates an account with an image. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "pseudo": {
+                "type": "string",
+                "example": "Bob Marley"
+              },
+              "theme": {
+                "type": "string",
+                "example": "nuancesDeGris"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "example": "monEmail@example.com"
+              },
+              "password": {
+                "type": "string",
+                "example": "MotDePasse"
+              },
+              "isAdmin": {
+                "type": "boolean",
+                "example": true
+              }
+            },
+            "required": [
+              "pseudo",
+              "email",
+              "password"
+            ]
+          },
+          "image": {
+            "type": "string",
+            "example": "MonImage.jpg"
+          }
+        },
+        "required": [
+          "user",
+          "image"
+        ]
+      },
+      "userPutJson": {
+        "title": "UserPutJson",
+        "description": "User schema used when user changes an account but not the image. At least one property of 'user' object is required. 'isAdmin' property changes won't be taken into consideration if the user modifying is not an admin.",
+        "type": "object",
+        "properties": {
+          "pseudo": {
+            "type": "string",
+            "example": "Bob Marley"
+          },
+          "theme": {
+            "type": "string",
+            "example": "nuancesDeGris"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "monEmail@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "MotDePasse"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "userPutFormdata": {
+        "title": "UserPutFormdata",
+        "description": "User schema used when user changes an account, at least the image. File type must be 'image/jpeg', 'image/jpg' or 'image/png'. 'isAdmin' property changes won't be taken into consideration if the user modifying is not an admin.",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "pseudo": {
+                "type": "string",
+                "example": "Bob Marley"
+              },
+              "theme": {
+                "type": "string",
+                "example": "nuancesDeGris"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "example": "monEmail@example.com"
+              },
+              "password": {
+                "type": "string",
+                "example": "MotDePasse"
+              },
+              "isAdmin": {
+                "type": "boolean",
+                "example": false
+              }
+            }
+          },
+          "image": {
+            "type": "string",
+            "example": "MonImage.jpg"
+          }
+        },
+        "required": [
+          "image"
+        ]
+      },
+      "login": {
+        "title": "Login",
+        "description": "Login request body schema.",
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "monEmail@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "MotDePasse"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "token": {
+        "title": "Token",
+        "description": "Token schema.",
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzMxZDk1MWU3N2YxNDAxMmQxMjExNmEiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY0MjExMzEyLCJleHAiOjE2NjQyOTc3MTJ9.03h-xFcgHmwpYCHMZq36hnSAsHNS7TItboYmAliKSIk"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "bearerToken": {
+        "description": "Bearer token schema.",
+        "type": "string",
+        "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzMxZDk1MWU3N2YxNDAxMmQxMjExNmEiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY0MjExMzEyLCJleHAiOjE2NjQyOTc3MTJ9.03h-xFcgHmwpYCHMZq36hnSAsHNS7TItboYmAliKSIk"
+      },
+      "userActivity": {
+        "title": "UserActivity",
+        "description": "User activity schema.",
+        "type": "object",
+        "properties": {
+          "posts": {
+            "type": "number",
+            "example": 5
+          },
+          "comments": {
+            "type": "number",
+            "example": 3
+          },
+          "reactions": {
+            "type": "number",
+            "example": 8
+          }
+        },
+        "required": [
+          "posts",
+          "comments",
+          "reactions"
+        ]
+      },
+      "postJson": {
+        "title": "PostJson",
+        "description": "Post schema used when user publishes or modifies his post without any image.",
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Voici une image."
+          }
+        },
+        "required": [
+        "content"
+        ]
+      },
+      "postFormdata": {
+        "title": "PostFormdata",
+        "description": "Post schema used when user publishes/modifies his post or admin modifies a post with an image file. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
+        "type": "object",
+        "properties": {
+          "post": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "example": "Voici une image."
+               }
+            }
+          },
+          "image": {
+            "type": "string",
+            "example": "MonImage.jpg"
+          }
+        },
+        "required": [
+          "image"
+        ]
+      },
+      "commentPost": {
+        "title": "CommentPost",
+        "description": "Comment schema used when user publishes his comment.",
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Bravo !"
+          },
+          "postId": {
+            "type": "string",
+            "example": "632efd854148fdc69cd7e652"
+          }
+        },
+        "required": [
+          "content",
+          "postId"
+        ]
+      },
+      "commentPut": {
+        "title": "CommentPut",
+        "description": "Post schema used when user modifies his comment.",
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Félicitations !"
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "reactionPost": {
+        "title": "ReactionPost",
+        "description": "Reaction schema used when user publishes a reaction. Exactly one of 'postId' or 'commentId' must be completed.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Like"
+          },
+          "postId": {
+            "type": "string",
+            "example": "632efd854148fdc69cd7e652"
+          },
+          "commentId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "reactionPut": {
+        "title": "ReactionPut",
+        "description": "Reaction schema used when user modifies his reaction.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Dislike"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "reportPost": {
+        "title": "ReportPost",
+        "description": "Report schema used when user reports a post or comment. Exactly one of 'postId' or 'commentId' must be completed.",
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "example": ""
+          },
+          "commentId": {
+            "type": "string",
+            "example": "632efd854148fdc69cd7e892"
+          }
+        }
+      }
+    }
+  }
+}
