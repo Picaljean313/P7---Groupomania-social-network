@@ -218,12 +218,21 @@
             "required": true
           },
           {
-            "name": "lastUserId",
+            "name": "minDate",
             "in": "query",
-            "description": "Get all users who are after this user Id in the database.",
+            "description": "Get all users who have been created after this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
             "schema": {
               "type": "string",
-              "example": "632dc722c75414645a459eb2"
+              "example": "2022-13-01T14:48:02.809Z"
+            }
+          },
+          {
+            "name": "maxDate",
+            "in": "query",
+            "description": "Get all users who have been created before this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
+            "schema": {
+              "type": "string",
+              "example": "2022-13-01T14:48:02.809Z"
             }
           },
           {
@@ -238,7 +247,7 @@
           {
             "name": "sort",
             "in": "query",
-            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "description": "Returns elements from oldest to newest ('asc') or from newest to oldest ('desc').",
             "schema": {
               "type": "string",
               "example": "asc"
@@ -529,12 +538,21 @@
             "required": true
           },
           {
-            "name": "lastPostId",
+            "name": "minDate",
             "in": "query",
-            "description": "Get all posts which are after this post Id in the database.",
+            "description": "Get all posts who have been created after this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
             "schema": {
               "type": "string",
-              "example": "632efd854148fdc69cd7e652"
+              "example": "2022-13-01T14:48:02.809Z"
+            }
+          },
+          {
+            "name": "maxDate",
+            "in": "query",
+            "description": "Get all posts who have been created before this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
+            "schema": {
+              "type": "string",
+              "example": "2022-13-01T14:48:02.809Z"
             }
           },
           {
@@ -549,7 +567,7 @@
           {
             "name": "sort",
             "in": "query",
-            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "description": "Returns elements from oldest to newest ('asc') or from newest to oldest ('desc').",
             "schema": {
               "type": "string",
               "example": "asc"
@@ -880,12 +898,21 @@
             "required": true
           },
           {
-            "name": "lastCommentId",
+            "name": "minDate",
             "in": "query",
-            "description": "Get all comments which are after this comment Id in the database.",
+            "description": "Get all comments who have been created after this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
             "schema": {
               "type": "string",
-              "example": "632efdbb4148fdc69cd7e654"
+              "example": "2022-13-01T14:48:02.809Z"
+            }
+          },
+          {
+            "name": "maxDate",
+            "in": "query",
+            "description": "Get all comments who have been created before this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
+            "schema": {
+              "type": "string",
+              "example": "2022-13-01T14:48:02.809Z"
             }
           },
           {
@@ -900,7 +927,7 @@
           {
             "name": "sort",
             "in": "query",
-            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "description": "Returns elements from oldest to newest ('asc') or from newest to oldest ('desc').",
             "schema": {
               "type": "string",
               "example": "desc"
@@ -1199,12 +1226,21 @@
             "required": true
           },
           {
-            "name": "lastReactionId",
+            "name": "minDate",
             "in": "query",
-            "description": "Get all reactions which are after this reaction Id in the database.",
+            "description": "Get all reactions who have been created after this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
             "schema": {
               "type": "string",
-              "example": "632efdbb7848fdc69cd7e654"
+              "example": "2022-13-01T14:48:02.809Z"
+            }
+          },
+          {
+            "name": "maxDate",
+            "in": "query",
+            "description": "Get all reactions who have been created before this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
+            "schema": {
+              "type": "string",
+              "example": "2022-13-01T14:48:02.809Z"
             }
           },
           {
@@ -1219,7 +1255,7 @@
           {
             "name": "sort",
             "in": "query",
-            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "description": "Returns elements from oldest to newest ('asc') or from newest to oldest ('desc').",
             "schema": {
               "type": "string",
               "example": "desc"
@@ -1509,12 +1545,21 @@
             "required": true
           },
           {
-            "name": "lastReportId",
+            "name": "minDate",
             "in": "query",
-            "description": "Get all reports which are after this report Id in the database.",
+            "description": "Get all reports who have been created after this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
             "schema": {
               "type": "string",
-              "example": "632efdbb7848fdc69cd7e654"
+              "example": "2022-13-01T14:48:02.809Z"
+            }
+          },
+          {
+            "name": "maxDate",
+            "in": "query",
+            "description": "Get all reports who have been created before this date. Only the ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ) is supported.",
+            "schema": {
+              "type": "string",
+              "example": "2022-13-01T14:48:02.809Z"
             }
           },
           {
@@ -1529,7 +1574,7 @@
           {
             "name": "sort",
             "in": "query",
-            "description": "Consider your database collection as ascending ('asc') or descending ('desc').",
+            "description": "Returns elements from oldest to newest ('asc') or from newest to oldest ('desc').",
             "schema": {
               "type": "string",
               "example": "asc"
@@ -1740,11 +1785,15 @@
           },
           "creationDate": {
             "type": "string",
-            "example": "2022-09-24T12:53:15.814+00:00"
+            "example": "2022-13-01T14:48:02.809Z"
           },
           "isAdmin": {
             "type": "boolean",
             "example": false
+          },
+          "__v": {
+            "type": "number",
+            "example": 0
           },
           "activity": {
             "type": "object",
@@ -1772,7 +1821,8 @@
           "email",
           "password",
           "creationDate",
-          "isAdmin"
+          "isAdmin",
+          "__v"
         ]
       },
       "post": {
@@ -1798,7 +1848,7 @@
           },
           "creationDate": {
             "type": "string",
-            "example": "2022-09-24T12:53:15.814+00:00"
+            "example": "2022-13-01T14:48:02.809Z"
           },
           "reactions": {
             "type": "array",
@@ -1811,12 +1861,17 @@
             "items": {
               "$ref": "#/components/schemas/comment"
             }
+          },
+          "__v": {
+            "type": "number",
+            "example": 0
           }
         },
         "required": [
           "_id",
           "userId",
-          "creationDate"
+          "creationDate",
+          "__v"
         ]
       },
       "comment": {
@@ -1842,13 +1897,17 @@
           },
           "creationDate": {
             "type": "string",
-            "example": "2022-09-24T12:53:15.814+00:00"
+            "example": "2022-13-01T14:48:02.809Z"
           },
           "reactions": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/reaction"
             }
+          },
+          "__v": {
+            "type": "number",
+            "example": 0
           }
         },
         "required": [
@@ -1856,7 +1915,8 @@
           "content",
           "postId",
           "userId",
-          "creationDate"
+          "creationDate",
+          "__v"
         ]
       },
       "reaction": {
@@ -1883,12 +1943,22 @@
           "userId": {
             "type": "string",
             "example": "632dc722c75414645a459eb2"
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "2022-13-01T14:48:02.809Z"
+          },
+          "__v": {
+            "type": "number",
+            "example": 0
           }
         },
         "required": [
           "_id",
           "type",
-          "userId"
+          "userId",
+          "creationDate",
+          "__v"
         ]
       },
       "report": {
@@ -1914,13 +1984,18 @@
           },
           "creationDate": {
             "type": "string",
-            "example": "2022-09-24T12:53:15.814+00:00"
+            "example": "2022-13-01T14:48:02.809Z"
+          },
+          "__v": {
+            "type": "number",
+            "example": 0
           }
         },
         "required": [
           "_id",
           "userId",
-          "creationDate"
+          "creationDate",
+          "__v"
         ]
       },
       "userSignupJson": {

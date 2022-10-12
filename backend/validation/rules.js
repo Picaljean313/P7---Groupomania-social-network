@@ -1,5 +1,7 @@
 const validationRules = (thing) => {
-  if (thing.required === false && thing.value === undefined) return true
+  if (thing.required === false && thing.value === undefined ) return true
+  if (Number.isNaN(thing.value) && thing.required === false ) return true
+  if (Number.isNaN(thing.value) && thing.required === true) return false
   if (typeof thing.value !== thing.expectedType) return false
   if (thing.expectedType === "string"){
     try {
@@ -7,6 +9,7 @@ const validationRules = (thing) => {
     } catch {
       return false
     }
+    if (thing.expectedValue !== undefined && !thing.expectedValue.includes(thing.value)) return false
     if (thing.minLength !== undefined && thing.value.length < thing.minLength) return false
     if (thing.maxLength !== undefined && thing.value.length > thing.maxLength) return false
   }

@@ -1,4 +1,7 @@
 const UsersModel = require ('../models/Users');
+const PostsModel = require ('../models/Posts');
+const CommentsModel = require ('../models/Comments');
+const ReactionsModel = require ('../models/Reactions');
 const TokensModel = require ('../models/Tokens');
 const bcrypt = require ('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -6,7 +9,9 @@ const functions = require ('../functions');
 const login = require ('../validation/data/login');
 const signup = require ('../validation/data/signup');
 const createOneUser = require('../validation/data/createOneUser');
+const reqQueries = require('../validation/data/reqQueries');
 const rules = require ('../validation/rules');
+const url = require ('url');
 
 exports.signup = (req, res, next) => {
   const includedFile = req.file ? true : false;
@@ -151,7 +156,56 @@ exports.createOneUser = (req, res, next) => {
 };
 
 exports.getAllUsers = (req, res, next) => {
-
+  const allowedQueries = ["minDate", "maxDate", "limit", "sort", "activity"]; 
+  const reqQueriesObject = url.parse(req.url, true).query;
+  const reqQueriesKeys = Object.keys(url.parse(req.url, true).query);
+  for (let reqQueryKey of reqQueriesKeys){
+    if (!allowedQueries.includes(reqQueryKey)) return functions.response(res, 400);
+  };
+  const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
+  if (!validParams) return functions.response(res, 400);
+  const minDate = req.query.minDate ? Date.parse(req.query.minDate) : 0;
+  const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
+  const limit = req.query.limit ? Number(req.query.limit) : null;
+  const sort = req.query.sort ? req.query.sort : null;
+  async function findUsers (){
+    try{
+      const users = await UsersModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit);
+      if (req.query.activity === "true"){
+        const usersUpdated = [];
+        for (let user of users){
+          const postsCount = PostsModel.count({ userId : user._id });
+          const commentsCount = CommentsModel.count({ userId : user._id });
+          const reactionsCount = ReactionsModel.count({ userId : user._id });
+          const activityArray = await Promise.all([postsCount, commentsCount, reactionsCount]);
+          const userActivity = {
+            posts : activityArray[0],
+            comments : activityArray[1],
+            reactions : activityArray[2]
+          };
+          const userUpdated = {
+            _id : user._id,
+            pseudo : user.pseudo,
+            imageUrl : user.imageUrl,
+            theme : user.theme,
+            email : user.email,
+            password : user.password,
+            creationDate : user.creationDate,
+            isAdmin : user.isAdmin,
+            __v : user.__v,
+            activity : userActivity
+          };
+          usersUpdated.push(userUpdated);
+        }
+        return res.status(200).json(usersUpdated)
+      } else {
+        return res.status(200).json(users)
+      }
+    } catch {
+      (error) => {functions.response(res, 500);}
+    }
+  };
+  findUsers();
 };
 
 exports.deleteAllUsers = (req, res, next) => {
