@@ -2,6 +2,7 @@ const UsersModel = require ('../models/Users');
 const PostsModel = require ('../models/Posts');
 const CommentsModel = require ('../models/Comments');
 const ReactionsModel = require ('../models/Reactions');
+const ReportsModel = require ('../models/Reports');
 const TokensModel = require ('../models/Tokens');
 const bcrypt = require ('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -209,7 +210,21 @@ exports.getAllUsers = (req, res, next) => {
 };
 
 exports.deleteAllUsers = (req, res, next) => {
-
+  const userId = req.auth.userId;
+  async function deleteUsers () {
+    try {
+      const deletedUsers = UsersModel.deleteMany({ _id : { '$ne' : userId }});
+      const deletedPosts = PostsModel.deleteMany({ userId : { '$ne' : userId }});
+      const deletedComments = CommentsModel.deleteMany({ userId : { '$ne' : userId }});
+      const deletedReactions = ReactionsModel.deleteMany({ userId : { '$ne' : userId }});
+      const deletedReports = ReportsModel.deleteMany({ userId : { '$ne' : userId }});
+      await Promise.all([deletedUsers, deletedPosts, deletedComments, deletedReactions, deletedReports]);
+      res.status(200).json({ message : "Ok." })
+    } catch {
+      functions.response(res, 500);
+    }
+  };
+  deleteUsers();
 };
 
 exports.getOneUser = (req, res, next) => {
