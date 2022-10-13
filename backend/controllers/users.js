@@ -11,6 +11,7 @@ const login = require ('../validation/data/login');
 const signup = require ('../validation/data/signup');
 const createOneUser = require('../validation/data/createOneUser');
 const reqQueries = require('../validation/data/reqQueries');
+const userId = require ('../validation/data/userId');
 const rules = require ('../validation/rules');
 const url = require ('url');
 
@@ -228,7 +229,50 @@ exports.deleteAllUsers = (req, res, next) => {
 };
 
 exports.getOneUser = (req, res, next) => {
-
+  const allowedQueries = ["activity"]; 
+  const reqQueriesObject = url.parse(req.url, true).query;
+  const reqQueriesKeys = Object.keys(url.parse(req.url, true).query);
+  for (let reqQueryKey of reqQueriesKeys){
+    if (!allowedQueries.includes(reqQueryKey)) return functions.response(res, 400);
+  };
+  const validreqQueries = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
+  const invalidUserId = !rules.valid(userId.userIdToValidate, req.params.userId);
+  if (!validreqQueries || invalidUserId) return functions.response(res, 400);
+  async function findOneUser (){
+    try{
+      const user = await UsersModel.findOne({ _id : req.params.userId });
+      if (user === null) return functions.response(res, 400);
+      if (req.query.activity === "true"){
+        const postsCount = PostsModel.count({ userId : user._id });
+        const commentsCount = CommentsModel.count({ userId : user._id });
+        const reactionsCount = ReactionsModel.count({ userId : user._id });
+        const activityArray = await Promise.all([postsCount, commentsCount, reactionsCount]);
+        const userActivity = {
+          posts : activityArray[0],
+          comments : activityArray[1],
+          reactions : activityArray[2]
+        };
+        const userUpdated = {
+          _id : user._id,
+          pseudo : user.pseudo,
+          imageUrl : user.imageUrl,
+          theme : user.theme,
+          email : user.email,
+          password : user.password,
+          creationDate : user.creationDate,
+          isAdmin : user.isAdmin,
+          __v : user.__v,
+          activity : userActivity
+        };
+        return res.status(200).json(userUpdated)
+      } else {
+        return res.status(200).json(user)
+      }
+    } catch {
+      (error) => {functions.response(res, 500);}
+    }
+  };
+  findOneUser();
 };
 
 exports.modifyOneUser = (req, res, next) => {
