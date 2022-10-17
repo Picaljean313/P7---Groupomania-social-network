@@ -10,12 +10,13 @@ const functions = require ('../functions');
 const login = require ('../validation/data/login');
 const signup = require ('../validation/data/signup');
 const createOneUser = require('../validation/data/createOneUser');
+const modifyOneUser = require('../validation/data/modifyOneUser');
 const reqQueries = require('../validation/data/reqQueries');
-const userId = require ('../validation/data/userId');
+const id = require ('../validation/data/id');
 const rules = require ('../validation/rules');
 const url = require ('url');
 
-exports.signup = (req, res, next) => {
+exports.signup = async function (req, res, next) {
   const includedFile = req.file ? true : false;
   if (includedFile) {
     const includedUserBody = req.body.user ? true : false;
@@ -25,84 +26,73 @@ exports.signup = (req, res, next) => {
     const validUserJson = rules.valid(signup.userJsonDataToValidate, JSON.parse(req.body.user)); 
     if (!validUserJson) return functions.unlinkFile(req, res, 400);
     const userObject = JSON.parse(req.body.user);
-    UsersModel.findOne({ email: userObject.email })
-      .then(user => {
-        if (user !== null) return functions.unlinkFile(req, res, 400);
-        bcrypt.hash(userObject.password, 10)
-          .then(hash => {
-            const user = new UsersModel({
-              pseudo : userObject.pseudo,
-              imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-              theme : userObject.theme,
-              email : userObject.email,
-              password : hash
-            });
-            user.save()
-              .then(()=> res.status(201).json({ message : "Account created." }))
-              .catch(error => functions.unlinkFile(req, res, 500));
-          })
-          .catch(error => functions.unlinkFile(req, res, 500));
-      })
-      .catch(error => functions.unlinkFile(req, res, 500));
+    const user = await UsersModel.findOne({ email: userObject.email })
+      .catch(() => functions.unlinkFile(req, res, 500));
+    if (user !== null) return functions.unlinkFile(req, res, 400);
+    const hash = await bcrypt.hash(userObject.password, 10)
+      .catch(() => functions.unlinkFile(req, res, 500));
+    const userCreated = new UsersModel({
+      pseudo : userObject.pseudo,
+      imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      theme : userObject.theme,
+      email : userObject.email,
+      password : hash
+    });
+    await userCreated.save()
+      .catch(() => functions.unlinkFile(req, res, 500));
+    res.status(201).json({ message : "Account created." });
   } else {
     const validUserJson = rules.valid(signup.userJsonDataToValidate, req.body); 
     if (!validUserJson) return functions.response(res, 400);
-    UsersModel.findOne({ email: req.body.email })
-      .then(user => {
-        if (user !== null) return functions.response(res, 400);
-        bcrypt.hash(req.body.password, 10)
-          .then(hash => {
-            const user = new UsersModel({
-              pseudo : req.body.pseudo,
-              theme : req.body.theme,
-              email : req.body.email,
-              password : hash
-            });
-            user.save()
-              .then(()=> res.status(201).json({ message : "Account created." }))
-              .catch(error => functions.response(res, 500));
-          })
-          .catch(error => functions.response(res, 500));
-      })
-      .catch(error => functions.response(res, 500));
+    const user = await UsersModel.findOne({ email: req.body.email })
+      .catch(() => functions.response(res, 500));
+    if (user !== null) return functions.response(res, 400);
+    const hash = await bcrypt.hash(req.body.password, 10)
+      .catch(() => functions.response(res, 500));
+    const userCreated = new UsersModel({
+      pseudo : req.body.pseudo,
+      theme : req.body.theme,
+      email : req.body.email,
+      password : hash
+    });
+    await userCreated.save()
+      .catch(() => functions.response(res, 500));
+    res.status(201).json({ message : "Account created." });
   }
 };
 
-exports.login = (req, res, next) => {
+exports.login = async function (req, res, next) {
   const validLoginData = typeof req.body.email === "string" ? rules.valid(login.loginDataToValidate, [req.body.email.trim(), req.body.password]) : false;
   if(!validLoginData) return functions.response(res, 400);
-  UsersModel.findOne({ email: req.body.email.trim() })
-    .then(user => {
-      if (user === null) return functions.response(res, 400);
-      bcrypt.compare(req.body.password, user.password)
-        .then(valid => {
-          if (!valid) return functions.response(res, 400); 
-          res.status(200).json({
-            token : jwt.sign(
-              { 
-                userId : user._id,
-                isAdmin : user.isAdmin
-              },
-              'HARIBO_C_EST_BEAU_LA_VIE',
-              { expiresIn: '24h' }
-            )
-          });
-        })
-        .catch(error => functions.response(res, 500));
-    })
-    .catch(error => functions.response(res, 500));
-};
-
-exports.logout = (req, res, next) => {
-  const tokenToRevoke = new TokensModel ({
-    token : req.headers.authorization
+  const user = await UsersModel.findOne({ email: req.body.email.trim() })
+    .catch(() => functions.response(res, 500));
+  if (user === null) return functions.response(res, 400);
+  const valid = await bcrypt.compare(req.body.password, user.password)
+    .catch(() => functions.response(res, 500));
+  if (!valid) return functions.response(res, 400); 
+  const token = new TokensModel({
+    token : jwt.sign(
+      { 
+        userId : user._id,
+        isAdmin : user.isAdmin
+      },
+      'HARIBO_C_EST_BEAU_LA_VIE',
+      { expiresIn: '24h' }
+    )
   });
-  tokenToRevoke.save()
-    .then(()=> { res.status(201).json({ message : "Token to revoke created." }); })
-    .catch(error => functions.response(res, 500));
+  await token.save()
+    .catch(() => functions.response(res, 500))
+  res.status(200).json({ token : token.token });
 };
 
-exports.createOneUser = (req, res, next) => {
+exports.logout = async function (req, res, next) {
+  const token = req.headers.authorization.split(' ')[1];
+  await TokensModel.deleteOne({ token : token })
+    .catch(() => functions.response(res, 500))
+  functions.response(res, 200);
+};
+
+exports.createOneUser = async function (req, res, next) {
   const includedFile = req.file ? true : false;
   if (includedFile) {
     const includedUserBody = req.body.user ? true : false;
@@ -112,52 +102,44 @@ exports.createOneUser = (req, res, next) => {
     const validUserJson = rules.valid(createOneUser.userJsonDataToValidate, JSON.parse(req.body.user)); 
     if (!validUserJson) return functions.unlinkFile(req, res, 400);
     const userObject = JSON.parse(req.body.user);
-    UsersModel.findOne({ email: userObject.email })
-      .then(user => {
-        if (user !== null) return functions.unlinkFile(req, res, 400);
-        bcrypt.hash(userObject.password, 10)
-          .then(hash => {
-            const user = new UsersModel({
-              pseudo : userObject.pseudo,
-              imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-              theme : userObject.theme,
-              email : userObject.email,
-              password : hash,
-              isAdmin : userObject.isAdmin
-            });
-            user.save()
-              .then(()=> res.status(201).json({ message : "Account created." }))
-              .catch(error => functions.unlinkFile(req, res, 500));
-          })
-          .catch(error => functions.unlinkFile(req, res, 500));
-      })
-      .catch(error => functions.unlinkFile(req, res, 500));
+    const user = await UsersModel.findOne({ email: userObject.email })
+      .catch(() => functions.unlinkFile(req, res, 500));
+    if (user !== null) return functions.unlinkFile(req, res, 400);
+    const hash = await bcrypt.hash(userObject.password, 10)
+      .catch(() => functions.unlinkFile(req, res, 500));
+    const userCreated = new UsersModel({
+      pseudo : userObject.pseudo,
+      imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      theme : userObject.theme,
+      email : userObject.email,
+      password : hash,
+      isAdmin : userObject.isAdmin
+    });
+    await userCreated.save()
+      .catch(() => functions.unlinkFile(req, res, 500));
+    res.status(201).json({ message : "Account created." });
   } else {
     const validUserJson = rules.valid(createOneUser.userJsonDataToValidate, req.body); 
     if (!validUserJson) return functions.response(res, 400);
-    UsersModel.findOne({ email: req.body.email })
-      .then(user => {
-        if (user !== null) return functions.response(res, 400);
-        bcrypt.hash(req.body.password, 10)
-          .then(hash => {
-            const user = new UsersModel({
-              pseudo : req.body.pseudo,
-              theme : req.body.theme,
-              email : req.body.email,
-              password : hash,
-              isAdmin : req.body.isAdmin
-            });
-            user.save()
-              .then(()=> res.status(201).json({ message : "Account created." }))
-              .catch(error => functions.response(res, 500));
-          })
-          .catch(error => functions.response(res, 500));
-      })
-      .catch(error => functions.response(res, 500));
+    const user = await UsersModel.findOne({ email: req.body.email })
+      .catch(() => functions.response(res, 500));
+    if (user !== null) return functions.response(res, 400);
+    const hash = await bcrypt.hash(req.body.password, 10)
+      .catch(() => functions.response(res, 500));
+    const userCreated = new UsersModel({
+      pseudo : req.body.pseudo,
+      theme : req.body.theme,
+      email : req.body.email,
+      password : hash,
+      isAdmin : req.body.isAdmin
+    });
+    await userCreated.save()
+      .catch(() => functions.response(res, 500));
+    res.status(201).json({ message : "Account created." });
   }
 };
 
-exports.getAllUsers = (req, res, next) => {
+exports.getAllUsers = async function (req, res, next) {
   const allowedQueries = ["minDate", "maxDate", "limit", "sort", "activity"]; 
   const reqQueriesObject = url.parse(req.url, true).query;
   const reqQueriesKeys = Object.keys(url.parse(req.url, true).query);
@@ -170,65 +152,60 @@ exports.getAllUsers = (req, res, next) => {
   const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
   const limit = req.query.limit ? Number(req.query.limit) : null;
   const sort = req.query.sort ? req.query.sort : null;
-  async function findUsers (){
-    try{
-      const users = await UsersModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit);
-      if (req.query.activity === "true"){
-        const usersUpdated = [];
-        for (let user of users){
-          const postsCount = PostsModel.count({ userId : user._id });
-          const commentsCount = CommentsModel.count({ userId : user._id });
-          const reactionsCount = ReactionsModel.count({ userId : user._id });
-          const activityArray = await Promise.all([postsCount, commentsCount, reactionsCount]);
-          const userActivity = {
-            posts : activityArray[0],
-            comments : activityArray[1],
-            reactions : activityArray[2]
-          };
-          const userUpdated = {
-            _id : user._id,
-            pseudo : user.pseudo,
-            imageUrl : user.imageUrl,
-            theme : user.theme,
-            email : user.email,
-            password : user.password,
-            creationDate : user.creationDate,
-            isAdmin : user.isAdmin,
-            __v : user.__v,
-            activity : userActivity
-          };
-          usersUpdated.push(userUpdated);
-        }
-        return res.status(200).json(usersUpdated)
-      } else {
-        return res.status(200).json(users)
-      }
-    } catch {
-      (error) => {functions.response(res, 500);}
+  const users = await UsersModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit)
+    .catch(()=> functions.response(res, 500));
+  if (req.query.activity === "true"){
+    const usersUpdated = [];
+    for (let user of users){
+      const postsCount = PostsModel.count({ userId : user._id })
+        .catch(()=> functions.response(res, 500));
+      const commentsCount = CommentsModel.count({ userId : user._id })
+        .catch(()=> functions.response(res, 500));
+      const reactionsCount = ReactionsModel.count({ userId : user._id })
+        .catch(()=> functions.response(res, 500));
+      const activityArray = await Promise.all([postsCount, commentsCount, reactionsCount]);
+      const userActivity = {
+        posts : activityArray[0],
+        comments : activityArray[1],
+        reactions : activityArray[2]
+      };
+      const userUpdated = {
+        _id : user._id,
+        pseudo : user.pseudo,
+        imageUrl : user.imageUrl,
+        theme : user.theme,
+        email : user.email,
+        password : user.password,
+        creationDate : user.creationDate,
+        isAdmin : user.isAdmin,
+        __v : user.__v,
+        activity : userActivity
+      };
+      usersUpdated.push(userUpdated);
     }
-  };
-  findUsers();
+    return res.status(200).json(usersUpdated)
+  } else {
+    return res.status(200).json(users)
+  }
 };
 
-exports.deleteAllUsers = (req, res, next) => {
+exports.deleteAllUsers = async function (req, res, next) {
   const userId = req.auth.userId;
-  async function deleteUsers () {
-    try {
-      const deletedUsers = UsersModel.deleteMany({ _id : { '$ne' : userId }});
-      const deletedPosts = PostsModel.deleteMany({ userId : { '$ne' : userId }});
-      const deletedComments = CommentsModel.deleteMany({ userId : { '$ne' : userId }});
-      const deletedReactions = ReactionsModel.deleteMany({ userId : { '$ne' : userId }});
-      const deletedReports = ReportsModel.deleteMany({ userId : { '$ne' : userId }});
-      await Promise.all([deletedUsers, deletedPosts, deletedComments, deletedReactions, deletedReports]);
-      res.status(200).json({ message : "Ok." })
-    } catch {
-      functions.response(res, 500);
-    }
-  };
-  deleteUsers();
+  const deletedUsers = UsersModel.deleteMany({ _id : { '$ne' : userId }})
+    .catch(()=> functions.response(res, 500));
+  const deletedPosts = PostsModel.deleteMany({ userId : { '$ne' : userId }})
+    .catch(()=> functions.response(res, 500));
+  const deletedComments = CommentsModel.deleteMany({ userId : { '$ne' : userId }})
+    .catch(()=> functions.response(res, 500));
+  const deletedReactions = ReactionsModel.deleteMany({ userId : { '$ne' : userId }})
+    .catch(()=> functions.response(res, 500));
+  const deletedReports = ReportsModel.deleteMany({ userId : { '$ne' : userId }})
+    .catch(()=> functions.response(res, 500));
+  await Promise.all([deletedUsers, deletedPosts, deletedComments, deletedReactions, deletedReports]);
+  res.status(200).json({ message : "Ok." })
 };
 
-exports.getOneUser = (req, res, next) => {
+exports.getOneUser = async function (req, res, next) {
   const allowedQueries = ["activity"]; 
   const reqQueriesObject = url.parse(req.url, true).query;
   const reqQueriesKeys = Object.keys(url.parse(req.url, true).query);
@@ -236,47 +213,105 @@ exports.getOneUser = (req, res, next) => {
     if (!allowedQueries.includes(reqQueryKey)) return functions.response(res, 400);
   };
   const validreqQueries = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
-  const invalidUserId = !rules.valid(userId.userIdToValidate, req.params.userId);
+  const invalidUserId = !rules.valid(id.idToValidate, req.params.userId);
   if (!validreqQueries || invalidUserId) return functions.response(res, 400);
-  async function findOneUser (){
-    try{
-      const user = await UsersModel.findOne({ _id : req.params.userId });
-      if (user === null) return functions.response(res, 400);
-      if (req.query.activity === "true"){
-        const postsCount = PostsModel.count({ userId : user._id });
-        const commentsCount = CommentsModel.count({ userId : user._id });
-        const reactionsCount = ReactionsModel.count({ userId : user._id });
-        const activityArray = await Promise.all([postsCount, commentsCount, reactionsCount]);
-        const userActivity = {
-          posts : activityArray[0],
-          comments : activityArray[1],
-          reactions : activityArray[2]
-        };
-        const userUpdated = {
-          _id : user._id,
-          pseudo : user.pseudo,
-          imageUrl : user.imageUrl,
-          theme : user.theme,
-          email : user.email,
-          password : user.password,
-          creationDate : user.creationDate,
-          isAdmin : user.isAdmin,
-          __v : user.__v,
-          activity : userActivity
-        };
-        return res.status(200).json(userUpdated)
-      } else {
-        return res.status(200).json(user)
-      }
-    } catch {
-      (error) => {functions.response(res, 500);}
-    }
-  };
-  findOneUser();
+  const user = await UsersModel.findOne({ _id : req.params.userId })
+    .catch(()=> functions.response(res, 500));
+  if (user === null) return functions.response(res, 400);
+  if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
+  if (req.query.activity === "true"){
+    const postsCount = PostsModel.count({ userId : user._id })
+      .catch(()=> functions.response(res, 500));
+    const commentsCount = CommentsModel.count({ userId : user._id })
+      .catch(()=> functions.response(res, 500));
+    const reactionsCount = ReactionsModel.count({ userId : user._id })
+      .catch(()=> functions.response(res, 500));
+    const activityArray = await Promise.all([postsCount, commentsCount, reactionsCount]);
+    const userActivity = {
+      posts : activityArray[0],
+      comments : activityArray[1],
+      reactions : activityArray[2]
+    };
+    const userUpdated = {
+      _id : user._id,
+      pseudo : user.pseudo,
+      imageUrl : user.imageUrl,
+      theme : user.theme,
+      email : user.email,
+      password : user.password,
+      creationDate : user.creationDate,
+      isAdmin : user.isAdmin,
+      __v : user.__v,
+      activity : userActivity
+    };
+    return res.status(200).json(userUpdated)
+  } else {
+    return res.status(200).json(user)
+  }
 };
 
-exports.modifyOneUser = (req, res, next) => {
-
+exports.modifyOneUser = async function (req, res, next) {
+  const allowedNonHashedProperties = ["pseudo", "theme", "email"];
+  const userModified = {};
+  const includedFile = req.file ? true : false;
+  if (includedFile){
+    const invalidUserId = !rules.valid(id.idToValidate, req.params.userId);
+    if (invalidUserId) return functions.unlinkFile(req, res, 400);
+    const user = await UsersModel.findOne({ _id : req.params.userId })
+      .catch(()=> functions.unlinkFile(req, res, 500));
+    if (user === null) return functions.unlinkFile(req, res, 400);
+    if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.unlinkFile(req, res, 401);
+    userModified.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+    if (req.body.user){
+      const validUserFormData = rules.valid(modifyOneUser.userFormDataToValidate, req.body.user);
+      if (!validUserFormData) return functions.unlinkFile(req, res, 400);
+      const validUserJson = rules.valid(modifyOneUser.userJsonDataToValidate, JSON.parse(req.body.user));
+      if (!validUserJson) return functions.unlinkFile(req, res, 400);
+      const userReqBodyPropertiesToModify = Object.keys(JSON.parse(req.body.user)).filter(e => allowedNonHashedProperties.includes(e));
+      if (userReqBodyPropertiesToModify.length !== 0){
+        for (let property of userReqBodyPropertiesToModify) {
+          userModified[property] = JSON.parse(req.body.user)[property];
+        };
+      }
+      if (JSON.parse(req.body.user).password) {
+        const hash = await bcrypt.hash(JSON.parse(req.body.user).password, 10)
+          .catch(()=> functions.unlinkFile(req, res, 500));
+        userModified.password = hash;
+      };
+      if (JSON.parse(req.body.user).isAdmin && req.auth.isAdmin) {
+        userModified.isAdmin = JSON.parse(req.body.user).isAdmin;
+      }
+    } 
+    await UsersModel.updateOne({ _id : req.params.userId }, userModified)
+      .catch(()=> functions.unlinkFile(req, res, 500));
+    functions.response(res, 200);
+  } else {
+    const invalidUserId = !rules.valid(id.idToValidate, req.params.userId);
+    if (invalidUserId) return functions.response(res, 400);
+    const user = await UsersModel.findOne({ _id : req.params.userId })
+      .catch(()=> functions.response(res, 500));
+    if (user === null) return functions.response(res, 400);
+    if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
+    const validUserJson = rules.valid(modifyOneUser.userJsonDataToValidate, req.body);
+    if (!validUserJson) return functions.response(res, 400);
+    const userReqBodyPropertiesToModify = Object.keys(req.body).filter(e => allowedNonHashedProperties.includes(e));
+    const isAdminChange = req.body.isAdmin && req.auth.isAdmin ? true : false;
+    if(userReqBodyPropertiesToModify.length === 0 && !isAdminChange && !req.body.password) return functions.response(res, 400);
+    for (let property of userReqBodyPropertiesToModify) {
+      userModified[property] = req.body[property];
+    };
+    if (req.body.password) {
+      const hash = await bcrypt.hash(req.body.password, 10)
+        .catch(()=> functions.response(res, 500));
+      userModified.password = hash;
+    };
+    if (isAdminChange) {
+      userModified.isAdmin = req.body.isAdmin;
+    }
+    await UsersModel.updateOne({ _id : req.params.userId }, userModified)
+      .catch(()=> functions.response(res, 500));
+    functions.response(res, 200);
+  }
 };
 
 exports.deleteOneUser = (req, res, next) => {

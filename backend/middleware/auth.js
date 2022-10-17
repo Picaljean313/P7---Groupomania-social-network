@@ -2,53 +2,52 @@ const jwt = require('jsonwebtoken');
 const rules = require('../validation/rules');
 const auth = require('../validation/data/auth');
 const TokenModel = require ('../models/Tokens');
+const UsersModel = require ('../models/Users');
 const functions = require('../functions');
 
-exports.classicAuth = (req, res, next) => {
-  const invalidToken = !rules.valid(auth.tokenToValidate, req.headers.authorization);
-  if (invalidToken) return functions.response(res, 401);
-  const revokedToken = req.headers.authorization;
-  TokenModel.findOne({ token: revokedToken })
-    .then((revokedToken)=> {
-      if (revokedToken !== null) return functions.response(res, 401);
-      const token = req.headers.authorization.split(' ')[1];
-      try {
-        const decodedToken = jwt.verify(token, 'HARIBO_C_EST_BEAU_LA_VIE');
-        const userId = decodedToken.userId;
-        const isAdmin = decodedToken.isAdmin;
-        req.auth = {
-          userId: userId,
-          isAdmin: isAdmin
-        };
-        next();
-      } catch (error) {
-        functions.response(res, 401);
-      }
-    })
-    .catch(error => functions.response(res, 500))
+exports.classicAuth = async function (req, res, next) {
+  const invalidBearerToken = !rules.valid(auth.tokenToValidate, req.headers.authorization);
+  if (invalidBearerToken) return functions.response(res, 401);
+  const tokenSplited = req.headers.authorization.split(' ')[1];
+  const token = await TokenModel.findOne({ token: tokenSplited })
+    .catch(() => functions.response(res, 500));
+  if (token === null) return functions.response(res, 401);
+  const decodedToken = jwt.verify(token.token, 'HARIBO_C_EST_BEAU_LA_VIE', (error, decodedToken)=> {
+    return decodedToken
+  });
+  if (decodedToken === undefined) return functions.response(res, 401);
+  const userId = decodedToken.userId;
+  const isAdmin = decodedToken.isAdmin;
+  req.auth = {
+    userId: userId,
+    isAdmin: isAdmin
+  };
+  const user = await UsersModel.findOne({ _id : req.auth.userId })
+    .catch(()=> functions.response(res, 500));
+  if (user === null) return functions.response(res, 401);
+  next();
 };
 
-exports.adminAuth = (req, res, next) => {
-  const invalidToken = !rules.valid(auth.tokenToValidate, req.headers.authorization);
-  if (invalidToken) return functions.response(res, 403);
-  const revokedToken = req.headers.authorization;
-  TokenModel.findOne({ token: revokedToken })
-    .then((revokedToken)=> {
-      if (revokedToken !== null) return functions.response(res, 403);
-      const token = req.headers.authorization.split(' ')[1];
-      try {
-        const decodedToken = jwt.verify(token, 'HARIBO_C_EST_BEAU_LA_VIE');
-        const userId = decodedToken.userId;
-        const isAdmin = decodedToken.isAdmin;
-        if (!isAdmin) throw error;
-        req.auth = {
-          userId: userId,
-          isAdmin: isAdmin
-        };
-        next();
-      } catch (error) {
-        functions.response(res, 403);
-      }
-    })
-    .catch(error => functions.response(res, 500))
+exports.adminAuth = async function (req, res, next) {
+  const invalidBearerToken = !rules.valid(auth.tokenToValidate, req.headers.authorization);
+  if (invalidBearerToken) return functions.response(res, 403);
+  const tokenSplited = req.headers.authorization.split(' ')[1];
+  const token = await TokenModel.findOne({ token: tokenSplited })
+    .catch(() => functions.response(res, 500));
+  if (token === null) return functions.response(res, 403);
+  const decodedToken = jwt.verify(token.token, 'HARIBO_C_EST_BEAU_LA_VIE', (error, decodedToken)=> {
+    return decodedToken
+  });
+  if (decodedToken === undefined) return functions.response(res, 403);
+  const userId = decodedToken.userId;
+  const isAdmin = decodedToken.isAdmin;
+  if (!isAdmin) return functions.response(res, 403);
+  req.auth = {
+    userId: userId,
+    isAdmin: isAdmin
+  };
+  const user = await UsersModel.findOne({ _id : req.auth.userId })
+    .catch(()=> functions.response(res, 500));
+  if (user === null) return functions.response(res, 403);
+  next();
 };

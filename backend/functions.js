@@ -1,6 +1,7 @@
 fs = require('fs');
 
 const response = {
+  200: "Ok.",
   400: "Bad request.",
   401: "Unauthorized request.",
   403: "Forbidden request.",

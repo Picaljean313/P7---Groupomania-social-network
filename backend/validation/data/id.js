@@ -1,7 +1,7 @@
-exports.userIdToValidate = (userId) => {
+exports.idToValidate = (id) => {
   return [
     {
-      value : userId,
+      value : id,
       expectedType : "string",
       mask : /^[a-f0-9]+$/,
       minLength : 24,
