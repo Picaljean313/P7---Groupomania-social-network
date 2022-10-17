@@ -14,7 +14,9 @@ const modifyOneUser = require('../validation/data/modifyOneUser');
 const reqQueries = require('../validation/data/reqQueries');
 const id = require ('../validation/data/id');
 const rules = require ('../validation/rules');
+const variables = require ('../variables');
 const url = require ('url');
+const fs = require ('fs');
 
 exports.signup = async function (req, res, next) {
   const includedFile = req.file ? true : false;
@@ -190,6 +192,20 @@ exports.getAllUsers = async function (req, res, next) {
 };
 
 exports.deleteAllUsers = async function (req, res, next) {
+  const user = await UsersModel.findOne({ _id : req.auth.userId })
+    .catch(()=> functions.response(res, 500));
+  const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
+  const userImageToKeep = user.imageUrl.split('images/')[1];
+  const filesToRemove = await fs.promises.readdir('images')
+  .catch(()=> functions.response(res, 500));
+  function unlinkFile (file) {
+    return fs.promises.unlink(`images/${file}`).catch(()=> functions.response(res, 500));
+  };
+  const promises =[];
+  for (let file of filesToRemove){
+    if (file !== defaultImageToKeep && file !== userImageToKeep){
+    promises.push(unlinkFile(file));}
+  };
   const userId = req.auth.userId;
   const deletedUsers = UsersModel.deleteMany({ _id : { '$ne' : userId }})
     .catch(()=> functions.response(res, 500));
@@ -201,7 +217,8 @@ exports.deleteAllUsers = async function (req, res, next) {
     .catch(()=> functions.response(res, 500));
   const deletedReports = ReportsModel.deleteMany({ userId : { '$ne' : userId }})
     .catch(()=> functions.response(res, 500));
-  await Promise.all([deletedUsers, deletedPosts, deletedComments, deletedReactions, deletedReports]);
+  promises.push(deletedUsers, deletedPosts, deletedComments, deletedReactions, deletedReports);
+  await Promise.all(promises);
   res.status(200).json({ message : "Ok." })
 };
 
@@ -314,6 +331,25 @@ exports.modifyOneUser = async function (req, res, next) {
   }
 };
 
-exports.deleteOneUser = (req, res, next) => {
-
+exports.deleteOneUser = async function (req, res, next) {
+  const invalidUserId = !rules.valid(id.idToValidate, req.params.userId);
+  if (invalidUserId) return functions.response(res, 400);
+  const user = await UsersModel.findOne({ _id : req.params.userId })
+    .catch(()=> functions.response(res, 500));
+  if (user === null) return functions.response(res, 400);
+  if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
+  const userImage = user.imageUrl.split('images/')[1];
+  const deletedImage = user.imageUrl !== variables.defaultImageUrl ? fs.promises.unlink(`images/${userImage}`).catch(()=> functions.response(res, 500)) : "resolved";
+  const deletedUser = UsersModel.deleteOne({ _id : req.params.userId })
+    .catch(()=> functions.response(res, 500));
+  const deletedPosts = PostsModel.deleteOne({ userId : req.params.userId })
+    .catch(()=> functions.response(res, 500));
+  const deletedComments = CommentsModel.deleteOne({ userId : req.params.userId })
+    .catch(()=> functions.response(res, 500));
+  const deletedReactions = ReactionsModel.deleteOne({ userId : req.params.userId })
+    .catch(()=> functions.response(res, 500));
+  const deletedReports = ReportsModel.deleteOne({ userId : req.params.userId })
+    .catch(()=> functions.response(res, 500));
+  await Promise.all([deletedImage, deletedUser, deletedPosts, deletedComments, deletedReactions, deletedReports]);
+  res.status(200).json({ message : "Ok." })
 };
