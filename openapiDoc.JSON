@@ -601,9 +601,9 @@
             }
           },
           {
-            "name": "commentReactions",
+            "name": "commentsReactions",
             "in": "query",
-            "description": "Get reactions of the posts comments.",
+            "description": "Get reactions of the posts comments. Only available if comments query is true.",
             "schema": {
               "type": "boolean",
               "example": true
@@ -706,7 +706,7 @@
             }
           },
           {
-            "name": "commentReactions",
+            "name": "commentsReactions",
             "in": "query",
             "description": "Get reactions of the post comments.",
             "schema": {

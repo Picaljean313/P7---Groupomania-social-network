@@ -154,10 +154,9 @@ exports.getAllUsers = async function (req, res, next) {
   const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
   const limit = req.query.limit ? Number(req.query.limit) : null;
   const sort = req.query.sort ? req.query.sort : null;
-  const users = await UsersModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit)
+  const users = await UsersModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean()
     .catch(()=> functions.response(res, 500));
   if (req.query.activity === "true"){
-    const usersUpdated = [];
     for (let user of users){
       const postsCount = PostsModel.count({ userId : user._id })
         .catch(()=> functions.response(res, 500));
@@ -171,24 +170,10 @@ exports.getAllUsers = async function (req, res, next) {
         comments : activityArray[1],
         reactions : activityArray[2]
       };
-      const userUpdated = {
-        _id : user._id,
-        pseudo : user.pseudo,
-        imageUrl : user.imageUrl,
-        theme : user.theme,
-        email : user.email,
-        password : user.password,
-        creationDate : user.creationDate,
-        isAdmin : user.isAdmin,
-        __v : user.__v,
-        activity : userActivity
-      };
-      usersUpdated.push(userUpdated);
+      user.activity = userActivity;
     }
-    return res.status(200).json(usersUpdated)
-  } else {
-    return res.status(200).json(users)
   }
+  res.status(200).json(users)
 };
 
 exports.deleteAllUsers = async function (req, res, next) {
@@ -232,7 +217,7 @@ exports.getOneUser = async function (req, res, next) {
   const validreqQueries = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
   const invalidUserId = !rules.valid(id.idToValidate, req.params.userId);
   if (!validreqQueries || invalidUserId) return functions.response(res, 400);
-  const user = await UsersModel.findOne({ _id : req.params.userId })
+  const user = await UsersModel.findOne({ _id : req.params.userId }).lean()
     .catch(()=> functions.response(res, 500));
   if (user === null) return functions.response(res, 400);
   if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
@@ -249,22 +234,9 @@ exports.getOneUser = async function (req, res, next) {
       comments : activityArray[1],
       reactions : activityArray[2]
     };
-    const userUpdated = {
-      _id : user._id,
-      pseudo : user.pseudo,
-      imageUrl : user.imageUrl,
-      theme : user.theme,
-      email : user.email,
-      password : user.password,
-      creationDate : user.creationDate,
-      isAdmin : user.isAdmin,
-      __v : user.__v,
-      activity : userActivity
-    };
-    return res.status(200).json(userUpdated)
-  } else {
-    return res.status(200).json(user)
+    user.activity = userActivity;
   }
+  res.status(200).json(user)
 };
 
 exports.modifyOneUser = async function (req, res, next) {

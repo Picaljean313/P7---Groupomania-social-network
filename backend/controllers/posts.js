@@ -1,7 +1,12 @@
 const PostsModel = require ('../models/Posts');
+const UsersModel = require ('../models/Users');
+const CommentsModel = require('../models/Comments');
+const ReactionsModel = require('../models/Reactions');
 const createOnePost = require ('../validation/data/createOnePost');
 const rules = require('../validation/rules');
 const functions = require('../functions');
+const reqQueries = require('../validation/data/reqQueries');
+const url = require ('url');
 
 exports.createOnePost = async function (req, res, next) {
   const includedFile = req.file ? true : false;
@@ -42,8 +47,51 @@ exports.createOnePost = async function (req, res, next) {
   }
 };
 
-exports.getAllPosts = (req, res, next) => {
-
+exports.getAllPosts = async function (req, res, next) {
+  const allowedQueries = ["minDate", "maxDate", "limit", "sort", "fromUserId", "reactions", "comments", "commentsReactions"]; 
+  const reqQueriesObject = url.parse(req.url, true).query;
+  const reqQueriesKeys = Object.keys(reqQueriesObject);
+  for (let reqQueryKey of reqQueriesKeys){
+    if (!allowedQueries.includes(reqQueryKey)) return functions.response(res, 400);
+  };
+  const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
+  if (!validParams) return functions.response(res, 400);
+  if (req.query.commentsReactions === "true" && !req.query.comments === "true") return functions.response(res, 400);
+  const minDate = req.query.minDate ? Date.parse(req.query.minDate) : 0;
+  const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
+  const limit = req.query.limit ? Number(req.query.limit) : null;
+  const sort = req.query.sort ? req.query.sort : null;
+  const fromUserId = req.query.fromUserId;
+  let posts;
+  if (fromUserId){
+    const user = await UsersModel.findOne({ _id : fromUserId })
+      .catch(()=> functions.response(res, 500));
+    if (user === null) return functions.response(res, 400);
+    posts = await PostsModel.find({ userId : fromUserId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean()
+      .catch(()=> functions.response(res, 500));
+  } else {
+    posts = await PostsModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean()
+      .catch(()=> functions.response(res, 500));    
+  }
+  if (req.query.reactions === "true"){
+    for (let post of posts) {
+      post.reactions = await ReactionsModel.find({ postId : post._id }).lean()
+        .catch(()=> functions.response(res, 500)); 
+    }
+  }
+  if (req.query.comments === "true"){
+    for (let post of posts) {
+      post.comments = await CommentsModel.find({ postId : post._id }).lean()
+        .catch(()=> functions.response(res, 500)); 
+      if (req.query.commentsReactions === "true") {
+        for (let comment of post.comments) {
+          comment.reactions = await ReactionsModel.find({ commentId : comment._id }).lean()
+            .catch(()=> functions.response(res, 500)); 
+        }
+      }
+    }
+  }
+  res.status(200).json(posts);
 };
 
 exports.deleteAllPosts = (req, res, next) => {

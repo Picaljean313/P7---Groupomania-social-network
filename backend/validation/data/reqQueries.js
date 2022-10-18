@@ -33,7 +33,7 @@ exports.reqQueriesToValidate = (reqQueries) => {
         value : reqQueries.fromUserId,
         required : false,
         expectedType : "string",
-        mask : /^[a-z0-9]+$/,
+        mask : /^[a-f0-9]+$/,
         minLength : 24,
         maxLength : 24
       },
@@ -41,7 +41,7 @@ exports.reqQueriesToValidate = (reqQueries) => {
         value : reqQueries.fromPostId,
         required : false,
         expectedType : "string",
-        mask : /^[a-z0-9]+$/,
+        mask : /^[a-f0-9]+$/,
         minLength : 24,
         maxLength : 24
       },
@@ -49,7 +49,7 @@ exports.reqQueriesToValidate = (reqQueries) => {
         value : reqQueries.fromCommentId,
         required : false,
         expectedType : "string",
-        mask : /^[a-z0-9]+$/,
+        mask : /^[a-f0-9]+$/,
         minLength : 24,
         maxLength : 24
       },
@@ -66,7 +66,7 @@ exports.reqQueriesToValidate = (reqQueries) => {
         expectedValue : ["true", "false"]
       },
       {
-        value : reqQueries.commentReactions,
+        value : reqQueries.commentsReactions,
         required : false,
         expectedType : "string",
         expectedValue : ["true", "false"]
