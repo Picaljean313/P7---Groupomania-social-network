@@ -2,10 +2,12 @@ const PostsModel = require ('../models/Posts');
 const UsersModel = require ('../models/Users');
 const CommentsModel = require('../models/Comments');
 const ReactionsModel = require('../models/Reactions');
+const ReportsModel = require ('../models/Reports');
 const createOnePost = require ('../validation/data/createOnePost');
 const rules = require('../validation/rules');
 const functions = require('../functions');
 const reqQueries = require('../validation/data/reqQueries');
+const variables = require('../variables');
 const url = require ('url');
 
 exports.createOnePost = async function (req, res, next) {
@@ -94,8 +96,35 @@ exports.getAllPosts = async function (req, res, next) {
   res.status(200).json(posts);
 };
 
-exports.deleteAllPosts = (req, res, next) => {
-
+exports.deleteAllPosts = async function (req, res, next) {
+  const imagesToDelete = [];
+  const posts = await PostsModel.find()
+    .catch(()=> functions.response(res, 500));
+  for (let post of posts){
+    if (post.imageUrl){
+      imagesToDelete.push(post.imageUrl.split('images/')[1]);
+    }
+  };
+  const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
+  function unlinkFile (file) {
+    return fs.promises.unlink(`images/${file}`).catch(()=> functions.response(res, 500));
+  };
+  const promises =[];
+  for (let image of imagesToDelete){
+    if (image !== defaultImageToKeep){
+    promises.push(unlinkFile(image));}
+  };
+  const deletedPosts = PostsModel.deleteMany()
+    .catch(()=> functions.response(res, 500));
+  const deletedComments = CommentsModel.deleteMany()
+    .catch(()=> functions.response(res, 500));
+  const deletedReactions = ReactionsModel.deleteMany()
+    .catch(()=> functions.response(res, 500));
+  const deletedReports = ReportsModel.deleteMany()
+    .catch(()=> functions.response(res, 500));
+  promises.push(deletedPosts, deletedComments, deletedReactions, deletedReports);
+  await Promise.all(promises);
+  res.status(200).json({ message : "Ok." })
 };
 
 exports.getOnePost = (req, res, next) => {
