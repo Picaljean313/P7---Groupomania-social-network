@@ -8,6 +8,7 @@ const rules = require('../validation/rules');
 const functions = require('../functions');
 const reqQueries = require('../validation/data/reqQueries');
 const variables = require('../variables');
+const id = require('../validation/data/id');
 const url = require ('url');
 
 exports.createOnePost = async function (req, res, next) {
@@ -58,7 +59,7 @@ exports.getAllPosts = async function (req, res, next) {
   };
   const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
   if (!validParams) return functions.response(res, 400);
-  if (req.query.commentsReactions === "true" && !req.query.comments === "true") return functions.response(res, 400);
+  if (req.query.commentsReactions === "true" && req.query.comments !== "true") return functions.response(res, 400);
   const minDate = req.query.minDate ? Date.parse(req.query.minDate) : 0;
   const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
   const limit = req.query.limit ? Number(req.query.limit) : null;
@@ -127,8 +128,35 @@ exports.deleteAllPosts = async function (req, res, next) {
   res.status(200).json({ message : "Ok." })
 };
 
-exports.getOnePost = (req, res, next) => {
-
+exports.getOnePost = async function (req, res, next) {
+  const allowedQueries = ["reactions", "comments", "commentsReactions"]; 
+  const reqQueriesObject = url.parse(req.url, true).query;
+  const reqQueriesKeys = Object.keys(reqQueriesObject);
+  for (let reqQueryKey of reqQueriesKeys){
+    if (!allowedQueries.includes(reqQueryKey)) return functions.response(res, 400);
+  };
+  const validreqQueries = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
+  const invalidPostId = !rules.valid(id.idToValidate, req.params.postId);
+  if (!validreqQueries || invalidPostId) return functions.response(res, 400);
+  const post = await PostsModel.findOne({ _id : req.params.postId }).lean()
+    .catch(()=> functions.response(res, 500));
+  if (post === null) return functions.response(res, 400);
+  if (req.query.commentsReactions === "true" && req.query.comments !== "true") return functions.response(res, 400);
+  if (req.query.reactions === "true"){
+    post.reactions = await ReactionsModel.find({ postId : post._id }).lean()
+      .catch(()=> functions.response(res, 500)); 
+  }
+  if (req.query.comments === "true"){
+    post.comments = await CommentsModel.find({ postId : post._id }).lean()
+      .catch(()=> functions.response(res, 500)); 
+    if (req.query.commentsReactions === "true") {
+      for (let comment of post.comments) {
+        comment.reactions = await ReactionsModel.find({ commentId : comment._id }).lean()
+          .catch(()=> functions.response(res, 500)); 
+      }
+    }
+  }
+  res.status(200).json(post);
 };
 
 exports.modifyOnePost = (req, res, next) => {
