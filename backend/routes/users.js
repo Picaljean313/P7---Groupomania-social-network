@@ -7,11 +7,11 @@ const multer = require('../middleware/multer');
 router.post('/signup', multer, usersCtrl.signup);
 router.post('/login', usersCtrl.login);
 router.post('/logout', authFonctions.classicAuth, usersCtrl.logout);
-router.post('/', multer, authFonctions.adminAuth, usersCtrl.createOneUser);
+router.post('/', authFonctions.adminAuth, multer, usersCtrl.createOneUser);
 router.get('/', authFonctions.adminAuth, usersCtrl.getAllUsers);
 router.delete('/', authFonctions.adminAuth, usersCtrl.deleteAllUsers);
 router.get('/:userId', authFonctions.classicAuth, usersCtrl.getOneUser);
-router.put('/:userId', multer, authFonctions.classicAuth, usersCtrl.modifyOneUser);
+router.put('/:userId', authFonctions.classicAuth, multer, usersCtrl.modifyOneUser);
 router.delete('/:userId', authFonctions.classicAuth, usersCtrl.deleteOneUser);
 
 module.exports = router;

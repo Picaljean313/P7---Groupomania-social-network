@@ -177,21 +177,29 @@ exports.getAllUsers = async function (req, res, next) {
 };
 
 exports.deleteAllUsers = async function (req, res, next) {
-  const user = await UsersModel.findOne({ _id : req.auth.userId })
+  const userId = req.auth.userId;
+  const imagesToDelete = [];
+  const users = await UsersModel.find( { _id : { '$ne' : userId }})
     .catch(()=> functions.response(res, 500));
+  for (let user of users){
+    imagesToDelete.push(user.imageUrl.split('images/')[1]);
+  };
+  const posts = await PostsModel.find( { userId : { '$ne' : userId }})
+    .catch(()=> functions.response(res, 500));
+  for (let post of posts){
+    if (post.imageUrl){
+      imagesToDelete.push(post.imageUrl.split('images/')[1]);
+    }
+  };
   const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
-  const userImageToKeep = user.imageUrl.split('images/')[1];
-  const filesToRemove = await fs.promises.readdir('images')
-  .catch(()=> functions.response(res, 500));
   function unlinkFile (file) {
     return fs.promises.unlink(`images/${file}`).catch(()=> functions.response(res, 500));
   };
   const promises =[];
-  for (let file of filesToRemove){
-    if (file !== defaultImageToKeep && file !== userImageToKeep){
-    promises.push(unlinkFile(file));}
+  for (let image of imagesToDelete){
+    if (image !== defaultImageToKeep){
+    promises.push(unlinkFile(image));}
   };
-  const userId = req.auth.userId;
   const deletedUsers = UsersModel.deleteMany({ _id : { '$ne' : userId }})
     .catch(()=> functions.response(res, 500));
   const deletedPosts = PostsModel.deleteMany({ userId : { '$ne' : userId }})
