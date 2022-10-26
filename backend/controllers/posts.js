@@ -4,6 +4,7 @@ const CommentsModel = require('../models/Comments');
 const ReactionsModel = require('../models/Reactions');
 const ReportsModel = require ('../models/Reports');
 const createOnePost = require ('../validation/data/createOnePost');
+const modifyOnePost = require ('../validation/data/modifyOnePost');
 const rules = require('../validation/rules');
 const functions = require('../functions');
 const reqQueries = require('../validation/data/reqQueries');
@@ -18,35 +19,54 @@ exports.createOnePost = async function (req, res, next) {
     if (includedPostBody) {
       const validPostFormData = rules.valid(createOnePost.postFormDataToValidate, req.body.post);
       if (!validPostFormData) return functions.unlinkFile(req, res, 400);
+
       const validPostJson = rules.valid(createOnePost.postJsonDataToValidate, JSON.parse(req.body.post)); 
       if (!validPostJson) return functions.unlinkFile(req, res, 400);
+
       const postCreated = new PostsModel ({
         content : JSON.parse(req.body.post).content,
         imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         userId : req.auth.userId
       });
-      await postCreated.save()
-        .catch(()=> functions.unlinkFile(req, res, 500));
-      res.status(201).json({ message : "Post created." });
-    } else {
+      try {
+        await postCreated.save()
+      } catch {
+        console.log("Can't save post.");
+        return functions.unlinkFile(req, res, 500);
+      }
+
+      return res.status(201).json({ message : "Post created." });
+    } 
+    else {
       const postCreated = new PostsModel ({
         imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         userId : req.auth.userId
       });
-      await postCreated.save()
-        .catch(()=> functions.unlinkFile(req, res, 500));
-      res.status(201).json({ message : "Post created." });
+      try {
+        await postCreated.save()
+      } catch {
+        console.log("Can't save post.");
+        return functions.unlinkFile(req, res, 500);
+      }
+      
+      return res.status(201).json({ message : "Post created." });
     }
   } else {
     const validPostJson = rules.valid(createOnePost.postJsonDataToValidate, req.body); 
     if(!validPostJson) return functions.response(res, 400);
+
     const postCreated = new PostsModel ({
       content : req.body.content,
       userId : req.auth.userId
     });
-    await postCreated.save()
-      .catch(()=>  functions.response(res, 500));
-    res.status(201).json({ message : "Post created." });
+    try {
+      await postCreated.save()
+    } catch {
+      console.log("Can't save post.");
+      return functions.response(res, 500);
+    }
+    
+    return res.status(201).json({ message : "Post created." });
   }
 };
 
@@ -54,115 +74,439 @@ exports.getAllPosts = async function (req, res, next) {
   const allowedQueries = ["minDate", "maxDate", "limit", "sort", "fromUserId", "reactions", "comments", "commentsReactions"]; 
   const reqQueriesObject = url.parse(req.url, true).query;
   const reqQueriesKeys = Object.keys(reqQueriesObject);
-  for (let reqQueryKey of reqQueriesKeys){
-    if (!allowedQueries.includes(reqQueryKey)) return functions.response(res, 400);
-  };
+  const invalidReqQueries = reqQueriesKeys.map(x => allowedQueries.includes(x)).includes(false);
+  if (invalidReqQueries) return functions.response(res, 400);
+
   const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
   if (!validParams) return functions.response(res, 400);
+
   if (req.query.commentsReactions === "true" && req.query.comments !== "true") return functions.response(res, 400);
+
   const minDate = req.query.minDate ? Date.parse(req.query.minDate) : 0;
   const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
   const limit = req.query.limit ? Number(req.query.limit) : null;
   const sort = req.query.sort ? req.query.sort : null;
   const fromUserId = req.query.fromUserId;
   let posts;
+
   if (fromUserId){
-    const user = await UsersModel.findOne({ _id : fromUserId })
-      .catch(()=> functions.response(res, 500));
+    let user;
+    try {
+      user = await UsersModel.findOne({ _id : fromUserId });
+    } catch {
+      console.log("Can't find user.");
+      return functions.response(res, 500);
+    }
     if (user === null) return functions.response(res, 400);
-    posts = await PostsModel.find({ userId : fromUserId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean()
-      .catch(()=> functions.response(res, 500));
-  } else {
-    posts = await PostsModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean()
-      .catch(()=> functions.response(res, 500));    
+
+    try {
+      posts = await PostsModel.find({ userId : fromUserId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
+    } catch {
+      console.log("Can't find posts.");
+      return functions.response(res, 500);
+    }
+  } 
+  else {
+    try {
+      posts = await PostsModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
+    } catch {
+      console.log("Can't find posts.");
+      return functions.response(res, 500);
+    }  
   }
+
   if (req.query.reactions === "true"){
-    for (let post of posts) {
-      post.reactions = await ReactionsModel.find({ postId : post._id }).lean()
-        .catch(()=> functions.response(res, 500)); 
+    let results;
+    try {
+      const promises = [];
+      for (let i in posts) {
+        const promise = ReactionsModel.find({ postId : posts[i]._id }).lean();
+        promises.push(promise);
+      }
+      results = await Promise.all(promises);
+    } catch {
+      console.log("Can't find all posts reactions.");
+      return functions.response(res, 500);
+    }
+
+    for (let i in posts) {
+      posts[i].reactions = results[i];
     }
   }
+
   if (req.query.comments === "true"){
-    for (let post of posts) {
-      post.comments = await CommentsModel.find({ postId : post._id }).lean()
-        .catch(()=> functions.response(res, 500)); 
-      if (req.query.commentsReactions === "true") {
-        for (let comment of post.comments) {
-          comment.reactions = await ReactionsModel.find({ commentId : comment._id }).lean()
-            .catch(()=> functions.response(res, 500)); 
+    let results;
+    try {
+      const promises = [];
+      for (let i in posts) {
+        const promise = CommentsModel.find({ postId : posts[i]._id }).lean();
+        promises.push(promise);
+      }
+      results = await Promise.all(promises);
+    } catch {
+      console.log("Can't find all posts comments.");
+      return functions.response(res, 500);
+    }
+    
+    for (let i in posts) {
+      posts[i].comments = results[i];
+    }
+
+    if (req.query.commentsReactions === "true") {
+      let results;
+      try {
+        const promises = [];
+        for (let i in posts) {
+          for (let j in posts[i].comments) {
+            const promise = ReactionsModel.find({ commentId : posts[i].comments[j]._id }).lean();
+            promises.push(promise);
+          }
+        }
+        results = await Promise.all(promises);
+      } catch {
+        console.log("Can't find all comments reactions.");
+        return functions.response(res, 500);
+      }
+ 
+      let k = 0;
+      for (let i in posts) {
+        for (let j in posts[i].comments) {
+          posts[i].comments[j].reactions = results[k];
+          k++;
         }
       }
     }
   }
-  res.status(200).json(posts);
+
+  return res.status(200).json(posts);
 };
 
 exports.deleteAllPosts = async function (req, res, next) {
-  const imagesToDelete = [];
-  const posts = await PostsModel.find()
-    .catch(()=> functions.response(res, 500));
+  const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
+  let posts;
+  try {
+    posts = await PostsModel.find()
+  } catch {
+    console.log("Can't find posts.");
+    return functions.response(res, 500);
+  }
+  const postsImagesToDelete = [];
   for (let post of posts){
-    if (post.imageUrl){
-      imagesToDelete.push(post.imageUrl.split('images/')[1]);
+    if (post.imageUrl) {
+      const postImage = post.imageUrl.split('images/')[1];
+      if (postImage !== defaultImageToKeep) {
+        postsImagesToDelete.push(postImage);
+      }
     }
   };
-  const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
-  function unlinkFile (file) {
-    return fs.promises.unlink(`images/${file}`).catch(()=> functions.response(res, 500));
-  };
-  const promises =[];
-  for (let image of imagesToDelete){
-    if (image !== defaultImageToKeep){
-    promises.push(unlinkFile(image));}
-  };
-  const deletedPosts = PostsModel.deleteMany()
-    .catch(()=> functions.response(res, 500));
-  const deletedComments = CommentsModel.deleteMany()
-    .catch(()=> functions.response(res, 500));
+
+  let failedPromises = 0;
   const deletedReactions = ReactionsModel.deleteMany()
-    .catch(()=> functions.response(res, 500));
+    .catch(() => {
+      console.log("Can't delete reactions");
+      failedPromises++;
+    });
   const deletedReports = ReportsModel.deleteMany()
-    .catch(()=> functions.response(res, 500));
-  promises.push(deletedPosts, deletedComments, deletedReactions, deletedReports);
-  await Promise.all(promises);
-  res.status(200).json({ message : "Ok." })
+  .catch(() => {
+    console.log("Can't delete reports");
+    failedPromises++;
+  });
+  await Promise.allSettled([deletedReactions, deletedReports]);
+  if (failedPromises !== 0) return functions.response(res, 500);
+
+  try {
+    await CommentsModel.deleteMany();
+  } catch {
+    console.log("Can't delete comments.");
+    return functions.response(res, 500);
+  }
+
+  try {
+    await PostsModel.deleteMany();
+  } catch {
+    console.log("Can't delete posts.");
+    return functions.response(res, 500);
+  }
+
+  const promises = [];
+  for (let image of postsImagesToDelete) {
+    const promise = fs.promises.unlink(`images/${image}`)
+      .catch(() => console.log(`Can't delete ${image}.`));
+    promises.push(promise);
+  }
+  await Promise.allSettled(promises);
+
+  return functions.response(res,200);
 };
 
 exports.getOnePost = async function (req, res, next) {
   const allowedQueries = ["reactions", "comments", "commentsReactions"]; 
   const reqQueriesObject = url.parse(req.url, true).query;
   const reqQueriesKeys = Object.keys(reqQueriesObject);
-  for (let reqQueryKey of reqQueriesKeys){
-    if (!allowedQueries.includes(reqQueryKey)) return functions.response(res, 400);
-  };
-  const validreqQueries = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
+  const invalidReqQueries = reqQueriesKeys.map(x => allowedQueries.includes(x)).includes(false);
+  if (invalidReqQueries) return functions.response(res, 400);
+
+  const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
   const invalidPostId = !rules.valid(id.idToValidate, req.params.postId);
-  if (!validreqQueries || invalidPostId) return functions.response(res, 400);
-  const post = await PostsModel.findOne({ _id : req.params.postId }).lean()
-    .catch(()=> functions.response(res, 500));
-  if (post === null) return functions.response(res, 400);
-  if (req.query.commentsReactions === "true" && req.query.comments !== "true") return functions.response(res, 400);
-  if (req.query.reactions === "true"){
-    post.reactions = await ReactionsModel.find({ postId : post._id }).lean()
-      .catch(()=> functions.response(res, 500)); 
+  if (!validParams || invalidPostId) return functions.response(res, 400);
+
+  let post;
+  try {
+    post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+  } catch {
+    console.log("Can't find post.");
+    return functions.response(res, 500);
   }
+  if (post === null) return functions.response(res, 400);
+
+  if (req.query.commentsReactions === "true" && req.query.comments !== "true") return functions.response(res, 400);
+
+  if (req.query.reactions === "true"){
+    let reactions;
+    try {
+      reactions = ReactionsModel.find({ postId : post._id }).lean();
+    } catch {
+      console.log("Can't find reactions.");
+      return functions.response(res, 500);
+    }
+    post.reactions = reactions;
+  }
+
   if (req.query.comments === "true"){
-    post.comments = await CommentsModel.find({ postId : post._id }).lean()
-      .catch(()=> functions.response(res, 500)); 
+    let comments;
+    try {
+      comments = CommentsModel.find({ postId : post._id }).lean();
+    } catch {
+      console.log("Can't find comments.");
+      return functions.response(res, 500);
+    }
+    post.comments = comments;
+
     if (req.query.commentsReactions === "true") {
-      for (let comment of post.comments) {
-        comment.reactions = await ReactionsModel.find({ commentId : comment._id }).lean()
-          .catch(()=> functions.response(res, 500)); 
+      let results;
+      try {
+        const promises = [];
+        for (let i in post.comments) {
+          const promise = ReactionsModel.find({ commentId : post.comments[i]._id }).lean();
+          promises.push(promise);
+        }
+        results = await Promise.all(promises);
+      } catch {
+        console.log("Can't find all comments reactions.");
+        return functions.response(res, 500);
+      }
+ 
+      for (let i in post.comments) {
+        post.comments[i].reactions = results[i];
       }
     }
   }
-  res.status(200).json(post);
+
+  return res.status(200).json(post);
 };
 
-exports.modifyOnePost = (req, res, next) => {
+exports.modifyOnePost = async function (req, res, next) {
+  const includedFile = req.file ? true : false;
+  if (includedFile){
+    const invalidPostId = !rules.valid(id.idToValidate, req.params.postId);
+    if (invalidPostId) return functions.unlinkFile(req, res, 400);
 
+    let post;
+    try {
+      post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+    } catch {
+      console.log("Can't find post.");
+      return functions.unlinkFile(req, res, 500);
+    }
+    if (post === null) return functions.unlinkFile(req, res, 400);
+
+    if (!req.auth.isAdmin && req.auth.userId !== post.userId) return functions.unlinkFile(req, res, 401);
+
+    if (req.body.post){
+      const validPostFormData = rules.valid(modifyOnePost.postFormDataToValidate, req.body.post);
+      if (!validPostFormData) return functions.unlinkFile(req, res, 400);
+
+      const validPostJson = rules.valid(modifyOnePost.postJsonDataToValidate, JSON.parse(req.body.post));
+      if (!validPostJson) return functions.unlinkFile(req, res, 400);
+
+      const isContent = JSON.parse(req.body.post).content !== undefined;
+      const isDeletePostContent = JSON.parse(req.body.post).deletePostContent === true;
+      if (isContent && isDeletePostContent) return functions.unlinkFile(req, res, 400);
+
+      if (!isContent && !isDeletePostContent) return functions.unlinkFile(req, res, 400);
+
+      if (isDeletePostContent && post.content === undefined) return functions.unlinkFile(req, res, 400);
+
+      if (isContent){
+        if (JSON.parse(req.body.post).content !== post.content){
+          post.content = JSON.parse(req.body.post).content;
+        } 
+      };
+
+      if (isDeletePostContent){
+        delete post.content;
+        try {
+          await PostsModel.updateOne({ _id : req.params.postId }, {$unset: {content: 1 }});
+        } catch {
+          console.log("Can't remove content field.");
+          return functions.unlinkFile(req, res, 500);
+        }
+      }
+    } 
+
+    let imageToDelete = undefined;
+    const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
+    if (post.imageUrl){
+      if (post.imageUrl.split('images/')[1] !== defaultImageToKeep){
+        imageToDelete = post.imageUrl.split('images/')[1]; 
+      };
+    };
+
+    post.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+
+    try {
+      await PostsModel.updateOne({ _id : req.params.postId }, post);
+    } catch {
+      console.log("Can't update user.");
+      return functions.unlinkFile(req, res, 500);
+    }
+
+    if (imageToDelete !== undefined) {
+      await fs.promises.unlink(`images/${imageToDelete}`)
+        .catch(()=> console.log(`Can't delete ${imageToDelete}.`));
+    }
+
+    return functions.response(res,200);
+  } 
+  else {
+    const invalidPostId = !rules.valid(id.idToValidate, req.params.postId);
+    if (invalidPostId) return functions.response(res, 400);
+
+    let post;
+    try {
+      post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+    } catch {
+      console.log("Can't find post.");
+      return functions.response(res, 500);
+    }
+    if (post === null) return functions.response(res, 400);
+
+    if (!req.auth.isAdmin && req.auth.userId !== post.userId) return functions.response(res, 401);
+
+    const validPostJson = rules.valid(modifyOnePost.postJsonDataToValidate, req.body);
+    if (!validPostJson) return functions.response(res, 400);
+
+    const isContent = req.body.content !== undefined;
+    const isDeletePostImage = req.body.deletePostImage === true;
+    const isDeletePostContent = req.body.deletePostContent === true;
+    const isPostImage = post.imageUrl !== undefined;
+    const isPostContent = post.content !== undefined; 
+    if (isContent && isDeletePostContent) return functions.response(res, 400);
+
+    if (isDeletePostContent && isDeletePostImage) return functions.response(res, 400);
+
+    if (!isContent && !isDeletePostContent && !isDeletePostImage) return functions.response(res, 400);
+
+    if (isPostContent && !isPostImage){
+      if (isDeletePostContent || isDeletePostImage) return functions.response(res, 400);
+    }
+
+    if (!isPostContent && isPostImage){
+      if (isDeletePostContent) return functions.response(res, 400);
+      if (!isContent && isDeletePostImage) return functions.response(res, 400);
+    }
+
+    if (isContent && req.body.content === post.content) return functions.response(res, 400);
+
+    if (isContent){
+      try {
+        await PostsModel.updateOne({ _id : req.params.postId }, { content : req.body.content });
+      } catch {
+        console.log("Can't update post.");
+        return functions.response(res, 500);
+      }
+    }
+
+    if (isDeletePostContent){
+      try {
+        await PostsModel.updateOne({ _id : req.params.postId }, {$unset: {content: 1 }});
+      } catch {
+        console.log("Can't remove content field.");
+        return functions.response(res, 500);
+      }
+    }
+
+    if (isDeletePostImage){
+      try {
+        await PostsModel.updateOne({ _id : req.params.postId }, {$unset: {imageUrl: 1 }});
+      } catch {
+        console.log("Can't remove imageUrl field.");
+        return functions.response(res, 500);
+      }
+
+      const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
+      const imageToDelete = post.imageUrl.split('images/')[1];
+      if (imageToDelete !== defaultImageToKeep){
+        await fs.promises.unlink(`images/${imageToDelete}`)
+          .catch(() => console.log(`Can't delete ${imageToDelete}.`));
+      }
+    };
+    
+    return functions.response(res,200);
+  }
 };
 
-exports.deleteOnePost = (req, res, next) => {
+exports.deleteOnePost = async function (req, res, next) {
+  const invalidPostId = !rules.valid(id.idToValidate, req.params.postId);
+  if (invalidPostId) return functions.response(res, 400);
 
+  let post;
+  try {
+    post = await PostsModel.findOne({ _id : req.params.postId });
+  } catch {
+    console.log("Can't find post.");
+    return functions.response(res, 500);
+  }
+  if (post === null) return functions.response(res, 400);
+
+  if (!req.auth.isAdmin && req.auth.userId !== post.userId) return functions.response(res, 401);
+
+  let failedPromises = 0;
+  const deletedReactions = ReactionsModel.deleteMany({ postId : req.params.postId })
+    .catch(() => {
+      console.log("Can't delete reactions");
+      failedPromises++;
+    });
+  const deletedReports = ReportsModel.deleteMany({ postId : req.params.postId })
+  .catch(() => {
+    console.log("Can't delete reports");
+    failedPromises++;
+  });
+  await Promise.allSettled([deletedReactions, deletedReports]);
+  if (failedPromises !== 0) return functions.response(res, 500);
+
+  try {
+    await CommentsModel.deleteMany({ postId : req.params.postId });
+  } catch {
+    console.log("Can't delete comments.");
+    return functions.response(res, 500);
+  }
+
+  try {
+    await PostsModel.deleteOne({ _id : req.params.postId });
+  } catch {
+    console.log("Can't delete post.");
+    return functions.response(res, 500);
+  }
+
+  if (post.imageUrl) {
+    const postImageToDelete = post.imageUrl.split('images/')[1];
+    const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
+    if (postImageToDelete !== defaultImageToKeep) {
+      await fs.promises.unlink(`images/${postImageToDelete}`)
+        .catch(() => console.log(`Can't delete ${postImageToDelete}.`));
+    }
+  }
+
+  return functions.response(res, 200);
 };

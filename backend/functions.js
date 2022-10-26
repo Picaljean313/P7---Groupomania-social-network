@@ -18,6 +18,7 @@ exports.unlinkFile = (req, res, status) => {
       res.status(status).json({ message : response[status] });
     });
   } catch {
-    error => res.status(500).json({ message : "Server error." })
+    console.log("Can't unlink file.");
+    return res.status(500).json({ message : "Server error." });
   }
 };

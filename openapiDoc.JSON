@@ -764,16 +764,16 @@
           }
         ],
         "requestBody": {
-          "description": "Post properties modifications. For more details, go to 'PostJson' or 'PostFormdata' schemas. At least 'post' object 'content' property or an image is needed.",
+          "description": "Post properties modifications. For more details, go to 'PostModifyJson' or 'PostModifyFormData' schemas. Post must always have at least a content or an image.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/postJson"
+                "$ref": "#/components/schemas/postModifyJson"
               }
             },
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/postFormdata"
+                "$ref": "#/components/schemas/postModifyFormData"
               }
             }
           },
@@ -2293,6 +2293,25 @@
         "content"
         ]
       },
+      "postModifyJson": {
+        "title": "PostModifyJson",
+        "description": "Post schema used when user modifies his post without any image. He can delete post image with deletePostImage property and post content with deletepostContent property. Post must always have at least a content or an image.",
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Voici une image."
+          },
+          "deletePostImage": {
+            "type": "boolean",
+            "example": true
+          },
+          "deletePostContent": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
       "postFormdata": {
         "title": "PostFormdata",
         "description": "Post schema used when user publishes/modifies his post or admin modifies a post with an image file. File type must be 'image/jpeg', 'image/jpg' or 'image/png'.",
@@ -2305,6 +2324,33 @@
                 "type": "string",
                 "example": "Voici une image."
                }
+            }
+          },
+          "image": {
+            "type": "string",
+            "example": "MonImage.jpg"
+          }
+        },
+        "required": [
+          "image"
+        ]
+      },
+      "postModifyFormData": {
+        "title": "PostModifyFormData",
+        "description": "Post schema used when user modifies his post with an image. He can delete post content with deletepostContent property. Post must always have at least a content or an image.",
+         "type": "object",
+        "properties": {
+          "post": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "example": "Voici une image."
+              },
+              "deletePostContent": {
+                "type": "boolean",
+                "example": false
+              }
             }
           },
           "image": {
