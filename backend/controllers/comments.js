@@ -1,9 +1,14 @@
 const CommentsModel = require ('../models/Comments');
+const UsersModel = require ('../models/Users');
 const PostsModel = require ('../models/Posts');
+const ReactionsModel = require ('../models/Reactions');
+const ReportsModel = require ('../models/Reports');
 const createOneComment = require('../validation/data/createOneComment');
 const reqQueries = require('../validation/data/reqQueries');
 const rules = require('../validation/rules');
 const functions = require('../functions');
+const id = require('../validation/data/id');
+const url = require ('url');
 
 exports.createOneComment = async function (req, res, next) {
   const validCommentJson = rules.valid(createOneComment.commentJsonDataToValidate, req.body); 
@@ -145,8 +150,29 @@ exports.getAllComments = async function (req, res, next) {
   return res.status(200).json(comments);
 };
 
-exports.deleteAllComments = (req, res, next) => {
+exports.deleteAllComments = async function (req, res, next) {
+  let failedPromises = 0;
+  const deletedReactions = ReactionsModel.deleteMany({ commentId : { $exists : true }})
+    .catch(() => {
+      console.log("Can't delete reactions");
+      failedPromises++;
+    });
+  const deletedReports = ReportsModel.deleteMany({ commentId : { $exists : true }})
+  .catch(() => {
+    console.log("Can't delete reports");
+    failedPromises++;
+  });
+  await Promise.allSettled([deletedReactions, deletedReports]);
+  if (failedPromises !== 0) return functions.response(res, 500);
 
+  try {
+    await CommentsModel.deleteMany();
+  } catch {
+    console.log("Can't delete comments.");
+    return functions.response(res, 500);
+  }
+
+  return functions.response(res,200);
 };
 
 exports.getOneComment = (req, res, next) => {
