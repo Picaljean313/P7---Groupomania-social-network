@@ -264,7 +264,7 @@ exports.getOnePost = async function (req, res, next) {
   if (req.query.reactions === "true"){
     let reactions;
     try {
-      reactions = ReactionsModel.find({ postId : post._id }).lean();
+      reactions = await ReactionsModel.find({ postId : post._id }).lean();
     } catch {
       console.log("Can't find reactions.");
       return functions.response(res, 500);
@@ -275,7 +275,7 @@ exports.getOnePost = async function (req, res, next) {
   if (req.query.comments === "true"){
     let comments;
     try {
-      comments = CommentsModel.find({ postId : post._id }).lean();
+      comments = await CommentsModel.find({ postId : post._id }).lean();
     } catch {
       console.log("Can't find comments.");
       return functions.response(res, 500);

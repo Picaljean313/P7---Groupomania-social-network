@@ -175,8 +175,38 @@ exports.deleteAllComments = async function (req, res, next) {
   return functions.response(res,200);
 };
 
-exports.getOneComment = (req, res, next) => {
+exports.getOneComment = async function (req, res, next) {
+  const allowedQueries = ["reactions"]; 
+  const reqQueriesObject = url.parse(req.url, true).query;
+  const reqQueriesKeys = Object.keys(reqQueriesObject);
+  const invalidReqQueries = reqQueriesKeys.map(x => allowedQueries.includes(x)).includes(false);
+  if (invalidReqQueries) return functions.response(res, 400);
 
+  const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
+  const invalidCommentId = !rules.valid(id.idToValidate, req.params.commentId);
+  if (!validParams || invalidCommentId) return functions.response(res, 400);
+
+  let comment;
+  try {
+    comment = await CommentsModel.findOne({ _id : req.params.commentId }).lean();
+  } catch {
+    console.log("Can't find comment.");
+    return functions.response(res, 500);
+  }
+  if (comment === null) return functions.response(res, 400);
+
+  if (req.query.reactions === "true"){
+    let reactions;
+    try {
+      reactions = await ReactionsModel.find({ commentId : comment._id }).lean();
+    } catch {
+      console.log("Can't find reactions.");
+      return functions.response(res, 500);
+    }
+    comment.reactions = reactions;
+  }
+
+  return res.status(200).json(comment);
 };
 
 exports.modifyOneComment = (req, res, next) => {
