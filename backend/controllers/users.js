@@ -554,7 +554,6 @@ exports.deleteOneUser = async function (req, res, next) {
 
   if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
 
-  const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
   let posts;
   try {
     posts = await PostsModel.find({ userId : req.params.userId });
@@ -562,8 +561,12 @@ exports.deleteOneUser = async function (req, res, next) {
     console.log("Can't find posts.");
     return functions.response(res, 500);
   }
+
+  const postsToDeleteIds = [];
   const postsImagesToDelete = [];
+  const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
   for (let post of posts){
+    postsToDeleteIds.push(post._id);
     if (post.imageUrl){
       const postImage = post.imageUrl.split('images/')[1];
       if (postImage !== defaultImageToKeep) {
@@ -572,13 +575,37 @@ exports.deleteOneUser = async function (req, res, next) {
     }
   };
 
+  const commentsToDeleteIds = [];
+
+  let comments;
+  try {
+    comments = await CommentsModel.find({ userId : req.params.userId });
+  } catch {
+    console.log("Can't find comments.");
+    return functions.response(res, 500);
+  }
+  for (let comment of comments) {
+    commentsToDeleteIds.push(comment._id);
+  }
+
+  let otherUsersCommentsOnUserPosts;
+  try {
+    otherUsersCommentsOnUserPosts = await CommentsModel.find({ $and : [{ postId : { $in : postsToDeleteIds }}, { userId : { $ne : req.params.userId }}] });
+  } catch {
+    console.log("Can't find comments.");
+    return functions.response(res, 500);
+  }
+  for (let comment of otherUsersCommentsOnUserPosts) {
+    commentsToDeleteIds.push(comment._id);
+  }
+
   let failedPromises = 0;
-  const deletedReactions = ReactionsModel.deleteMany({ userId : req.params.userId })
+  const deletedReactions = ReactionsModel.deleteMany({ $or : [{ userId : req.params.userId }, { commentId : { $in : commentsToDeleteIds }}, { postId : { $in : postsToDeleteIds }}] })
     .catch(() => {
       console.log("Can't delete reactions");
       failedPromises++;
     });
-  const deletedReports = ReportsModel.deleteMany({ userId : req.params.userId })
+  const deletedReports = ReportsModel.deleteMany({ $or : [{ userId : req.params.userId }, { commentId : { $in : commentsToDeleteIds }}, { postId : { $in : postsToDeleteIds }}] })
   .catch(() => {
     console.log("Can't delete reports");
     failedPromises++;
@@ -587,7 +614,7 @@ exports.deleteOneUser = async function (req, res, next) {
   if (failedPromises !== 0) return functions.response(res, 500);
 
   try {
-    await CommentsModel.deleteMany({ userId : req.params.userId });
+    await CommentsModel.deleteMany({ _id : { $in : commentsToDeleteIds }});
   } catch {
     console.log("Can't delete comments.");
     return functions.response(res, 500);

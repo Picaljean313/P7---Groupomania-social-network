@@ -471,13 +471,26 @@ exports.deleteOnePost = async function (req, res, next) {
 
   if (!req.auth.isAdmin && req.auth.userId !== post.userId) return functions.response(res, 401);
 
+  const commentsIds = [];
+
+  let comments;
+  try {
+    comments = await CommentsModel.find({ postId : req.params.postId });
+  } catch {
+    console.log("Can't find comments.");
+    return functions.response(res, 500);
+  }
+  for (let comment of comments) {
+    commentsIds.push(comment._id);
+  }
+
   let failedPromises = 0;
-  const deletedReactions = ReactionsModel.deleteMany({ postId : req.params.postId })
+  const deletedReactions = ReactionsModel.deleteMany({$or : [{ postId : req.params.postId }, { commentId : { $in : commentsIds }}] })
     .catch(() => {
       console.log("Can't delete reactions");
       failedPromises++;
     });
-  const deletedReports = ReportsModel.deleteMany({ postId : req.params.postId })
+  const deletedReports = ReportsModel.deleteMany({$or : [{ postId : req.params.postId }, { commentId : { $in : commentsIds }}] })
   .catch(() => {
     console.log("Can't delete reports");
     failedPromises++;

@@ -241,6 +241,41 @@ exports.modifyOneComment = async function (req, res, next) {
   return functions.response(res, 200);
 };
 
-exports.deleteOneComment = (req, res, next) => {
+exports.deleteOneComment = async function (req, res, next) {
+  const invalidCommentId = !rules.valid(id.idToValidate, req.params.commentId);
+  if (invalidCommentId) return functions.response(res, 400);
 
+  let comment;
+  try {
+    comment = await CommentsModel.findOne({ _id : req.params.commentId });
+  } catch {
+    console.log("Can't find comment.");
+    return functions.response(res, 500);
+  }
+  if (comment === null) return functions.response(res, 400);
+
+  if (!req.auth.isAdmin && req.auth.userId !== comment.userId) return functions.response(res, 401);
+
+  let failedPromises = 0;
+  const deletedReactions = ReactionsModel.deleteMany({ commentId : req.params.commentId })
+    .catch(() => {
+      console.log("Can't delete reactions");
+      failedPromises++;
+    });
+  const deletedReports = ReportsModel.deleteMany({ commentId : req.params.commentId })
+  .catch(() => {
+    console.log("Can't delete reports");
+    failedPromises++;
+  });
+  await Promise.allSettled([deletedReactions, deletedReports]);
+  if (failedPromises !== 0) return functions.response(res, 500);
+
+  try {
+    await CommentsModel.deleteOne({ _id : req.params.commentId });
+  } catch {
+    console.log("Can't delete comment.");
+    return functions.response(res, 500);
+  }
+
+  return functions.response(res, 200);
 };
