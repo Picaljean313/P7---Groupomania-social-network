@@ -1,6 +1,7 @@
 const CommentsModel = require ('../models/Comments');
 const PostsModel = require ('../models/Posts');
 const createOneComment = require('../validation/data/createOneComment');
+const reqQueries = require('../validation/data/reqQueries');
 const rules = require('../validation/rules');
 const functions = require('../functions');
 
@@ -32,8 +33,116 @@ exports.createOneComment = async function (req, res, next) {
   return res.status(201).json({ message : "Comment created." });
 };
 
-exports.getAllComments = (req, res, next) => {
+exports.getAllComments = async function (req, res, next) {
+  const allowedQueries = ["minDate", "maxDate", "limit", "sort", "fromUserId", "fromPostId", "reactions"]; 
+  const reqQueriesObject = url.parse(req.url, true).query;
+  const reqQueriesKeys = Object.keys(reqQueriesObject);
+  const invalidReqQueries = reqQueriesKeys.map(x => allowedQueries.includes(x)).includes(false);
+  if (invalidReqQueries) return functions.response(res, 400);
 
+  const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
+  if (!validParams) return functions.response(res, 400);
+
+  const minDate = req.query.minDate ? Date.parse(req.query.minDate) : 0;
+  const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
+  const limit = req.query.limit ? Number(req.query.limit) : null;
+  const sort = req.query.sort ? req.query.sort : null;
+  const fromUserId = req.query.fromUserId;
+  const fromPostId = req.query.fromPostId;
+  let comments;
+
+  if (fromUserId && fromPostId) {
+    let user;
+    try {
+      user = await UsersModel.findOne({ _id : fromUserId });
+    } catch {
+      console.log("Can't find user.");
+      return functions.response(res, 500);
+    }
+    if (user === null) return functions.response(res, 400);
+
+    let post;
+    try {
+      post = await PostsModel.findOne({ _id : fromPostId });
+    } catch {
+      console.log("Can't find post.");
+      return functions.response(res, 500);
+    }
+    if (post === null) return functions.response(res, 400);
+
+    try {
+      comments = await CommentsModel.find({ userId : fromUserId, postId : fromPostId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
+    } catch {
+      console.log("Can't find comments.");
+      return functions.response(res, 500);
+    }
+  }
+  
+  else if (fromUserId && !fromPostId){
+    let user;
+    try {
+      user = await UsersModel.findOne({ _id : fromUserId });
+    } catch {
+      console.log("Can't find user.");
+      return functions.response(res, 500);
+    }
+    if (user === null) return functions.response(res, 400);
+
+    try {
+      comments = await CommentsModel.find({ userId : fromUserId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
+    } catch {
+      console.log("Can't find comments.");
+      return functions.response(res, 500);
+    }
+  } 
+
+  else if (!fromUserId && fromPostId){
+    let post;
+    try {
+      post = await PostsModel.findOne({ _id : fromPostId });
+    } catch {
+      console.log("Can't find post.");
+      return functions.response(res, 500);
+    }
+    if (post === null) return functions.response(res, 400);
+
+    try {
+      comments = await CommentsModel.find({ postId : fromPostId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
+    } catch {
+      console.log("Can't find comments.");
+      return functions.response(res, 500);
+    }
+  } 
+
+  else {
+    try {
+      comments = await CommentsModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
+    } catch {
+      console.log("Can't find comments.");
+      return functions.response(res, 500);
+    }  
+  }
+
+  if (req.query.reactions === "true"){
+    let results;
+    try {
+      const promises = [];
+      for (let i in comments) {
+        const promise = ReactionsModel.find({ commentId : comments[i]._id }).lean();
+        promises.push(promise);
+      }
+      results = await Promise.all(promises);
+    } catch {
+      console.log("Can't find all comments reactions.");
+      return functions.response(res, 500);
+    }
+
+    for (let i in comments) {
+      comments[i].reactions = results[i];
+    }
+  }
+
+  return res.status(200).json(comments);
 };
 
 exports.deleteAllComments = (req, res, next) => {
