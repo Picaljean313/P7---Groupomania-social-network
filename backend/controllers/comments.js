@@ -4,6 +4,7 @@ const PostsModel = require ('../models/Posts');
 const ReactionsModel = require ('../models/Reactions');
 const ReportsModel = require ('../models/Reports');
 const createOneComment = require('../validation/data/createOneComment');
+const modifyOneComment = require('../validation/data/modifyOneComment');
 const reqQueries = require('../validation/data/reqQueries');
 const rules = require('../validation/rules');
 const functions = require('../functions');
@@ -209,8 +210,35 @@ exports.getOneComment = async function (req, res, next) {
   return res.status(200).json(comment);
 };
 
-exports.modifyOneComment = (req, res, next) => {
+exports.modifyOneComment = async function (req, res, next) {
+  const invalidCommentId = !rules.valid(id.idToValidate, req.params.commentId);
+  if (invalidCommentId) return functions.response(res, 400);
 
+  let comment;
+  try {
+    comment = await CommentsModel.findOne({ _id : req.params.commentId });
+  } catch {
+    console.log("Can't find comment.");
+    return functions.response(res, 500);
+  }
+  if (comment === null) return functions.response(res, 400);
+
+  if (!req.auth.isAdmin && req.auth.userId !== comment.userId) return functions.response(res, 401);
+
+  const validCommentJson = rules.valid(modifyOneComment.commentJsonDataToValidate, req.body);
+  if (!validCommentJson) return functions.response(res, 400);
+
+  if (req.body.content !== comment.content) {
+    try {
+      await CommentsModel.updateOne({ _id : req.params.commentId }, { content : req.body.content });
+    } catch {
+      console.log("Can't update comment.");
+      return functions.response(res, 500);
+    }
+  }
+  else return functions.response(res, 400);
+  
+  return functions.response(res, 200);
 };
 
 exports.deleteOneComment = (req, res, next) => {
