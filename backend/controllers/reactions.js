@@ -146,8 +146,15 @@ exports.getAllReactions = async function (req, res, next) {
   return res.status(200).json(reactions);
 };
 
-exports.deleteAllReactions = (req, res, next) => {
+exports.deleteAllReactions = async function (req, res, next) {
+  try {
+    await ReactionsModel.deleteMany();
+  } catch {
+    console.log("Can't delete reactions.");
+    return functions.response(res, 500);
+  }
 
+  return functions.response(res,200);
 };
 
 exports.getOneReaction = (req, res, next) => {
