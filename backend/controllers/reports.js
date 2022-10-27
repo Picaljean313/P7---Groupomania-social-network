@@ -171,6 +171,27 @@ exports.getOneReport = async function (req, res, next) {
   return res.status(200).json(report);
 };
 
-exports.deleteOneReport = (req, res, next) => {
+exports.deleteOneReport = async function (req, res, next) {
+  const invalidReportId = !rules.valid(id.idToValidate, req.params.reportId);
+  if (invalidReportId) return functions.response(res, 400);
 
+  let report;
+  try {
+    report = await ReportsModel.findOne({ _id : req.params.reportId });
+  } catch {
+    console.log("Can't find report.");
+    return functions.response(res, 500);
+  }
+  if (report === null) return functions.response(res, 400);
+
+  if (!req.auth.isAdmin && req.auth.userId !== report.userId) return functions.response(res, 401);
+
+  try {
+    await ReportsModel.deleteOne({ _id : req.params.reportId });
+  } catch {
+    console.log("Can't delete report.");
+    return functions.response(res, 500);
+  }
+
+  return functions.response(res, 200);
 };
