@@ -157,8 +157,20 @@ exports.deleteAllReactions = async function (req, res, next) {
   return functions.response(res,200);
 };
 
-exports.getOneReaction = (req, res, next) => {
+exports.getOneReaction = async function (req, res, next) {
+  const invalidReactionId = !rules.valid(id.idToValidate, req.params.reactionId);
+  if (invalidReactionId) return functions.response(res, 400);
 
+  let reaction;
+  try {
+    reaction = await ReactionsModel.findOne({ _id : req.params.reactionId });
+  } catch {
+    console.log("Can't find reaction.");
+    return functions.response(res, 500);
+  }
+  if (reaction === null) return functions.response(res, 400);
+
+  return res.status(200).json(reaction);
 };
 
 exports.modifyOneReaction = (req, res, next) => {
