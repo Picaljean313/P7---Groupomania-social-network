@@ -23,9 +23,9 @@ exports.classicAuth = async function (req, res, next) {
     return decodedToken
   });
   if (decodedToken === undefined) return functions.response(res, 401);
-
-  const userId = decodedToken.userId;
-  const isAdmin = decodedToken.isAdmin;
+  
+  const userId = decodedToken["userId"];
+  const isAdmin = decodedToken["isAdmin"];
   req.auth = {
     userId: userId,
     isAdmin: isAdmin
@@ -61,8 +61,8 @@ exports.adminAuth = async function (req, res, next) {
   });
   if (decodedToken === undefined) return functions.response(res, 403);
 
-  const userId = decodedToken.userId;
-  const isAdmin = decodedToken.isAdmin;
+  const userId = decodedToken["userId"];
+  const isAdmin = decodedToken["isAdmin"];
   if (!isAdmin) return functions.response(res, 403);
 
   req.auth = {

@@ -1,7 +1,7 @@
 const mongoose = require ('mongoose');
 const variables = require ('../variables');
 
-const userSchema = mongoose.Schema ({
+const userSchema = new mongoose.Schema ({
   pseudo : { type : String, required : true },
   imageUrl : { type : String, default : variables.defaultImageUrl, required : true },
   theme : { type : String, default : variables.defaultTheme, required : true },

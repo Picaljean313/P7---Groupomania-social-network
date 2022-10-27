@@ -106,7 +106,7 @@ exports.getAllComments = async function (req, res, next) {
     }
 
     for (let i in comments) {
-      comments[i].reactions = results[i];
+      comments[i]["reactions"] = results[i];
     }
   }
 
@@ -166,7 +166,7 @@ exports.getOneComment = async function (req, res, next) {
       console.log("Can't find reactions.");
       return functions.response(res, 500);
     }
-    comment.reactions = reactions;
+    comment["reactions"] = reactions;
   }
 
   return res.status(200).json(comment);

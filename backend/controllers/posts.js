@@ -11,6 +11,7 @@ const reqQueries = require('../validation/data/reqQueries');
 const variables = require('../variables');
 const id = require('../validation/data/id');
 const url = require ('url');
+const fs = require ('fs');
 
 exports.createOnePost = async function (req, res, next) {
   const includedFile = req.file ? true : false;
@@ -130,7 +131,7 @@ exports.getAllPosts = async function (req, res, next) {
     }
 
     for (let i in posts) {
-      posts[i].reactions = results[i];
+      posts[i]["reactions"] = results[i];
     }
   }
 
@@ -149,7 +150,7 @@ exports.getAllPosts = async function (req, res, next) {
     }
     
     for (let i in posts) {
-      posts[i].comments = results[i];
+      posts[i]["comments"] = results[i];
     }
 
     if (req.query.commentsReactions === "true") {
@@ -157,8 +158,8 @@ exports.getAllPosts = async function (req, res, next) {
       try {
         const promises = [];
         for (let i in posts) {
-          for (let j in posts[i].comments) {
-            const promise = ReactionsModel.find({ commentId : posts[i].comments[j]._id }).lean();
+          for (let j in posts[i]["comments"]) {
+            const promise = ReactionsModel.find({ commentId : posts[i]["comments"][j]._id }).lean();
             promises.push(promise);
           }
         }
@@ -170,8 +171,8 @@ exports.getAllPosts = async function (req, res, next) {
  
       let k = 0;
       for (let i in posts) {
-        for (let j in posts[i].comments) {
-          posts[i].comments[j].reactions = results[k];
+        for (let j in posts[i]["comments"]) {
+          posts[i]["comments"][j].reactions = results[k];
           k++;
         }
       }
@@ -192,7 +193,7 @@ exports.deleteAllPosts = async function (req, res, next) {
   }
   const postsImagesToDelete = [];
   for (let post of posts){
-    if (post.imageUrl) {
+    if (typeof post.imageUrl === "string") {
       const postImage = post.imageUrl.split('images/')[1];
       if (postImage !== defaultImageToKeep) {
         postsImagesToDelete.push(postImage);
@@ -269,7 +270,7 @@ exports.getOnePost = async function (req, res, next) {
       console.log("Can't find reactions.");
       return functions.response(res, 500);
     }
-    post.reactions = reactions;
+    post["reactions"] = reactions;
   }
 
   if (req.query.comments === "true"){
@@ -280,14 +281,14 @@ exports.getOnePost = async function (req, res, next) {
       console.log("Can't find comments.");
       return functions.response(res, 500);
     }
-    post.comments = comments;
+    post["comments"] = comments;
 
     if (req.query.commentsReactions === "true") {
       let results;
       try {
         const promises = [];
-        for (let i in post.comments) {
-          const promise = ReactionsModel.find({ commentId : post.comments[i]._id }).lean();
+        for (let i in post["comments"]) {
+          const promise = ReactionsModel.find({ commentId : post["comments"][i]._id }).lean();
           promises.push(promise);
         }
         results = await Promise.all(promises);
@@ -296,8 +297,8 @@ exports.getOnePost = async function (req, res, next) {
         return functions.response(res, 500);
       }
  
-      for (let i in post.comments) {
-        post.comments[i].reactions = results[i];
+      for (let i in post["comments"]) {
+        post["comments"][i].reactions = results[i];
       }
     }
   }
@@ -356,7 +357,7 @@ exports.modifyOnePost = async function (req, res, next) {
 
     let imageToDelete = undefined;
     const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
-    if (post.imageUrl){
+    if (typeof post.imageUrl === "string"){
       if (post.imageUrl.split('images/')[1] !== defaultImageToKeep){
         imageToDelete = post.imageUrl.split('images/')[1]; 
       };
@@ -445,10 +446,12 @@ exports.modifyOnePost = async function (req, res, next) {
       }
 
       const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
-      const imageToDelete = post.imageUrl.split('images/')[1];
-      if (imageToDelete !== defaultImageToKeep){
-        await fs.promises.unlink(`images/${imageToDelete}`)
-          .catch(() => console.log(`Can't delete ${imageToDelete}.`));
+      if (typeof post.imageUrl === "string") {
+        const imageToDelete = post.imageUrl.split('images/')[1];
+        if (imageToDelete !== defaultImageToKeep){
+          await fs.promises.unlink(`images/${imageToDelete}`)
+            .catch(() => console.log(`Can't delete ${imageToDelete}.`));
+        }
       }
     };
     
@@ -512,7 +515,7 @@ exports.deleteOnePost = async function (req, res, next) {
     return functions.response(res, 500);
   }
 
-  if (post.imageUrl) {
+  if (typeof post.imageUrl === "string") {
     const postImageToDelete = post.imageUrl.split('images/')[1];
     const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
     if (postImageToDelete !== defaultImageToKeep) {

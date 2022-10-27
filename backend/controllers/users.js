@@ -281,7 +281,7 @@ exports.getAllUsers = async function (req, res, next) {
         comments : activityArray[1],
         reactions : activityArray[2]
       };
-      user.activity = userActivity;
+      user["activity"] = userActivity;
     }
   }
 
@@ -308,14 +308,14 @@ exports.deleteAllUsers = async function (req, res, next) {
 
   let posts;
   try {
-    posts = await PostsModel.find( { userId : { '$ne' : userId }});
+    posts = await PostsModel.find({ userId : { '$ne' : userId }});
   } catch {
     console.log("Can't find posts.");
     return functions.response(res, 500);
   }
   const postsImagesToDelete = [];
   for (let post of posts){
-    if (post.imageUrl){
+    if (typeof post.imageUrl === "string"){
       const postImage = post.imageUrl.split('images/')[1];
       if (postImage !== defaultImageToKeep) {
         postsImagesToDelete.push(postImage);
@@ -415,7 +415,7 @@ exports.getOneUser = async function (req, res, next) {
       comments : activityArray[1],
       reactions : activityArray[2]
     };
-    user.activity = userActivity;
+    user["activity"] = userActivity;
   }
 
   return res.status(200).json(user);
@@ -567,7 +567,7 @@ exports.deleteOneUser = async function (req, res, next) {
   const defaultImageToKeep = variables.defaultImageUrl.split('images/')[1];
   for (let post of posts){
     postsToDeleteIds.push(post._id);
-    if (post.imageUrl){
+    if (typeof post.imageUrl === "string"){
       const postImage = post.imageUrl.split('images/')[1];
       if (postImage !== defaultImageToKeep) {
         postsImagesToDelete.push(postImage);

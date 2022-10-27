@@ -1,6 +1,6 @@
 const mongoose = require ('mongoose');
 
-const reportSchema = mongoose.Schema ({
+const reportSchema = new mongoose.Schema ({
   postId : { type : mongoose.Schema.Types.ObjectId, ref : "Posts", required : function (){ return !this.commentId }},
   commentId : { type : mongoose.Schema.Types.ObjectId, ref : "Comments"},
   userId : { type : mongoose.Schema.Types.ObjectId, ref : "Users", required : true },
