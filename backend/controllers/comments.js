@@ -55,79 +55,41 @@ exports.getAllComments = async function (req, res, next) {
   const sort = req.query.sort ? req.query.sort : null;
   const fromUserId = req.query.fromUserId;
   const fromPostId = req.query.fromPostId;
+  const searchParam = {};
+
+  if (fromUserId) {
+    let user;
+    try {
+      user = await UsersModel.findOne({ _id : fromUserId });
+    } catch {
+      console.log("Can't find user.");
+      return functions.response(res, 500);
+    }
+    if (user === null) return functions.response(res, 400);
+
+    searchParam.userId = fromUserId;
+  }
+
+  if (fromPostId) {
+    let post;
+    try {
+      post = await PostsModel.findOne({ _id : fromPostId });
+    } catch {
+      console.log("Can't find post.");
+      return functions.response(res, 500);
+    }
+    if (post === null) return functions.response(res, 400);
+
+    searchParam.postId = fromPostId;
+  }
+
   let comments;
-
-  if (fromUserId && fromPostId) {
-    let user;
-    try {
-      user = await UsersModel.findOne({ _id : fromUserId });
-    } catch {
-      console.log("Can't find user.");
-      return functions.response(res, 500);
-    }
-    if (user === null) return functions.response(res, 400);
-
-    let post;
-    try {
-      post = await PostsModel.findOne({ _id : fromPostId });
-    } catch {
-      console.log("Can't find post.");
-      return functions.response(res, 500);
-    }
-    if (post === null) return functions.response(res, 400);
-
-    try {
-      comments = await CommentsModel.find({ userId : fromUserId, postId : fromPostId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
-    } catch {
-      console.log("Can't find comments.");
-      return functions.response(res, 500);
-    }
-  }
-  
-  else if (fromUserId && !fromPostId){
-    let user;
-    try {
-      user = await UsersModel.findOne({ _id : fromUserId });
-    } catch {
-      console.log("Can't find user.");
-      return functions.response(res, 500);
-    }
-    if (user === null) return functions.response(res, 400);
-
-    try {
-      comments = await CommentsModel.find({ userId : fromUserId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
-    } catch {
-      console.log("Can't find comments.");
-      return functions.response(res, 500);
-    }
+  try {
+    comments = await CommentsModel.find(searchParam).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
+  } catch {
+    console.log("Can't find comments.");
+    return functions.response(res, 500);
   } 
-
-  else if (!fromUserId && fromPostId){
-    let post;
-    try {
-      post = await PostsModel.findOne({ _id : fromPostId });
-    } catch {
-      console.log("Can't find post.");
-      return functions.response(res, 500);
-    }
-    if (post === null) return functions.response(res, 400);
-
-    try {
-      comments = await CommentsModel.find({ postId : fromPostId }).sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
-    } catch {
-      console.log("Can't find comments.");
-      return functions.response(res, 500);
-    }
-  } 
-
-  else {
-    try {
-      comments = await CommentsModel.find().sort({creationDate : sort}).where("creationDate").gte(minDate).lte(maxDate).limit(limit).lean();
-    } catch {
-      console.log("Can't find comments.");
-      return functions.response(res, 500);
-    }  
-  }
 
   if (req.query.reactions === "true"){
     let results;
