@@ -2410,8 +2410,12 @@
           },
           "commentId": {
             "type": "string",
-            "example": ""
+            "example": "632efd854148fdc69cd7e652"
           }
+        },
+        "example": {
+          "type" : "like",
+          "postId" : "632efd854148fdc69cd7e652"
         },
         "required": [
           "type"
@@ -2438,12 +2442,15 @@
         "properties": {
           "postId": {
             "type": "string",
-            "example": ""
+            "example": "632efd854148fdc69cd7e892"
           },
           "commentId": {
             "type": "string",
             "example": "632efd854148fdc69cd7e892"
           }
+        },
+        "example": {
+          "commentId" : "632efd854148fdc69cd7e652"
         }
       }
     }
