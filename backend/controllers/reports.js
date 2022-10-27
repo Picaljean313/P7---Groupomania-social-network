@@ -155,8 +155,20 @@ exports.deleteAllReports = async function (req, res, next) {
   return functions.response(res,200);
 };
 
-exports.getOneReport = (req, res, next) => {
+exports.getOneReport = async function (req, res, next) {
+  const invalidReportId = !rules.valid(id.idToValidate, req.params.reportId);
+  if (invalidReportId) return functions.response(res, 400);
 
+  let report;
+  try {
+    report = await ReportsModel.findOne({ _id : req.params.reportId });
+  } catch {
+    console.log("Can't find report.");
+    return functions.response(res, 500);
+  }
+  if (report === null) return functions.response(res, 400);
+
+  return res.status(200).json(report);
 };
 
 exports.deleteOneReport = (req, res, next) => {
