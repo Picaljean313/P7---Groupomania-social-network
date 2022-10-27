@@ -144,8 +144,15 @@ exports.getAllReports = async function (req, res, next) {
   return res.status(200).json(reports);
 };
 
-exports.deleteAllReports = (req, res, next) => {
+exports.deleteAllReports = async function (req, res, next) {
+  try {
+    await ReportsModel.deleteMany();
+  } catch {
+    console.log("Can't delete reports.");
+    return functions.response(res, 500);
+  }
 
+  return functions.response(res,200);
 };
 
 exports.getOneReport = (req, res, next) => {
