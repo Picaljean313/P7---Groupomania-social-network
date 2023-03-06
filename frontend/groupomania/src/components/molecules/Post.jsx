@@ -139,10 +139,38 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
     return console.log("Check onClick");
   };
 
-  const isMoreCommentsToShow = false;
+  const commmentsLimit = 2;
+
+  const initialIsMoreCommentsToShow = comments.length > commmentsLimit;
+  const [isMoreCommentsToShow, setIsMoreCommentsToShow] = useState (initialIsMoreCommentsToShow);
+
+  let initialPostComments = [];
+  if (comments.length > commmentsLimit) {
+    let i = 0;
+    while (i < commmentsLimit) {
+      initialPostComments.push(comments[i]);
+      i++;
+    }
+  } else {
+    initialPostComments = comments;
+  }
+  const [postComments, setPostComments] = useState(initialPostComments);
+
 
   const handleMoreCommentsOnClick = () => {
+    console.log(postComments);
+    const newPostComments = [];
+    let i = 0;
+    while (i < postComments.length + commmentsLimit && i < comments.length){
+      newPostComments.push(comments[i]);
+      i++;
+    }
 
+    if (newPostComments.length === comments.length){
+      setIsMoreCommentsToShow(false);
+    }
+
+    setPostComments(newPostComments);
   };
   
   return (
@@ -159,7 +187,7 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         </div>
       </div>
       <div className="comments" >
-        {Array.isArray(comments) && comments.map(e => 
+        {Array.isArray(postComments) && postComments.map(e => 
           <Comment key={e._id} _id={e._id} content={e.content} userData={e.userData} reactions={e.reactions} />
         )}
         {isMoreCommentsToShow ?
