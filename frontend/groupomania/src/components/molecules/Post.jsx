@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { keyframes } from "styled-components";
 import Comment from '../atoms/Comment';
-import {basePath} from '../../utils/pagesData'
+import {basePath} from '../../utils/pagesData';
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
@@ -71,10 +71,6 @@ img {
 function Post ({_id, content, imageUrl, userData, reactions, comments}) {
   const {token} = useContext(Context);
 
-  const [commentReactions, setCommentReactions] = useState(reactions);
-
-  console.log(reactions);
-
   let initialUserReaction = "none";
 
   for (let i in reactions){
@@ -87,9 +83,8 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
   }
 
   const [userReaction, setUserReaction] = useState (initialUserReaction);
-  console.log(userReaction)
 
-  const handleOnClick = async function (reaction) {
+  const handlePostReactionOnClick = async function (reaction) {
     if (userReaction === "none"){
       const res = await fetch(`${basePath}/reactions`, {
         method : "POST",
@@ -145,6 +140,10 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
   };
 
   const isMoreCommentsToShow = false;
+
+  const handleMoreCommentsOnClick = () => {
+
+  };
   
   return (
     <StyledPost>
@@ -152,19 +151,19 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         <p>{content}</p>
         {imageUrl && <img src={imageUrl} alt={`Post from ${userData.pseudo}`}/>}
         <div className="postReaction" >
-          <FontAwesomeIcon name="heart" className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={()=> {handleOnClick("heart")}} />
-          <FontAwesomeIcon name="thumbs-up" className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={()=> {handleOnClick("thumbs-up")}} />
-          <FontAwesomeIcon name="face-grin-tears" className={`icon ${userReaction.type === "face-grin-tears" ? "isSelected" : ""}`} icon={solid("face-grin-tears")} onClick={()=> {handleOnClick("face-grin-tears")}} />
-          <FontAwesomeIcon name="face-surprise" className={`icon ${userReaction.type === "face-surprise" ? "isSelected" : ""}`} icon={solid("face-surprise")} onClick={()=> {handleOnClick("face-surprise")}} />
-          <FontAwesomeIcon name="face-angry" className={`icon ${userReaction.type === "face-angry" ? "isSelected" : ""}`} icon={solid("face-angry")} onClick={()=> {handleOnClick("face-angry")}} />
+          <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={()=> {handlePostReactionOnClick("heart")}} />
+          <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={()=> {handlePostReactionOnClick("thumbs-up")}} />
+          <FontAwesomeIcon className={`icon ${userReaction.type === "face-grin-tears" ? "isSelected" : ""}`} icon={solid("face-grin-tears")} onClick={()=> {handlePostReactionOnClick("face-grin-tears")}} />
+          <FontAwesomeIcon className={`icon ${userReaction.type === "face-surprise" ? "isSelected" : ""}`} icon={solid("face-surprise")} onClick={()=> {handlePostReactionOnClick("face-surprise")}} />
+          <FontAwesomeIcon className={`icon ${userReaction.type === "face-angry" ? "isSelected" : ""}`} icon={solid("face-angry")} onClick={()=> {handlePostReactionOnClick("face-angry")}} />
         </div>
       </div>
       <div className="comments" >
         {Array.isArray(comments) && comments.map(e => 
-          <Comment key={e._id} content={e.content} userData={e.userData} reactions={e.reactions} />
+          <Comment key={e._id} _id={e._id} content={e.content} userData={e.userData} reactions={e.reactions} />
         )}
         {isMoreCommentsToShow ?
-        <button onClick={handleOnClick}>
+        <button onClick={handleMoreCommentsOnClick}>
           View more comments
         </button> : 
         <p>No more comments to show</p>}

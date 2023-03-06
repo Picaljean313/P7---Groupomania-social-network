@@ -12,7 +12,6 @@ export const ContextProvider = ({children}) => {
   const [theme, setTheme] = useState("original");
 
   const [userData, setUserData] = useState("none");
-  console.log(userData);
 
   const getUserData = async function () {
     if (token === "none") {

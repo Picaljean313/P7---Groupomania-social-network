@@ -23,7 +23,7 @@ function Home () {
   const [homePosts, setHomePosts] = useState("none");
   const [isMorePostsToShow, setIsMorePostsToShow] = useState(false);
 
-  const limit = 2;
+  const limit = 1;
 
   const getInitialHomePagePosts = async function () {
     const fetchLimit = limit + 1;
