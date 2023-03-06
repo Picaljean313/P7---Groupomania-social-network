@@ -72,7 +72,7 @@ exports.createOnePost = async function (req, res, next) {
 };
 
 exports.getAllPosts = async function (req, res, next) {
-  const allowedQueries = ["minDate", "maxDate", "limit", "sort", "fromUserId", "reactions", "comments", "commentsReactions"]; 
+  const allowedQueries = ["minDate", "maxDate", "limit", "sort", "fromUserId", "reactions", "comments", "commentsReactions", "userData", "commentsUserData"]; 
   const reqQueriesObject = url.parse(req.url, true).query;
   const reqQueriesKeys = Object.keys(reqQueriesObject);
   const invalidReqQueries = reqQueriesKeys.map(x => allowedQueries.includes(x)).includes(false);
@@ -82,6 +82,7 @@ exports.getAllPosts = async function (req, res, next) {
   if (!validParams) return functions.response(res, 400);
 
   if (req.query.commentsReactions === "true" && req.query.comments !== "true") return functions.response(res, 400);
+  if (req.query.commentsUserData === "true" && req.query.comments !== "true") return functions.response(res, 400);
 
   const minDate = req.query.minDate ? Date.parse(req.query.minDate) : 0;
   const maxDate = req.query.maxDate ? Date.parse(req.query.maxDate) : Date.now();
@@ -114,6 +115,25 @@ exports.getAllPosts = async function (req, res, next) {
       console.log("Can't find posts.");
       return functions.response(res, 500);
     }  
+  }
+
+  if (req.query.userData === "true"){
+    let results;
+    try {
+      const promises = [];
+      for (let i in posts) {
+        const promise = UsersModel.findOne({ _id : posts[i].userId }).lean();
+        promises.push(promise);
+      }
+      results = await Promise.all(promises);
+    } catch {
+      console.log("Can't find all posts reactions.");
+      return functions.response(res, 500);
+    }
+
+    for (let i in posts) {
+      posts[i]["userData"] = results[i];
+    }
   }
 
   if (req.query.reactions === "true"){
@@ -151,6 +171,31 @@ exports.getAllPosts = async function (req, res, next) {
     
     for (let i in posts) {
       posts[i]["comments"] = results[i];
+    }
+
+    if (req.query.commentsUserData === "true") {
+      let results;
+      try {
+        const promises = [];
+        for (let i in posts) {
+          for (let j in posts[i]["comments"]) {
+            const promise = UsersModel.findOne({ _id : posts[i]["comments"][j].userId }).lean();
+            promises.push(promise);
+          }
+        }
+        results = await Promise.all(promises);
+      } catch {
+        console.log("Can't find all comments user data.");
+        return functions.response(res, 500);
+      }
+ 
+      let k = 0;
+      for (let i in posts) {
+        for (let j in posts[i]["comments"]) {
+          posts[i]["comments"][j].userData = results[k];
+          k++;
+        }
+      }
     }
 
     if (req.query.commentsReactions === "true") {

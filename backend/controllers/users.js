@@ -385,19 +385,23 @@ exports.getOneUser = async function (req, res, next) {
   if (invalidReqQueries) return functions.response(res, 400);
   
   const validParams = rules.valid(reqQueries.reqQueriesToValidate, reqQueriesObject);
-  const invalidUserId = !rules.valid(id.idToValidate, req.params.userId);
+  const invalidUserId = req.params.userId !== "me" ? !rules.valid(id.idToValidate, req.params.userId) : false;
   if (!validParams || invalidUserId) return functions.response(res, 400);
 
   let user;
   try {
-    user = await UsersModel.findOne({ _id : req.params.userId }).lean();
+    if (req.params.userId !== "me") {
+      user = await UsersModel.findOne({ _id : req.params.userId }).lean();
+    } else {
+      user = await UsersModel.findOne({ _id : req.auth.userId }).lean();
+    }
   } catch {
     console.log("Can't find user.");
     return functions.response(res, 500);
   }
   if (user === null) return functions.response(res, 400);
 
-  if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
+  // if (!req.auth.isAdmin && req.auth.userId !== req.params.userId && req.params.userId !== "me") return functions.response(res, 401); -> tout les membres du réseau social peuvent avoir les infos des autres
 
   if (req.query.activity === "true"){
     let activityArray;

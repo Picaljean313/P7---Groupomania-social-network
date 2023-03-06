@@ -89,6 +89,18 @@ exports.reqQueriesToValidate = (reqQueries) => {
         required : false,
         expectedType : "string",
         expectedValue : ["true", "false"]
+      },
+      {
+        value : reqQueries.userData,
+        required : false,
+        expectedType : "string",
+        expectedValue : ["true", "false"]
+      },
+      {
+        value : reqQueries.commentsUserData,
+        required : false,
+        expectedType : "string",
+        expectedValue : ["true", "false"]
       }
     ]
   }

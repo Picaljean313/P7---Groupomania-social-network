@@ -65,14 +65,16 @@ exports.createOneReaction = async function (req, res, next) {
     commentId : req.body.commentId,
     userId : req.auth.userId
   });
+  let reactionId;
   try {
-    await reactionCreated.save()
+    const reaction = await reactionCreated.save();
+    reactionId = reaction._id;
   } catch {
     console.log("Can't save reaction.");
     return functions.response(res, 500);
   }
   
-  return res.status(201).json({ message : "Reaction created." });
+  return res.status(201).json({reactionId : reactionId});
 };
 
 exports.getAllReactions = async function (req, res, next) {
@@ -179,14 +181,16 @@ exports.modifyOneReaction = async function (req, res, next) {
 
   let reaction;
   try {
-    reaction = await ReactionsModel.findOne({ _id : req.params.reactionId });
+    if (!req.auth.isAdmin){
+      reaction = await ReactionsModel.findOne({ _id : req.params.reactionId, userId : req.auth.userId});
+    } else {
+      reaction = await ReactionsModel.findOne({ _id : req.params.reactionId});
+    }
   } catch {
     console.log("Can't find reaction.");
     return functions.response(res, 500);
   }
   if (reaction === null) return functions.response(res, 400);
-
-  if (!req.auth.isAdmin && req.auth.userId !== reaction.userId) return functions.response(res, 401);
 
   const validReactionJson = rules.valid(modifyOneReaction.reactionJsonDataToValidate, req.body);
   if (!validReactionJson) return functions.response(res, 400);
@@ -210,14 +214,16 @@ exports.deleteOneReaction = async function (req, res, next) {
 
   let reaction;
   try {
-    reaction = await ReactionsModel.findOne({ _id : req.params.reactionId });
+    if (!req.auth.isAdmin){
+      reaction = await ReactionsModel.findOne({ _id : req.params.reactionId, userId : req.auth.userId});
+    } else {
+      reaction = await ReactionsModel.findOne({ _id : req.params.reactionId});
+    }
   } catch {
     console.log("Can't find reaction.");
     return functions.response(res, 500);
   }
   if (reaction === null) return functions.response(res, 400);
-
-  if (!req.auth.isAdmin && req.auth.userId !== reaction.userId) return functions.response(res, 401);
 
   try {
     await ReactionsModel.deleteOne({ _id : req.params.reactionId });

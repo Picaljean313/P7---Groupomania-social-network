@@ -42,7 +42,7 @@ exports.userJsonDataToValidate = (user) => {
       {
         value : user.email,
         expectedType : "string",
-        mask : /^[^\s\.@]{1,50}@[^\s\.@]{1,50}\.[^\s\.@]{1,10}$/
+        mask : /^[^\s@]{1,25}@[^\s\.@]{1,18}\.[^\s\.@]{1,5}$/
       },
       {
         value : user.password,
