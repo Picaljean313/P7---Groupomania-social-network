@@ -213,6 +213,16 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
     }
     else return
   };
+
+  const handleHideCommentsOnClick = () => {
+    const newPostComments = [];
+    let i = 0;
+    while (i < commmentsLimit) {
+      newPostComments.push(totalPostComments[i]);
+      i++;
+    }
+    setPostComments(newPostComments);
+  };
   
   return (
     <StyledPost>
@@ -231,11 +241,17 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         {Array.isArray(postComments) && postComments.map(e => 
           <Comment key={e._id} _id={e._id} content={e.content} userData={e.userData} reactions={e.reactions} />
         )}
-        {isMoreCommentsToShow ?
-        <button onClick={handleMoreCommentsOnClick}>
-          View older comments
-        </button> : 
-        <p>No more comments to show</p>}
+        <div>
+          {isMoreCommentsToShow ?
+          <button onClick={handleMoreCommentsOnClick}>
+            View older comments
+          </button> : 
+          <p>No more comments to show</p>}
+          {(postComments.length > commmentsLimit) && 
+          <button onClick={handleHideCommentsOnClick}>
+            Hide extra comments 
+          </button>}
+        </div>
       </div>
       <form onSubmit = { handleCommentSubmit }>
         <label htmlFor = "userComment" >Write your comment : </label>
