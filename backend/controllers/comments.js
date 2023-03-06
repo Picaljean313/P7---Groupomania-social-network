@@ -29,14 +29,15 @@ exports.createOneComment = async function (req, res, next) {
     postId : req.body.postId,
     userId : req.auth.userId
   });
+  let comment;
   try {
-    await commentCreated.save()
+    comment = await commentCreated.save();
   } catch {
     console.log("Can't save comment.");
     return functions.response(res, 500);
   }
   
-  return res.status(201).json({ message : "Comment created." });
+  return res.status(201).json({ comment : comment });
 };
 
 exports.getAllComments = async function (req, res, next) {

@@ -160,7 +160,7 @@ exports.getAllPosts = async function (req, res, next) {
     try {
       const promises = [];
       for (let i in posts) {
-        const promise = CommentsModel.find({ postId : posts[i]._id }).lean();
+        const promise = CommentsModel.find({ postId : posts[i]._id }).sort({creationDate : "desc"}).lean();
         promises.push(promise);
       }
       results = await Promise.all(promises);

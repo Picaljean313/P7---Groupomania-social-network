@@ -156,21 +156,62 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
   }
   const [postComments, setPostComments] = useState(initialPostComments);
 
+  const [totalPostComments, setTotalPostComments] = useState(comments);
+
 
   const handleMoreCommentsOnClick = () => {
-    console.log(postComments);
     const newPostComments = [];
     let i = 0;
-    while (i < postComments.length + commmentsLimit && i < comments.length){
-      newPostComments.push(comments[i]);
+    while (i < postComments.length + commmentsLimit && i < totalPostComments.length){
+      newPostComments.push(totalPostComments[i]);
       i++;
     }
 
-    if (newPostComments.length === comments.length){
+    if (newPostComments.length === totalPostComments.length){
       setIsMoreCommentsToShow(false);
     }
 
     setPostComments(newPostComments);
+  };
+
+  const handleCommentSubmit = async function (event) {
+    event.preventDefault();
+
+    const value = document.getElementById("userComment").value;
+
+    if (value.length > 1 && value.length < 1000){
+      const res = await fetch(`${basePath}/comments`, {
+        method : "POST",
+        headers: { 
+          'Accept': 'application/json', 
+          'Content-Type': 'application/json',
+          'Authorization' : `Bearer ${token}` 
+          },
+        body : JSON.stringify({
+          content : value,
+          postId : _id
+        })
+      });
+      if (res.status === 200 || res.status === 201){
+        const apiData = await res.json();
+        const newComment = apiData.comment;
+
+        const newPostComments = [newComment];
+        for (let i in postComments){
+          newPostComments.push(postComments[i]);
+        }
+        const newTotalPostComments = [newComment];
+        for (let i in totalPostComments){
+          newTotalPostComments.push(totalPostComments[i]);
+        }
+        setPostComments(newPostComments);
+        setTotalPostComments(newTotalPostComments);
+        document.getElementById("userComment").value = "";
+      } else {
+        console.log("Can't post comment");
+      }
+    }
+    else return
   };
   
   return (
@@ -192,10 +233,15 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         )}
         {isMoreCommentsToShow ?
         <button onClick={handleMoreCommentsOnClick}>
-          View more comments
+          View older comments
         </button> : 
         <p>No more comments to show</p>}
       </div>
+      <form onSubmit = { handleCommentSubmit }>
+        <label htmlFor = "userComment" >Write your comment : </label>
+        <textarea id = "userComment" name = "userComment" type = "text" maxLength = "1000" />
+        <button type="submit">Envoyer</button>
+      </form>
     </StyledPost>
   );
 }

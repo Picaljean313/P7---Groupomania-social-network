@@ -12,7 +12,7 @@ flex-direction: column;
   object-fit : cover;
 }
 
-.pouet {
+.user {
   display : flex;
   justify-content : center;
   align-items : center;
@@ -20,7 +20,7 @@ flex-direction: column;
   height: 50%;
 }
 
-.pouet p {
+.user p {
   font-size : 20px;
   margin-left : 10px;
 }
@@ -41,7 +41,7 @@ function Informations() {
   return (
     <StyledInformations>
       <img src={'images/logo/logo.svg'} alt='Groupomania logo' className = "logo"/>
-      {userData !== "none" && <div className="pouet">
+      {userData !== "none" && <div className="user">
           <img src={imageUrl} alt='Avatar' className = "avatar"/>
           <p>{pseudo}</p>
         </div>}
