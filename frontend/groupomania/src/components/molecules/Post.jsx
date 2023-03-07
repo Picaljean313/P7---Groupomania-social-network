@@ -68,17 +68,14 @@ img {
 `
 
 
-function Post ({_id, content, imageUrl, userData, reactions, comments}) {
-  const {token} = useContext(Context);
+function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
+  const {token, userData} = useContext(Context);
 
   let initialUserReaction = "none";
 
   for (let i in reactions){
     if (reactions[i].userId === userData._id && ["heart", "thumbs-up", "face-grin-tears", "face-surprise", "face-angry"].includes(reactions[i].type)){
-      initialUserReaction = {
-        type : reactions[i].type,
-        _id : reactions[i]._id
-      };
+      initialUserReaction = reactions[i];
     }
   }
 
@@ -99,11 +96,8 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         })
       });
       if (res.status === 200 || res.status === 201){
-        const resJson = await res.json();
-        return setUserReaction({
-          type : reaction,
-          _id : resJson.reactionId
-        })
+        const reaction = await res.json();
+        return setUserReaction(reaction.reaction);
       }
     }
     if (userReaction.type !== reaction) {
@@ -119,10 +113,13 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         })
       });
       if (res.status === 200 || res.status === 201){
-        return setUserReaction({
-          type : reaction,
-          _id : userReaction._id
-        });
+        const newUserReaction = {};
+        for (let key of Object.keys(userReaction)){
+          newUserReaction[key] = userReaction[key];
+        }
+        newUserReaction.type = reaction;
+        console.log(newUserReaction);
+        return setUserReaction(newUserReaction);
       }
     }
     if (userReaction.type === reaction){
@@ -227,7 +224,7 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
     <StyledPost>
       <div className="post" >
         <p>{content}</p>
-        {imageUrl && <img src={imageUrl} alt={`Post from ${userData.pseudo}`}/>}
+        {imageUrl && <img src={imageUrl} alt={`Post from ${postUserData.pseudo}`}/>}
         <div className="postReaction" >
           <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={()=> {handlePostReactionOnClick("heart")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={()=> {handlePostReactionOnClick("thumbs-up")}} />

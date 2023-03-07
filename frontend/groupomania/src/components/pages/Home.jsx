@@ -23,7 +23,7 @@ function Home () {
   const [homePosts, setHomePosts] = useState("none");
   const [isMorePostsToShow, setIsMorePostsToShow] = useState(false);
 
-  const limit = 2;
+  const limit = 1;
 
   const getInitialHomePagePosts = async function () {
     const fetchLimit = limit + 1;
@@ -109,7 +109,7 @@ function Home () {
       <Header />
       <div className="main">
         {Array.isArray(homePosts) ? homePosts.map(e => 
-          <Post key={e._id} _id ={e._id} content={e.content} imageUrl={e.imageUrl} userData={e.userData} reactions={e.reactions} comments={e.comments} />
+          <Post key={e._id} _id ={e._id} content={e.content} imageUrl={e.imageUrl} postUserData={e.userData} reactions={e.reactions} comments={e.comments} />
           ) : <p>No posts to show</p>}
         {Array.isArray(homePosts) && (isMorePostsToShow ?
         <button onClick={handleOnClick}>
