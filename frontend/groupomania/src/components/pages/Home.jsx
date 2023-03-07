@@ -100,22 +100,87 @@ function Home () {
     getInitialHomePagePosts();
   }, []);
 
-  const handleOnClick = () => {
+  const handleMorePostsOnClick = () => {
     getMoreHomePagePosts();
   };
+
+const handleNewPostSubmit = async function (event) {
+  event.preventDefault();
+
+  const content = document.getElementById("userNewPostContent").value;
+  if (content.length < 1 || content.length > 1000){
+    return alert ("Fill correctly post content");
+  }
+
+  const image = document.getElementById("userNewPostImage").files[0];
+
+  if (image === undefined){
+    const res = await fetch (`${basePath}/posts`, {
+      method : "POST",
+      headers: { 
+        'Accept': 'application/json', 
+        'Content-Type': 'application/json',
+        'Authorization' : `Bearer ${token}`
+        },
+      body : JSON.stringify({
+        content : content
+      })
+    });
+    if (res.status === 200 || res.status === 201){
+      document.getElementById("userNewPostContent").value = "";
+      getInitialHomePagePosts();
+    } else {
+      console.log("Can't create post")
+    }
+  } 
+  else {
+    const formData = new FormData();
+    formData.append("content", JSON.stringify(content));
+    formData.append("image", image);
+
+    const res = await fetch (`${basePath}/posts`, {
+      method : "POST",
+      headers: {
+        'Authorization' : `Bearer ${token}`
+        },
+      body : formData
+    });
+
+    if (res.status === 200 || res.status === 201){
+      document.getElementById("userNewPostContent").value = "";
+      document.getElementById("userNewPostImage").value= "";
+      getInitialHomePagePosts();
+    } else {
+      console.log("Can't create post")
+    }
+  }
+};
 
   return (
     <StyledHome>
       <Header />
       <div className="main">
-        {Array.isArray(homePosts) ? homePosts.map(e => 
-          <Post key={e._id} _id ={e._id} content={e.content} imageUrl={e.imageUrl} postUserData={e.userData} reactions={e.reactions} comments={e.comments} />
-          ) : <p>No posts to show</p>}
-        {Array.isArray(homePosts) && (isMorePostsToShow ?
-        <button onClick={handleOnClick}>
-          View more posts
-        </button> : 
-        <p>No more posts to show</p>)}
+        <form onSubmit = { handleNewPostSubmit }>
+          <div className="newPostContent" >
+            <label htmlFor = "userNewPostContent" >Write your post : </label>
+            <textarea id = "userNewPostContent" name = "userNewPostContent" type = "text" maxLength = "1000" />
+          </div>
+          <div className="newPostImage">
+            <label htmlFor = "userNewPostImage" >Choose post image : </label>
+            <input id = "userNewPostImage" name= "userNewPostImage" type="file" accept= "image/png, image/jpeg, image/jpg" />
+          </div>
+          <button type="submit">Envoyer</button>
+        </form>
+        <div className="homePosts" >
+          {Array.isArray(homePosts) ? homePosts.map(e => 
+            <Post key={e._id} _id ={e._id} content={e.content} imageUrl={e.imageUrl} postUserData={e.userData} reactions={e.reactions} comments={e.comments} />
+            ) : <p>No posts to show</p>}
+          {Array.isArray(homePosts) && (isMorePostsToShow ?
+          <button onClick={handleMorePostsOnClick}>
+            View more posts
+          </button> : 
+          <p>No more posts to show</p>)}
+        </div>
       </div>
     </StyledHome>
     )
