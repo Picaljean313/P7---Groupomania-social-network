@@ -36,6 +36,31 @@ background-color : blue;
   align-items : center;
 }
 
+.commentUserData {
+  background-color : purple;
+  padding : 3px;
+  border-radius : 13px;
+  position : absolute;
+  top : -13px;
+  left : 10px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.commentUserData p {
+  font-size : 10px;
+  margin : 0 5px 0 5px;
+  color : white;
+}
+
+.commentUserData img {
+  height : 20px;
+  width : 20px;
+  border-radius : 50%;
+  margin : 0 5px 0 0;
+}
+
 .icon {
   font-size : 20px;
   margin : 5px;
@@ -326,6 +351,10 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
   return (
     <StyledComment>
       <div className="comment">
+        <div className="commentUserData">
+          <img src={commentUserData.imageUrl} alt='Avatar'/>
+          <p>{commentUserData.pseudo}</p>
+        </div>
         <div className="commentReactions">
           {commentReactions.heart !== 0 && (<div className="commentReaction">
             <div className="iconCommentReactionBackground">

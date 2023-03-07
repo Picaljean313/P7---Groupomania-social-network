@@ -49,6 +49,31 @@ img {
   border-radius : 10px;
 }
 
+.postUserData {
+  background-color : blue;
+  padding : 5px;
+  border-radius : 25px;
+  position : absolute;
+  top : -25px;
+  left : 0px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.postUserData p {
+  font-size : 20px;
+  margin : 0 10px 0 10px;
+  color : white;
+}
+
+.postUserData img {
+  height : 40px;
+  width : 40px;
+  border-radius : 50%;
+  margin : 0 10px 0 0;
+}
+
 .icon {
   font-size : 20px;
   margin : 5px;
@@ -384,6 +409,10 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   return (
     <StyledPost>
       <div className="post" >
+        <div className="postUserData">
+          <img src={postUserData.imageUrl} alt='Avatar'/>
+          <p>{postUserData.pseudo}</p>
+        </div>
         <div className="postReactions">
           {postReactions.heart !== 0 && (<div className="postReaction">
             <div className="iconPostReactionBackground">
