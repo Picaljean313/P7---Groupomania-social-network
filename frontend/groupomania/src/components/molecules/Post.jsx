@@ -176,7 +176,7 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
   const handleCommentSubmit = async function (event) {
     event.preventDefault();
 
-    const value = document.getElementById("userComment").value;
+    const value = document.getElementById(`userComment-${_id}`).value;
 
     if (value.length > 1 && value.length < 1000){
       const res = await fetch(`${basePath}/comments`, {
@@ -205,7 +205,7 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         }
         setTotalPostComments(newTotalPostComments);
         setPostComments(newPostComments);
-        document.getElementById("userComment").value = "";
+        document.getElementById(`userComment-${_id}`).value = "";
       } else {
         console.log("Can't post comment");
       }
@@ -254,7 +254,7 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
       </div>
       <form onSubmit = { handleCommentSubmit }>
         <label htmlFor = "userComment" >Write your comment : </label>
-        <textarea id = "userComment" name = "userComment" type = "text" maxLength = "1000" />
+        <textarea id = {`userComment-${_id}`} name = "userComment" type = "text" maxLength = "1000" />
         <button type="submit">Envoyer</button>
       </form>
     </StyledPost>
