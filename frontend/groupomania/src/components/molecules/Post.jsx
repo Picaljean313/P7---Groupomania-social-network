@@ -377,6 +377,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         const apiData = await res.json();
         const newComment = apiData.comment;
         newComment["reactions"] = [];
+        newComment["userData"] = userData;
 
         const newPostComments = [newComment];
         for (let i in postComments){
