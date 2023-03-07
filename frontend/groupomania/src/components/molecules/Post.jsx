@@ -7,6 +7,7 @@ import {basePath} from '../../utils/pagesData';
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
+import React from "react";
 
 const reactionHover = keyframes`
 0% {
@@ -27,6 +28,9 @@ const StyledPost = styled.div `
 margin : 80px;
 background-color : yellow;
 border-radius : 25px;
+display : flex;
+flex-direction : column;
+align-items: center;
 
 .post {
   position : relative;
@@ -58,11 +62,76 @@ img {
   color : red;
 }
 
+.postReactions {
+  display : flex;
+  position : absolute;
+  top : -15px;
+  right : -10px;
+}
+
 .postReaction {
+  position : relative;
+}
+
+.iconPostReaction {
+  margin : 0;
+  font-size : 20px;
+}
+
+.iconPostReactionBackground {
+  height : 30px;
+  width : 30px;
+  border-radius : 50%;
+  background-color : white;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.heart {
+  color : red;
+}
+
+.thumbsUp {
+  color : blue;
+}
+
+.faceGrinTears {
+  color : orange;
+}
+
+.faceSurprise {
+  color : orange;
+}
+
+.faceAngry {
+  color : orange;
+}
+
+.reactionNumber {
+  position : absolute;
+  left : 19px;
+  bottom : 0px;
+  background-color : green;
+  height : 12px;
+  width : 12px;
+  display : flex;
+  align-items : center;
+  justify-content : center;
+  border-radius : 50%;
+}
+
+.reactionNumber p {
+  margin : 0;
+  color : white;
+  font-size : 8px;
+}
+
+.postUserReactions {
   background-color : white;
   border-radius : 15px;
   position : absolute;
-  right : -15px;
+  right : 30px;
   bottom : -15px;
 }
 `
@@ -78,6 +147,34 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       initialUserReaction = reactions[i];
     }
   }
+
+  const initialPostReactions = {
+    heart : 0,
+    thumbsUp : 0,
+    faceGrinTears : 0,
+    faceSurprise : 0,
+    faceAngry : 0
+  };
+
+  for (let reaction of reactions){
+    if (reaction.type === "heart"){
+      initialPostReactions.heart ++;
+    }
+    if (reaction.type === "thumbs-up"){
+      initialPostReactions.thumbsUp ++;
+    }
+    if (reaction.type === "face-grin-tears"){
+      initialPostReactions.faceGrinTears ++;
+    }
+    if (reaction.type === "face-surprise"){
+      initialPostReactions.faceSurprise ++;
+    }
+    if (reaction.type === "face-angry"){
+      initialPostReactions.faceAngry ++;
+    }
+  };
+
+  const [postReactions, setPostReactions] = useState(initialPostReactions);
 
   const [userReaction, setUserReaction] = useState (initialUserReaction);
 
@@ -96,8 +193,25 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         })
       });
       if (res.status === 200 || res.status === 201){
-        const reaction = await res.json();
-        return setUserReaction(reaction.reaction);
+        const apiReaction = await res.json();
+
+        const newPostReactions = postReactions;
+        switch (reaction){
+          case "heart" : newPostReactions.heart++;
+          break;
+          case "thumbs-up" : newPostReactions.thumbsUp++;
+          break;
+          case "face-grin-tears" : newPostReactions.faceGrinTears++;
+          break;
+          case "face-surprise" : newPostReactions.faceSurprise++;
+          break;
+          case "face-angry" : newPostReactions.faceAngry++;
+          break;
+          default : console.log("Can't add user reaction");
+        }
+        setPostReactions(newPostReactions);
+
+        return setUserReaction(apiReaction.reaction);
       }
     }
     if (userReaction.type !== reaction) {
@@ -113,12 +227,42 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         })
       });
       if (res.status === 200 || res.status === 201){
+
+        const newPostReactions = postReactions;
+        switch (userReaction.type){
+          case "heart" : newPostReactions.heart--;
+          break;
+          case "thumbs-up" : newPostReactions.thumbsUp--;
+          break;
+          case "face-grin-tears" : newPostReactions.faceGrinTears--;
+          break;
+          case "face-surprise" : newPostReactions.faceSurprise--;
+          break;
+          case "face-angry" : newPostReactions.faceAngry--;
+          break;
+          default : console.log("Can't remove user reaction");
+        }
+        switch (reaction){
+          case "heart" : newPostReactions.heart++;
+          break;
+          case "thumbs-up" : newPostReactions.thumbsUp++;
+          break;
+          case "face-grin-tears" : newPostReactions.faceGrinTears++;
+          break;
+          case "face-surprise" : newPostReactions.faceSurprise++;
+          break;
+          case "face-angry" : newPostReactions.faceAngry++;
+          break;
+          default : console.log("Can't add user reaction");
+        }
+        setPostReactions(newPostReactions);
+
         const newUserReaction = {};
         for (let key of Object.keys(userReaction)){
           newUserReaction[key] = userReaction[key];
         }
         newUserReaction.type = reaction;
-        console.log(newUserReaction);
+
         return setUserReaction(newUserReaction);
       }
     }
@@ -130,6 +274,22 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         }
       });
       if (res.status === 200 || res.status === 201){
+        const newPostReactions = postReactions;
+        switch (reaction){
+          case "heart" : newPostReactions.heart--;
+          break;
+          case "thumbs-up" : newPostReactions.thumbsUp--;
+          break;
+          case "face-grin-tears" : newPostReactions.faceGrinTears--;
+          break;
+          case "face-surprise" : newPostReactions.faceSurprise--;
+          break;
+          case "face-angry" : newPostReactions.faceAngry--;
+          break;
+          default : console.log("Can't remove user reaction");
+        }
+        setPostReactions(newPostReactions);
+
         return setUserReaction("none");
       }
     }
@@ -224,9 +384,51 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   return (
     <StyledPost>
       <div className="post" >
+        <div className="postReactions">
+          {postReactions.heart !== 0 && (<div className="postReaction">
+            <div className="iconPostReactionBackground">
+              <FontAwesomeIcon className="iconPostReaction heart" icon={solid("heart")} />
+            </div>
+            <div className="reactionNumber">
+              <p>{postReactions.heart}</p>
+            </div>
+          </div>)}
+          {postReactions.thumbsUp !== 0 && (<div className="postReaction">
+            <div className="iconPostReactionBackground">
+              <FontAwesomeIcon className="iconPostReaction thumbsUp" icon={solid("thumbs-up")} />
+            </div>
+            <div className="reactionNumber">
+              <p>{postReactions.thumbsUp}</p>
+            </div>
+          </div>)}
+          {postReactions.faceGrinTears !== 0 && (<div className="postReaction">
+            <div className="iconPostReactionBackground">
+              <FontAwesomeIcon className="iconPostReaction faceGrinTears" icon={solid("face-grin-tears")} />
+            </div>
+            <div className="reactionNumber">
+              <p>{postReactions.faceGrinTears}</p>
+            </div>
+          </div>)}
+          {postReactions.faceSurprise !== 0 && (<div className="postReaction">
+            <div className="iconPostReactionBackground">
+              <FontAwesomeIcon className="iconPostReaction faceSurprise" icon={solid("face-surprise")} />
+            </div>
+            <div className="reactionNumber">
+              <p>{postReactions.faceSurprise}</p>
+            </div>
+          </div>)}
+          {postReactions.faceAngry !== 0 && (<div className="postReaction">
+            <div className="iconPostReactionBackground">
+            <FontAwesomeIcon className="iconPostReaction faceAngry" icon={solid("face-angry")} />
+            </div>
+            <div className="reactionNumber">
+              <p>{postReactions.faceAngry}</p>
+            </div>
+          </div>)}
+        </div>
         <p>{content}</p>
         {imageUrl && <img src={imageUrl} alt={`Post from ${postUserData.pseudo}`}/>}
-        <div className="postReaction" >
+        <div className="postUserReactions" >
           <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={()=> {handlePostReactionOnClick("heart")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={()=> {handlePostReactionOnClick("thumbs-up")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "face-grin-tears" ? "isSelected" : ""}`} icon={solid("face-grin-tears")} onClick={()=> {handlePostReactionOnClick("face-grin-tears")}} />

@@ -83,13 +83,13 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
         })
       });
       if (res.status === 200 || res.status === 201){
-        const reaction = await res.json();
-        setUserReaction(reaction.reaction);
+        const apiReaction = await res.json();
+        setUserReaction(apiReaction.reaction);
 
         const newTotalPostComments = totalPostComments;
         for (let i in newTotalPostComments){
           if(newTotalPostComments[i]._id === _id){
-            newTotalPostComments[i].reactions.push(reaction.reaction);
+            newTotalPostComments[i].reactions.push(apiReaction.reaction);
           }
         }
 
@@ -114,7 +114,6 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
           newUserReaction[key] = userReaction[key];
         }
         newUserReaction.type = reaction;
-        console.log(newUserReaction);
         setUserReaction(newUserReaction);
 
         const newTotalPostComments = [];
@@ -159,7 +158,7 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
             newTotalPostComments.push(totalPostComments[i]);
           }
         }
-        
+
         return setTotalPostComments(newTotalPostComments);
       }
     }
