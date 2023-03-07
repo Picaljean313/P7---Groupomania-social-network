@@ -55,17 +55,14 @@ background-color : blue;
 `
 
 
-function Comment ({_id, content, userData, reactions}) {
-  const {token} = useContext(Context);
+function Comment ({_id, content, commentUserData, reactions, totalPostComments, setTotalPostComments}) {
+  const {token, userData} = useContext(Context);
 
   let initialUserReaction = "none";
 
   for (let i in reactions){
     if (reactions[i].userId === userData._id && ["heart", "thumbs-up", "face-grin-tears", "face-surprise", "face-angry"].includes(reactions[i].type)){
-      initialUserReaction = {
-        type : reactions[i].type,
-        _id : reactions[i]._id
-      };
+      initialUserReaction = reactions[i];
     }
   }
 
@@ -86,11 +83,17 @@ function Comment ({_id, content, userData, reactions}) {
         })
       });
       if (res.status === 200 || res.status === 201){
-        const resJson = await res.json();
-        return setUserReaction({
-          type : reaction,
-          _id : resJson.reactionId
-        })
+        const reaction = await res.json();
+        setUserReaction(reaction.reaction);
+
+        const newTotalPostComments = totalPostComments;
+        for (let i in newTotalPostComments){
+          if(newTotalPostComments[i]._id === _id){
+            newTotalPostComments[i].reactions.push(reaction.reaction);
+          }
+        }
+
+        return setTotalPostComments(newTotalPostComments);
       }
     }
     if (userReaction.type !== reaction) {
@@ -106,10 +109,30 @@ function Comment ({_id, content, userData, reactions}) {
         })
       });
       if (res.status === 200 || res.status === 201){
-        return setUserReaction({
-          type : reaction,
-          _id : userReaction._id
-        });
+        const newUserReaction = {};
+        for (let key of Object.keys(userReaction)){
+          newUserReaction[key] = userReaction[key];
+        }
+        newUserReaction.type = reaction;
+        console.log(newUserReaction);
+        setUserReaction(newUserReaction);
+
+        const newTotalPostComments = [];
+        for (let i in totalPostComments){
+          if(totalPostComments[i]._id === _id){
+            for (let j in totalPostComments[i].reactions){
+              if (totalPostComments[i].reactions[j].userId === userData._id){
+                const newComment = totalPostComments[i];
+                newComment.reactions.splice(j, 1, newUserReaction);
+                newTotalPostComments.push(newComment);
+              }
+            }
+          } else {
+            newTotalPostComments.push(totalPostComments[i]);
+          }
+        }
+
+        return setTotalPostComments(newTotalPostComments);
       }
     }
     if (userReaction.type === reaction){
@@ -120,14 +143,27 @@ function Comment ({_id, content, userData, reactions}) {
         }
       });
       if (res.status === 200 || res.status === 201){
-        return setUserReaction("none");
+        setUserReaction("none");
+
+        const newTotalPostComments = [];
+        for (let i in totalPostComments){
+          if(totalPostComments[i]._id === _id){
+            for (let j in totalPostComments[i].reactions){
+              if (totalPostComments[i].reactions[j].userId === userData._id){
+                const newComment = totalPostComments[i];
+                newComment.reactions.splice(j, 1);
+                newTotalPostComments.push(newComment);
+              }
+            }
+          } else {
+            newTotalPostComments.push(totalPostComments[i]);
+          }
+        }
+        
+        return setTotalPostComments(newTotalPostComments);
       }
     }
     return console.log("Check onClick");
-  };
-
-  const handleOnClick = function () {
-    console.log("click")
   };
   
   return (

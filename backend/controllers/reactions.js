@@ -65,16 +65,15 @@ exports.createOneReaction = async function (req, res, next) {
     commentId : req.body.commentId,
     userId : req.auth.userId
   });
-  let reactionId;
+  let reaction;
   try {
-    const reaction = await reactionCreated.save();
-    reactionId = reaction._id;
+    reaction = await reactionCreated.save();
   } catch {
     console.log("Can't save reaction.");
     return functions.response(res, 500);
   }
   
-  return res.status(201).json({reactionId : reactionId});
+  return res.status(201).json({reaction : reaction});
 };
 
 exports.getAllReactions = async function (req, res, next) {

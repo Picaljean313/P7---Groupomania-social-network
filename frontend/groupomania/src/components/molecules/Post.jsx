@@ -158,7 +158,6 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
 
   const [totalPostComments, setTotalPostComments] = useState(comments);
 
-
   const handleMoreCommentsOnClick = () => {
     const newPostComments = [];
     let i = 0;
@@ -204,8 +203,8 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
         for (let i in totalPostComments){
           newTotalPostComments.push(totalPostComments[i]);
         }
-        setPostComments(newPostComments);
         setTotalPostComments(newTotalPostComments);
+        setPostComments(newPostComments);
         document.getElementById("userComment").value = "";
       } else {
         console.log("Can't post comment");
@@ -239,7 +238,7 @@ function Post ({_id, content, imageUrl, userData, reactions, comments}) {
       </div>
       <div className="comments" >
         {Array.isArray(postComments) && postComments.map(e => 
-          <Comment key={e._id} _id={e._id} content={e.content} userData={e.userData} reactions={e.reactions} />
+          <Comment key={e._id} _id={e._id} content={e.content} commentUserData={e.userData} reactions={e.reactions} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} />
         )}
         <div>
           {isMoreCommentsToShow ?
