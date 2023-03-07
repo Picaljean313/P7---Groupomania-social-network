@@ -108,7 +108,7 @@ img {
   color : orange;
 }
 
-.reactionNumber {
+.postReactionNumber {
   position : absolute;
   left : 19px;
   bottom : 0px;
@@ -121,7 +121,7 @@ img {
   border-radius : 50%;
 }
 
-.reactionNumber p {
+.postReactionNumber p {
   margin : 0;
   color : white;
   font-size : 8px;
@@ -147,6 +147,8 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       initialUserReaction = reactions[i];
     }
   }
+
+  const [userReaction, setUserReaction] = useState (initialUserReaction);
 
   const initialPostReactions = {
     heart : 0,
@@ -175,8 +177,6 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   };
 
   const [postReactions, setPostReactions] = useState(initialPostReactions);
-
-  const [userReaction, setUserReaction] = useState (initialUserReaction);
 
   const handlePostReactionOnClick = async function (reaction) {
     if (userReaction === "none"){
@@ -389,7 +389,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
             <div className="iconPostReactionBackground">
               <FontAwesomeIcon className="iconPostReaction heart" icon={solid("heart")} />
             </div>
-            <div className="reactionNumber">
+            <div className="postReactionNumber">
               <p>{postReactions.heart}</p>
             </div>
           </div>)}
@@ -397,7 +397,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
             <div className="iconPostReactionBackground">
               <FontAwesomeIcon className="iconPostReaction thumbsUp" icon={solid("thumbs-up")} />
             </div>
-            <div className="reactionNumber">
+            <div className="postReactionNumber">
               <p>{postReactions.thumbsUp}</p>
             </div>
           </div>)}
@@ -405,7 +405,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
             <div className="iconPostReactionBackground">
               <FontAwesomeIcon className="iconPostReaction faceGrinTears" icon={solid("face-grin-tears")} />
             </div>
-            <div className="reactionNumber">
+            <div className="postReactionNumber">
               <p>{postReactions.faceGrinTears}</p>
             </div>
           </div>)}
@@ -413,7 +413,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
             <div className="iconPostReactionBackground">
               <FontAwesomeIcon className="iconPostReaction faceSurprise" icon={solid("face-surprise")} />
             </div>
-            <div className="reactionNumber">
+            <div className="postReactionNumber">
               <p>{postReactions.faceSurprise}</p>
             </div>
           </div>)}
@@ -421,7 +421,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
             <div className="iconPostReactionBackground">
             <FontAwesomeIcon className="iconPostReaction faceAngry" icon={solid("face-angry")} />
             </div>
-            <div className="reactionNumber">
+            <div className="postReactionNumber">
               <p>{postReactions.faceAngry}</p>
             </div>
           </div>)}

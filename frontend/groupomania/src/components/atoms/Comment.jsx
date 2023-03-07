@@ -45,7 +45,72 @@ background-color : blue;
   animation : ${reactionHover} 1000ms linear;
 }
 
+.commentReactions {
+  display : flex;
+  position : absolute;
+  top : -15px;
+  right : -10px;
+}
+
 .commentReaction {
+  position : relative;
+}
+
+.iconCommentReaction {
+  margin : 0;
+  font-size : 20px;
+}
+
+.iconCommentReactionBackground {
+  height : 30px;
+  width : 30px;
+  border-radius : 50%;
+  background-color : white;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.heart {
+  color : red;
+}
+
+.thumbsUp {
+  color : blue;
+}
+
+.faceGrinTears {
+  color : orange;
+}
+
+.faceSurprise {
+  color : orange;
+}
+
+.faceAngry {
+  color : orange;
+}
+
+.commentReactionNumber {
+  position : absolute;
+  left : 19px;
+  bottom : 0px;
+  background-color : green;
+  height : 12px;
+  width : 12px;
+  display : flex;
+  align-items : center;
+  justify-content : center;
+  border-radius : 50%;
+}
+
+.commentReactionNumber p {
+  margin : 0;
+  color : white;
+  font-size : 8px;
+}
+
+.commentUserReaction {
   background-color : white;
   border-radius : 15px;
   position : absolute;
@@ -68,6 +133,35 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
 
   const [userReaction, setUserReaction] = useState (initialUserReaction);
 
+  const initialCommentReactions = {
+    heart : 0,
+    thumbsUp : 0,
+    faceGrinTears : 0,
+    faceSurprise : 0,
+    faceAngry : 0
+  };
+
+  for (let reaction of reactions){
+    if (reaction.type === "heart"){
+      initialCommentReactions.heart ++;
+    }
+    if (reaction.type === "thumbs-up"){
+      initialCommentReactions.thumbsUp ++;
+    }
+    if (reaction.type === "face-grin-tears"){
+      initialCommentReactions.faceGrinTears ++;
+    }
+    if (reaction.type === "face-surprise"){
+      initialCommentReactions.faceSurprise ++;
+    }
+    if (reaction.type === "face-angry"){
+      initialCommentReactions.faceAngry ++;
+    }
+  };
+
+  const [commentReactions, setCommentReactions] = useState(initialCommentReactions);
+
+
   const handleCommentReactionOnClick = async function (reaction) {
     if (userReaction === "none"){
       const res = await fetch(`${basePath}/reactions`, {
@@ -84,6 +178,23 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
       });
       if (res.status === 200 || res.status === 201){
         const apiReaction = await res.json();
+
+        const newCommentReactions = commentReactions;
+        switch (reaction){
+          case "heart" : newCommentReactions.heart++;
+          break;
+          case "thumbs-up" : newCommentReactions.thumbsUp++;
+          break;
+          case "face-grin-tears" : newCommentReactions.faceGrinTears++;
+          break;
+          case "face-surprise" : newCommentReactions.faceSurprise++;
+          break;
+          case "face-angry" : newCommentReactions.faceAngry++;
+          break;
+          default : console.log("Can't add user reaction");
+        }
+        setCommentReactions(newCommentReactions);
+
         setUserReaction(apiReaction.reaction);
 
         const newTotalPostComments = totalPostComments;
@@ -109,6 +220,36 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
         })
       });
       if (res.status === 200 || res.status === 201){
+
+        const newCommentReactions = commentReactions;
+        switch (userReaction.type){
+          case "heart" : newCommentReactions.heart--;
+          break;
+          case "thumbs-up" : newCommentReactions.thumbsUp--;
+          break;
+          case "face-grin-tears" : newCommentReactions.faceGrinTears--;
+          break;
+          case "face-surprise" : newCommentReactions.faceSurprise--;
+          break;
+          case "face-angry" : newCommentReactions.faceAngry--;
+          break;
+          default : console.log("Can't remove user reaction");
+        }
+        switch (reaction){
+          case "heart" : newCommentReactions.heart++;
+          break;
+          case "thumbs-up" : newCommentReactions.thumbsUp++;
+          break;
+          case "face-grin-tears" : newCommentReactions.faceGrinTears++;
+          break;
+          case "face-surprise" : newCommentReactions.faceSurprise++;
+          break;
+          case "face-angry" : newCommentReactions.faceAngry++;
+          break;
+          default : console.log("Can't add user reaction");
+        }
+        setCommentReactions(newCommentReactions);
+
         const newUserReaction = {};
         for (let key of Object.keys(userReaction)){
           newUserReaction[key] = userReaction[key];
@@ -142,6 +283,23 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
         }
       });
       if (res.status === 200 || res.status === 201){
+
+        const newCommentReactions = commentReactions;
+        switch (reaction){
+          case "heart" : newCommentReactions.heart--;
+          break;
+          case "thumbs-up" : newCommentReactions.thumbsUp--;
+          break;
+          case "face-grin-tears" : newCommentReactions.faceGrinTears--;
+          break;
+          case "face-surprise" : newCommentReactions.faceSurprise--;
+          break;
+          case "face-angry" : newCommentReactions.faceAngry--;
+          break;
+          default : console.log("Can't remove user reaction");
+        }
+        setCommentReactions(newCommentReactions);
+
         setUserReaction("none");
 
         const newTotalPostComments = [];
@@ -168,8 +326,50 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
   return (
     <StyledComment>
       <div className="comment">
+        <div className="commentReactions">
+          {commentReactions.heart !== 0 && (<div className="commentReaction">
+            <div className="iconCommentReactionBackground">
+              <FontAwesomeIcon className="iconCommentReaction heart" icon={solid("heart")} />
+            </div>
+            <div className="commentReactionNumber">
+              <p>{commentReactions.heart}</p>
+            </div>
+          </div>)}
+          {commentReactions.thumbsUp !== 0 && (<div className="commentReaction">
+            <div className="iconCommentReactionBackground">
+              <FontAwesomeIcon className="iconCommentReaction thumbsUp" icon={solid("thumbs-up")} />
+            </div>
+            <div className="commentReactionNumber">
+              <p>{commentReactions.thumbsUp}</p>
+            </div>
+          </div>)}
+          {commentReactions.faceGrinTears !== 0 && (<div className="commentReaction">
+            <div className="iconCommentReactionBackground">
+              <FontAwesomeIcon className="iconCommentReaction faceGrinTears" icon={solid("face-grin-tears")} />
+            </div>
+            <div className="commentReactionNumber">
+              <p>{commentReactions.faceGrinTears}</p>
+            </div>
+          </div>)}
+          {commentReactions.faceSurprise !== 0 && (<div className="commentReaction">
+            <div className="iconCommentReactionBackground">
+              <FontAwesomeIcon className="iconCommentReaction faceSurprise" icon={solid("face-surprise")} />
+            </div>
+            <div className="commentReactionNumber">
+              <p>{commentReactions.faceSurprise}</p>
+            </div>
+          </div>)}
+          {commentReactions.faceAngry !== 0 && (<div className="commentReaction">
+            <div className="iconCommentReactionBackground">
+            <FontAwesomeIcon className="iconCommentReaction faceAngry" icon={solid("face-angry")} />
+            </div>
+            <div className="commentReactionNumber">
+              <p>{commentReactions.faceAngry}</p>
+            </div>
+          </div>)}
+        </div>
         <p>{content}</p>
-        <div className="commentReaction" >
+        <div className="commentUserReaction" >
           <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={() => {handleCommentReactionOnClick("heart")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={() => {handleCommentReactionOnClick("thumbs-up")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "face-grin-tears" ? "isSelected" : ""}`} icon={solid("face-grin-tears")} onClick={() => {handleCommentReactionOnClick("face-grin-tears")}} />
