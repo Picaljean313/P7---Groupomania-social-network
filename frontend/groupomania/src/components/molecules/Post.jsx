@@ -191,6 +191,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       if (res.status === 200 || res.status === 201){
         const apiData = await res.json();
         const newComment = apiData.comment;
+        newComment["reactions"] = [];
 
         const newPostComments = [newComment];
         for (let i in postComments){
