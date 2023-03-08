@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Context } from '../../utils/Context';
-import { basePath } from '../../utils/pagesData';
+import basePath from '../../utils/basePath';
 import Post from '../molecules/Post';
 import Header from '../organisms/Header';
 

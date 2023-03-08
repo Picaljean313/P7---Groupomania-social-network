@@ -1,7 +1,6 @@
 import Nav from '../molecules/Nav';
 import Informations from '../atoms/Informations';
 import styled from 'styled-components';
-import {pagesData} from '../../utils/pagesData';
 
 const StyledHeader = styled.div`
   display: flex;
@@ -11,8 +10,21 @@ const StyledHeader = styled.div`
 `
 
 function Header() {
-  const currentPage = window.location.pathname === "/" ? "welcome" : window.location.pathname.split('/')[1];
-  const title = pagesData[currentPage].title;
+
+  let title;
+
+  // if (/^\/profile\/\S+/.test(window.location.pathname)){
+  //   title = "User Profile";
+  // }
+  
+  switch(window.location.pathname){
+    case "/" : title = "Welcome"; break;
+    case "/signUp" : title = "Sign up"; break;
+    case "/logIn" : title = "Log in"; break;
+    case "/home" : title = "Home"; break;
+    case "/myProfile" : title = "My profile"; break;
+    default : title = "Undefined";
+  }
 
   return (
     <StyledHeader>

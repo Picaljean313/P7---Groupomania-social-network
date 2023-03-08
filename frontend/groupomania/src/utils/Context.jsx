@@ -11,7 +11,9 @@ export const ContextProvider = ({children}) => {
 
   const [theme, setTheme] = useState("original");
 
-  const [userData, setUserData] = useState("none");
+  const savedUserData = JSON.parse(sessionStorage.getItem("GroupomaniaUserData"));
+  const initialUserData = savedUserData !== null ? savedUserData : "none";
+  const [userData, setUserData] = useState(initialUserData);
 
   const getUserData = async function () {
     if (token === "none") {
@@ -46,7 +48,6 @@ export const ContextProvider = ({children}) => {
           setUserData(newUserData);
         }
         else if (res.status === 400 || res.status === 401 || res.status === 403) {
-          sessionStorage.removeItem("GroupomaniaSessionToken", token);
           setToken("none");
         } 
         else {

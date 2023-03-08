@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { basePath } from "../../utils/pagesData";
+import basePath from '../../utils/basePath';
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 
@@ -54,7 +54,7 @@ function Button({title, link, className}) {
       setToken("none");
     }
     else {
-      navigate(`/${link}`);
+      navigate(link);
     }
   };
   

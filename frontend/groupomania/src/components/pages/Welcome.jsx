@@ -17,8 +17,8 @@ function Welcome () {
       <Header />
       <StyledWelcome>
         <h2>Groupomania social network</h2>
-        <Button title="Sign up" link= "signUp" className="isWelcome"/>
-        <Button title="Log in" link= "logIn" className="isWelcome"/>
+        <Button title="Sign up" link= "/signUp" className="isWelcome"/>
+        <Button title="Log in" link= "/logIn" className="isWelcome"/>
       </StyledWelcome>
     </React.Fragment>
     )

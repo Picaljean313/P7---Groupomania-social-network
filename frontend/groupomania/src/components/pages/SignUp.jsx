@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Form  from '../organisms/Form';
 import styled from 'styled-components';
 import Header from '../organisms/Header';
-import { Context } from '../../utils/Context';
 
 const StyledSignUp = styled.div`
 display: flex;

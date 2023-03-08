@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { keyframes } from "styled-components";
-import {basePath} from '../../utils/pagesData';
+import basePath from '../../utils/basePath';
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";

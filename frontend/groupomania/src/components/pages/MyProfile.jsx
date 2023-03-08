@@ -5,9 +5,9 @@ import styled from 'styled-components';
 import { Context } from '../../utils/Context';
 import Header from '../organisms/Header';
 import Button from '../atoms/Button';
-import { basePath } from '../../utils/pagesData';
+import basePath from '../../utils/basePath';
 
-const StyledProfile = styled.div`
+const StyledMyProfile = styled.div`
 display : flex;
 flex-direction : column;
 align-items : center;
@@ -62,29 +62,18 @@ margin : 0 0 0 20px;
 }
 `
 
-function Profile ({userProfile}) {
+function MyProfile () {
   const {userData, token, setToken} = useContext(Context);
-
-  let user;
-  if (userProfile !== undefined){
-    user = userProfile;
-  } else {
-    if (userData === "none"){
-      user = JSON.parse(sessionStorage.getItem("GroupomaniaUserData"));
-    } else {
-      user = userData;
-    }
-  }
 
   let date;
   try {
-    const day = parseInt(user.creationDate.split('T')[0].split('-')[2]).toString();
+    const day = parseInt(userData.creationDate.split('T')[0].split('-')[2]).toString();
 
-    const monthNumber = parseInt(user.creationDate.split('T')[0].split('-')[1]).toString();
+    const monthNumber = parseInt(userData.creationDate.split('T')[0].split('-')[1]).toString();
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const month = months[monthNumber - 1];
 
-    const year = user.creationDate.split('T')[0].split('-')[0];
+    const year = userData.creationDate.split('T')[0].split('-')[0];
 
     date = `${day} ${month} ${year}`;
   } catch {
@@ -116,22 +105,20 @@ function Profile ({userProfile}) {
       })
     });
     if (res.status === 200){
-      const res = await fetch(`${basePath}/users/${user._id}`,{
+      const res = await fetch(`${basePath}/users/${userData._id}`,{
         method : "DELETE",
         headers : {
           'Authorization' : `Bearer ${token}`
         }
       });
       if (res.status === 200){
-        if (userData._id === user._id){
-          sessionStorage.removeItem("GroupomaniaUserData");
-          sessionStorage.removeItem("GroupomaniaSessionToken");
-          setToken("none");
-        }
-        alert ("User is deleted")
+        sessionStorage.removeItem("GroupomaniaUserData");
+        sessionStorage.removeItem("GroupomaniaSessionToken");
+        setToken("none");
+        alert ("Your profile is deleted")
       }
       else {
-        console.log("Can't delete user")
+        console.log("Can't delete profile")
       }
     } 
     else {
@@ -140,28 +127,28 @@ function Profile ({userProfile}) {
   };
 
   return (
-    <StyledProfile>
+    <StyledMyProfile>
       <Header />
       <div className="mainProfilePage">
         <div className="profileUserData">
           <div className="profileUserAvatarAndPseudo" >
-            <img src={user.imageUrl} alt='Avatar'/>
-            <p>{user.pseudo}</p>
+            <img src={userData.imageUrl} alt='Avatar'/>
+            <p>{userData.pseudo}</p>
           </div>
-          <p>Email : {user.email}</p>
-          <p>Theme : {user.theme}</p>
-          <p>Status : {user.isAdmin ? "admin" : "classic user"}</p>
+          <p>Email : {userData.email}</p>
+          <p>Theme : {userData.theme}</p>
+          <p>Status : {userData.isAdmin ? "admin" : "classic user"}</p>
           <p>Creation date : {date}</p>
           <div className="profileUserActivityContainer">
             <p>Activity :</p>
             <div className="profileUserActivity">
-              <p>Posts : {user.activity.posts}</p>
-              <p>Comments : {user.activity.comments}</p>
-              <p>Reactions : {user.activity.reactions}</p>
+              <p>Posts : {userData.activity.posts}</p>
+              <p>Comments : {userData.activity.comments}</p>
+              <p>Reactions : {userData.activity.reactions}</p>
             </div>
           </div>
         </div>
-        {(user === userData || user.isAdmin === true) && !isPasswordNeeded &&
+        {!isPasswordNeeded &&
         <div className="profileUserButtons" >
           <Button title = "Modify profile" link="modifyProfile" className="profileUserButton" />
           <button onClick={handleDeleteProfileOnClick} className="profileUserButton" >Delete profile</button>
@@ -178,7 +165,7 @@ function Profile ({userProfile}) {
           </form>
         </div>}
       </div>
-    </StyledProfile>
+    </StyledMyProfile>
     )
 }
-export default Profile;
+export default MyProfile;
