@@ -26,11 +26,11 @@ const pagesData = {
   },
   home : {
     title : "Home",
-    nav : ["logOut"]
+    nav : ["logOut", "profile"]
   },
-  myProfile : {
-    title : "My profile",
-    nav : ["welcome", "home"]
+  profile : {
+    title : "Profile",
+    nav : ["logOut", "home"]
   },
   modifyMyProfile : {
     title : "Modify my profile",

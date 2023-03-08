@@ -15,6 +15,7 @@ export const ContextProvider = ({children}) => {
 
   const getUserData = async function () {
     if (token === "none") {
+      sessionStorage.removeItem("GroupomaniaUserData");
       sessionStorage.removeItem("GroupomaniaSessionToken");
       if (userData !== "none"){
         setUserData("none");
@@ -34,6 +35,7 @@ export const ContextProvider = ({children}) => {
         if (res.status === 200) {
           const newUserData = await res.json();
           sessionStorage.setItem("GroupomaniaSessionToken", token);
+          sessionStorage.setItem("GroupomaniaUserData", JSON.stringify(newUserData));
           if (Object.keys(themes).includes(newUserData.theme)) {
             setTheme(newUserData.theme);
           } else {
