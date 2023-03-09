@@ -1,5 +1,5 @@
 import { useState, useEffect,createContext } from "react";
-import { basePath } from "./pagesData";
+import basePath from './basePath';
 import { themes } from "./themes";
 
 export const Context = createContext(null);

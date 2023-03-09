@@ -12,7 +12,7 @@ display : flex;
 flex-direction : column;
 align-items : center;
 
-.mainProfilePage {
+.mainMyProfile {
   display : flex;
   flex-direction : column;
   align-items : center;
@@ -129,7 +129,7 @@ function MyProfile () {
   return (
     <StyledMyProfile>
       <Header />
-      <div className="mainProfilePage">
+      <div className="mainMyProfile">
         <div className="profileUserData">
           <div className="profileUserAvatarAndPseudo" >
             <img src={userData.imageUrl} alt='Avatar'/>

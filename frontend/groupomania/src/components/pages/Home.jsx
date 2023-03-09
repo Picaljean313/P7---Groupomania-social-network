@@ -12,7 +12,7 @@ align-items : center;
 with : 100%;
 height: 100%;
 
-.main {
+.mainHome {
   position : relative;
   overflow : scroll;
 }
@@ -125,6 +125,7 @@ function Home () {
     event.preventDefault();
 
     const content = document.getElementById("userNewPostContent").value;
+    
     if (content.length < 1 || content.length > 1000){
       return alert ("Fill correctly post content");
     }
@@ -152,7 +153,7 @@ function Home () {
     } 
     else {
       const formData = new FormData();
-      formData.append("content", JSON.stringify(content));
+      formData.append("post", JSON.stringify({content : content}));
       formData.append("image", image);
 
       const res = await fetch (`${basePath}/posts`, {
@@ -180,7 +181,7 @@ function Home () {
   return (
     <StyledHome>
       <Header />
-      <div className="main">
+      <div className="mainHome">
         <button className="mainRefreshButton" onClick = {handleRefreshPostsOnClick}>
           Refresh posts
         </button>
