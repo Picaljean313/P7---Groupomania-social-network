@@ -150,7 +150,7 @@ function MyProfile () {
         </div>
         {!isPasswordNeeded &&
         <div className="profileUserButtons" >
-          <Button title = "Modify profile" link="modifyProfile" className="profileUserButton" />
+          <Button title = "Modify profile" link="/modifyMyProfile" className="profileUserButton" />
           <button onClick={handleDeleteProfileOnClick} className="profileUserButton" >Delete profile</button>
         </div>}
         {isPasswordNeeded && 

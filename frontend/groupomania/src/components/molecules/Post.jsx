@@ -405,6 +405,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       i++;
     }
     setPostComments(newPostComments);
+    setIsMoreCommentsToShow(true);
   };
   
   return (

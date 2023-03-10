@@ -7,6 +7,7 @@ import SignUp from './components/pages/SignUp';
 import LogIn from './components/pages/LogIn';
 import Home from './components/pages/Home';
 import MyProfile from './components/pages/MyProfile';
+import ModifyMyProfile from './components/pages/ModifyMyProfile';
 import Error from './components/pages/Error';
 import {ContextProvider} from './utils/Context';
 import TokenRedirectionLayout from './utils/TokenRedirectionLayout';
@@ -28,6 +29,7 @@ root.render(
           <Route element= {<NoTokenRedirectionLayout />}>
             <Route path="/home" element= {<Home />}/>
             <Route path="/myProfile" element= {<MyProfile />}/>
+            <Route path="/modifyMyProfile" element= {<ModifyMyProfile />}/>
           </Route>
           <Route path="*" element= {<Error />}/>
         </Routes>

@@ -17,6 +17,7 @@ const reqQueries = require('../validation/data/reqQueries');
 const id = require ('../validation/data/id');
 const url = require ('url');
 const fs = require ('fs');
+const { findOne } = require('../models/Users');
 
 exports.signup = async function (req, res, next) {
   const includedFile = req.file ? true : false;
@@ -489,7 +490,15 @@ exports.modifyOneUser = async function (req, res, next) {
         .catch(() => console.log(`Can't delete ${imageToDelete}.`));
     }
 
-    return functions.response(res, 200);
+    let userModified;
+    try {
+      userModified = await UsersModel.findOne({_id : req.params.userId});
+    } catch {
+      console.log("Can't send back user.");
+      return functions.unlinkFile(req, res, 500);
+    }
+
+    return res.status(200).json(userModified);
   } 
   else {
     const invalidUserId = !rules.valid(id.idToValidate, req.params.userId);
@@ -502,7 +511,7 @@ exports.modifyOneUser = async function (req, res, next) {
       console.log("Can't find user.");
       return functions.response(res, 500);
     }
-    if (user === null) return functions.response(res, 400);
+    if (user === null) return functions.response(res, 401);
 
     if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
 
@@ -539,7 +548,15 @@ exports.modifyOneUser = async function (req, res, next) {
       return functions.response(res, 500);
     }
 
-    return functions.response(res, 200);
+    let userModified;
+    try {
+      userModified = await UsersModel.findOne({_id : req.params.userId});
+    } catch {
+      console.log("Can't send back user.");
+      return functions.unlinkFile(req, res, 500);
+    }
+
+    return res.status(200).json(userModified);
   }
 };
 

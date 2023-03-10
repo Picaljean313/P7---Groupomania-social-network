@@ -69,6 +69,10 @@ function LogIn () {
     }
   };
 
+  const handleCancelOnClick = () => {
+    navigate(-1);
+  };
+
   return (
     <StyledLogIn>
       <Header />
@@ -78,7 +82,7 @@ function LogIn () {
           <TextInput name="password" defaultValue="" className="logIn" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
           <div className="loginFormButtonsContainer">
             <button type="submit">Submit</button>
-            <button onClick={()=> navigate(-1)}>Cancel</button>
+            <button type="button" onClick={handleCancelOnClick}>Cancel</button>
           </div>
         </form>
       </div>

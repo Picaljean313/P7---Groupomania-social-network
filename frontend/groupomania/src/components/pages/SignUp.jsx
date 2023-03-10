@@ -26,14 +26,6 @@ function SignUp () {
   const navigate = useNavigate();
   const {setToken} = useContext(Context);
 
-  const defaultValues = {
-    pseudo : "",
-    avatar : undefined,
-    theme : "original",
-    email : "",
-    password : ""
-  };
-
   const initialInputsValidationStatus = {
     pseudo : false,
     avatar : false,
@@ -129,6 +121,10 @@ function SignUp () {
     }
   };
 
+  const handleCancelOnClick = () => {
+    navigate(-1);
+  };
+
   return (
     <StyledSignUp>
       <Header />
@@ -141,7 +137,7 @@ function SignUp () {
           <ConfirmPasswordInput name="password" className="signUp" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
           <div className="loginFormButtonsContainer">
             <button type="submit">Submit</button>
-            <button onClick={()=> navigate(-1)}>Cancel</button>
+            <button type="button" onClick={handleCancelOnClick}>Cancel</button>
           </div>
         </form>
       </div>
