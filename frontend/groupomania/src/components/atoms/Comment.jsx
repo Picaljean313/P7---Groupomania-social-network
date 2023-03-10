@@ -204,7 +204,10 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
       if (res.status === 200 || res.status === 201){
         const apiReaction = await res.json();
 
-        const newCommentReactions = commentReactions;
+        const newCommentReactions = {}; 
+        for (let key of Object.keys(commentReactions)){
+          newCommentReactions[key]= commentReactions[key];
+        }
         switch (reaction){
           case "heart" : newCommentReactions.heart++;
           break;
@@ -246,7 +249,10 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
       });
       if (res.status === 200 || res.status === 201){
 
-        const newCommentReactions = commentReactions;
+        const newCommentReactions = {}; 
+        for (let key of Object.keys(commentReactions)){
+          newCommentReactions[key]= commentReactions[key];
+        }
         switch (userReaction.type){
           case "heart" : newCommentReactions.heart--;
           break;
@@ -309,7 +315,10 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
       });
       if (res.status === 200 || res.status === 201){
 
-        const newCommentReactions = commentReactions;
+        const newCommentReactions = {}; 
+        for (let key of Object.keys(commentReactions)){
+          newCommentReactions[key]= commentReactions[key];
+        }
         switch (reaction){
           case "heart" : newCommentReactions.heart--;
           break;

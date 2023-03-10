@@ -197,7 +197,7 @@ function Home () {
           <button type="submit">Envoyer</button>
         </form>
         <div className="homePosts" >
-          {Array.isArray(homePosts) ? homePosts.map(e => 
+          {(Array.isArray(homePosts) && homePosts.length !== 0) ? homePosts.map(e => 
             <Post key={e._id} _id ={e._id} content={e.content} imageUrl={e.imageUrl} postUserData={e.userData} reactions={e.reactions} comments={e.comments} />
             ) : <p>No posts to show</p>}
           <div className="homePageButtonsContainer" >

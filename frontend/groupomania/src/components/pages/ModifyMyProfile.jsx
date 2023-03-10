@@ -35,10 +35,11 @@ function ModifyMyProfile () {
   const navigate = useNavigate();
 
   const initialInputsValidationStatus = {
-    pseudo : false,
-    avatar : false,
-    theme : false,
-    email : false,
+    pseudo : true,
+    avatar : true,
+    theme : true,
+    email : true,
+    formerPassword : false,
     password : false
   }
   const [inputsValidationStatus, setInputsValidationStatus] = useState(initialInputsValidationStatus);
@@ -65,22 +66,11 @@ function ModifyMyProfile () {
   };
 
   const cancelChangePasswordOnClick = () => {
-    const newFormInputsData = formInputsData;
-    newFormInputsData.formerPassword = "";
-    newFormInputsData.password = "";
-    setFormInputsData(newFormInputsData);
-    const newInputsValidationStatus = inputsValidationStatus;
-    newInputsValidationStatus.password = false;
-    setInputsValidationStatus(newInputsValidationStatus);
     setIsChangePassword(false);
   };
 
   const handleOnSubmit = async function (event) {
     event.preventDefault();
-    console.log(userData);
-    console.log(initialFormInputsData);
-    console.log(formInputsData);
-    console.log(inputsValidationStatus);
 
     let isDataChanged = false;
     let isImageToSend = false;
@@ -123,12 +113,28 @@ function ModifyMyProfile () {
 
       isFormValid = (!Object.values(inputsValidationStatus).includes(false) && isDataChanged);
     }
-      
-    console.log(isDataChanged);
-    console.log(dataToSend);
-    console.log(isFormValid);
 
-    if (!isFormValid) return alert ("Changes are not valid")
+    if (!isFormValid) return alert ("Changes are not valid");
+
+    if (isChangePassword){
+      const res = await fetch(`${basePath}/users/logIn`,{
+        method : "POST",
+        headers: { 
+          'Accept': 'application/json', 
+          'Content-Type': 'application/json' 
+          },
+        body : JSON.stringify({
+          email : userData.email,
+          password : document.getElementById("formerPassword").value
+        })
+      });
+      if (res.status === 200){
+        console.log("Password change allowed");
+      }
+      else {
+        return alert ("Check your former password");
+      }
+    }
 
     if (isImageToSend) {
       const formData = new FormData();
@@ -158,7 +164,7 @@ function ModifyMyProfile () {
           setTheme(newUserData.theme);
         }
 
-        return alert ("Changes succeeded")
+        alert ("Changes succeeded")
       }
       else {
         return console.log("Changes failed")
@@ -186,12 +192,14 @@ function ModifyMyProfile () {
           setTheme(newUserData.theme);
         }
 
-        return alert ("Changes succeeded")
+        alert ("Changes succeeded");
       }
       else {
         return console.log("Changes failed")
       }
     }
+
+    return navigate("/myProfile");
   };
 
   return (

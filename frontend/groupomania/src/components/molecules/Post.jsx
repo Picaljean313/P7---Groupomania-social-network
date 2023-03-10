@@ -220,7 +220,10 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       if (res.status === 200 || res.status === 201){
         const apiReaction = await res.json();
 
-        const newPostReactions = postReactions;
+        const newPostReactions = {}; 
+        for (let key of Object.keys(postReactions)){
+          newPostReactions[key]= postReactions[key];
+        }
         switch (reaction){
           case "heart" : newPostReactions.heart++;
           break;
@@ -253,7 +256,10 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       });
       if (res.status === 200 || res.status === 201){
 
-        const newPostReactions = postReactions;
+        const newPostReactions = {}; 
+        for (let key of Object.keys(postReactions)){
+          newPostReactions[key]= postReactions[key];
+        }
         switch (userReaction.type){
           case "heart" : newPostReactions.heart--;
           break;
@@ -299,7 +305,10 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         }
       });
       if (res.status === 200 || res.status === 201){
-        const newPostReactions = postReactions;
+        const newPostReactions = {}; 
+        for (let key of Object.keys(postReactions)){
+          newPostReactions[key]= postReactions[key];
+        }
         switch (reaction){
           case "heart" : newPostReactions.heart--;
           break;
@@ -468,15 +477,15 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         </div>
       </div>
       <div className="comments" >
-        {Array.isArray(postComments) && postComments.map(e => 
+        {(Array.isArray(postComments) && postComments.length !== 0) ? postComments.map(e => 
           <Comment key={e._id} _id={e._id} content={e.content} commentUserData={e.userData} reactions={e.reactions} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} />
-        )}
+        ) : <p>No comments to show</p>}
         <div>
-          {isMoreCommentsToShow ?
+          {(Array.isArray(postComments) && postComments.length !== 0) && (isMoreCommentsToShow ?
           <button onClick={handleMoreCommentsOnClick}>
             View older comments
           </button> : 
-          <p>No more comments to show</p>}
+          <p>No more comments to show</p>)}
           {(postComments.length > commmentsLimit) && 
           <button onClick={handleHideCommentsOnClick}>
             Hide extra comments 

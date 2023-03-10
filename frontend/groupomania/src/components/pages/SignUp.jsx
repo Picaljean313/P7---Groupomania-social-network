@@ -28,8 +28,8 @@ function SignUp () {
 
   const initialInputsValidationStatus = {
     pseudo : false,
-    avatar : false,
-    theme : false,
+    avatar : true,
+    theme : true,
     email : false,
     password : false
   }

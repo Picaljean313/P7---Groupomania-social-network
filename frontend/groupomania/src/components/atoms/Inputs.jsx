@@ -66,16 +66,22 @@ function TextInput ({name, defaultValue, className, inputsValidationStatus, setI
   const [inputIsValid, setInputIsValid] = useState (checkValue(defaultValue));
 
   if (inputIsValid !== false && inputIsValid !== true) return <ErrorInput />
-
-  if (inputIsValid !== inputsValidationStatus[name]) {
-    const newInputsValidationStatus = inputsValidationStatus;
-    newInputsValidationStatus[name] = inputIsValid;
-    setInputsValidationStatus(newInputsValidationStatus);
-  }
   
   const handleOnChange = (event) => {
     const value = event.target.value;
     setInputIsValid(checkValue(value));
+
+    if (checkValue(value) !== inputsValidationStatus[name]) {
+      const newInputsValidationStatus = {};
+      for (let key of Object.keys(inputsValidationStatus)){
+        if (key !== name){
+          newInputsValidationStatus[key]= inputsValidationStatus[key];
+        } else {
+          newInputsValidationStatus[key] = checkValue(value);
+        }
+      }
+      setInputsValidationStatus(newInputsValidationStatus);
+    }
 
     const newFormInputsData = {};
     for (let key of Object.keys(formInputsData)){
@@ -86,7 +92,7 @@ function TextInput ({name, defaultValue, className, inputsValidationStatus, setI
         newFormInputsData[key] = value;
       }
     }
-    setFormInputsData(newFormInputsData);
+    return setFormInputsData(newFormInputsData);
   }
 
   return (
@@ -108,14 +114,20 @@ function FileInput ({name, className, defaultValue, inputsValidationStatus, setI
 
   const inputIsValid = true; /* Une prise en compte de critères se fera peut-être plus tard (taille de la photo, etc)*/
 
-  if (inputIsValid !== inputsValidationStatus[name]) {
-    const newInputsValidationStatus = inputsValidationStatus;
-    newInputsValidationStatus[name] = inputIsValid;
-    setInputsValidationStatus(newInputsValidationStatus);
-  }
-
   const handleOnChange = (event) => {
     const value = event.target.value;
+
+    if (inputsValidationStatus[name] !== true) {
+      const newInputsValidationStatus = {};
+      for (let key of Object.keys(inputsValidationStatus)){
+        if (key !== name){
+          newInputsValidationStatus[key]= inputsValidationStatus[key];
+        } else {
+          newInputsValidationStatus[key] = true;
+        }
+      }
+      setInputsValidationStatus(newInputsValidationStatus);
+    }
 
     const newFormInputsData = {};
     for (let key of Object.keys(formInputsData)){
@@ -157,14 +169,20 @@ function SelectInput ({name, className, defaultValue, inputsValidationStatus, se
 
   const inputIsValid = true; /* Une prise en compte de critères se fera peut-être plus tard */
 
-  if (inputIsValid !== inputsValidationStatus[name]) {
-    const newInputsValidationStatus = inputsValidationStatus;
-    newInputsValidationStatus[name] = inputIsValid;
-    setInputsValidationStatus(newInputsValidationStatus);
-  }
-
   const handleOnChange = (event) => {
     const value = event.target.value;
+
+    if (inputsValidationStatus[name] !== true) {
+      const newInputsValidationStatus = {};
+      for (let key of Object.keys(inputsValidationStatus)){
+        if (key !== name){
+          newInputsValidationStatus[key]= inputsValidationStatus[key];
+        } else {
+          newInputsValidationStatus[key] = true;
+        }
+      }
+      setInputsValidationStatus(newInputsValidationStatus);
+    }
 
     const newFormInputsData = {};
     for (let key of Object.keys(formInputsData)){
@@ -216,13 +234,6 @@ function ConfirmPasswordInput ({name, className, inputsValidationStatus, setInpu
 
   if (passwordIsValid !== false && passwordIsValid !== true) return <ErrorInput />
   if (confirmPasswordIsValid !== false && confirmPasswordIsValid !== true) return <ErrorInput />
-
- 
-  if (confirmPasswordIsValid !== inputsValidationStatus[name]) {
-    const newInputsValidationStatus = inputsValidationStatus;
-    newInputsValidationStatus[name] = confirmPasswordIsValid;
-    setInputsValidationStatus(newInputsValidationStatus);
-  }
   
   const handlePasswordOnChange = (event) => {
     const value = event.target.value;
@@ -230,12 +241,38 @@ function ConfirmPasswordInput ({name, className, inputsValidationStatus, setInpu
     setPasswordIsValid(checkValue(value));
 
     if (value === confirmPasswordValue && checkValue(value) && confirmPasswordIsValid === false) {
-      setConfirmPasswordIsValid(true);
+      setConfirmPasswordIsValid(true); 
+
+      if (inputsValidationStatus["password"] === false) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus[key] = true;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
 
     if (value !== confirmPasswordValue && confirmPasswordIsValid === true) {
       setConfirmPasswordIsValid(false);
+ 
+      if (inputsValidationStatus["password"] === true) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus["password"] = false;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
+
+    return 
   }
 
   const handleConfirmPasswordOnChange = (event) => {
@@ -243,11 +280,35 @@ function ConfirmPasswordInput ({name, className, inputsValidationStatus, setInpu
     setConfirmPasswordValue(value);
 
     if (value === passwordValue && checkValue(value) && confirmPasswordIsValid === false) {
-      setConfirmPasswordIsValid(true)
+      setConfirmPasswordIsValid(true);
+
+      if (inputsValidationStatus["password"] === false) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus[key] = true;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
 
     if ((value !== passwordValue && confirmPasswordIsValid === true) || (!checkValue(value) && confirmPasswordIsValid === true)) {
       setConfirmPasswordIsValid(false);
+
+      if (inputsValidationStatus["password"] === true) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus[key] = false;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
 
     const newFormInputsData = {};
@@ -260,7 +321,7 @@ function ConfirmPasswordInput ({name, className, inputsValidationStatus, setInpu
       }
     }
     
-    setFormInputsData(newFormInputsData);
+    return setFormInputsData(newFormInputsData);
   }
 
   return (
@@ -305,13 +366,6 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
   if (formerPasswordIsValid !== false && formerPasswordIsValid !== true) return <ErrorInput />
   if (newPasswordIsValid !== false && newPasswordIsValid !== true) return <ErrorInput />
   if (confirmNewPasswordIsValid !== false && confirmNewPasswordIsValid !== true) return <ErrorInput />
- 
-  const allInputsAreValid = (formerPasswordIsValid && confirmNewPasswordIsValid);
-  if (allInputsAreValid !== inputsValidationStatus[name]) {
-    const newInputsValidationStatus = inputsValidationStatus;
-    newInputsValidationStatus[name] = allInputsAreValid;
-    setInputsValidationStatus(newInputsValidationStatus);
-  }
   
   const handleFormerPasswordOnChange = (event) => {
     const value = event.target.value;
@@ -320,7 +374,7 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
 
     const newFormInputsData = {};
     for (let key of Object.keys(formInputsData)){
-      if (key !== name){
+      if (key !== "formerPassword"){
         newFormInputsData[key] = formInputsData[key];
       }
       else {
@@ -332,10 +386,48 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
 
     if (value === confirmNewPasswordValue && confirmNewPasswordIsValid === true){
       setConfirmNewPasswordIsValid(false);
+
+      const newInputsValidationStatus = {};
+      for (let key of Object.keys(inputsValidationStatus)){
+        if (key !== "password" && key !== "formerPassword"){
+          newInputsValidationStatus[key]= inputsValidationStatus[key];
+        } else if (key === "formerPassword") {
+          newInputsValidationStatus["formerPassword"] = checkValue(value);
+        } else {
+          newInputsValidationStatus["password"] = false;
+        }
+      }
+      setInputsValidationStatus(newInputsValidationStatus);
     }
-    if (value !== confirmNewPasswordValue && newPasswordValue === confirmNewPasswordValue && checkValue(confirmNewPasswordValue) && confirmNewPasswordIsValid === false){
+
+    else if (value !== confirmNewPasswordValue && newPasswordValue === confirmNewPasswordValue && checkValue(confirmNewPasswordValue) && confirmNewPasswordIsValid === false){
       setConfirmNewPasswordIsValid(true);
+
+      const newInputsValidationStatus = {};
+      for (let key of Object.keys(inputsValidationStatus)){
+        if (key !== "password" && key !== "formerPassword"){
+          newInputsValidationStatus[key]= inputsValidationStatus[key];
+        } else if (key === "formerPassword") {
+          newInputsValidationStatus["formerPassword"] = checkValue(value);
+        } else {
+          newInputsValidationStatus["password"] = true;
+        }
+      }
+      setInputsValidationStatus(newInputsValidationStatus);
     }
+    else {
+      const newInputsValidationStatus = {};
+      for (let key of Object.keys(inputsValidationStatus)){
+        if (key !== "formerPassword"){
+          newInputsValidationStatus[key]= inputsValidationStatus[key];
+        } else {
+          newInputsValidationStatus[key] = checkValue(value);
+        }
+      }
+      setInputsValidationStatus(newInputsValidationStatus);
+    }
+
+    return 
   }
 
   const handleNewPasswordOnChange = (event) => {
@@ -345,11 +437,37 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
 
     if (value === confirmNewPasswordValue && value !== formerPasswordValue && checkValue(value) && confirmNewPasswordIsValid === false) {
       setConfirmNewPasswordIsValid(true);
+
+      if (inputsValidationStatus["password"] === false) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus[key] = true;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
 
     if (value !== confirmNewPasswordValue && confirmNewPasswordIsValid === true) {
       setConfirmNewPasswordIsValid(false);
+
+      if (inputsValidationStatus["password"] === true) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus[key] = false;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
+
+    return
   }
 
   const handleConfirmNewPasswordOnChange = (event) => {
@@ -357,16 +475,40 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
     setConfirmNewPasswordValue(value);
 
     if (value === newPasswordValue && value !== formerPasswordValue && checkValue(value) && confirmNewPasswordIsValid === false) {
-      setConfirmNewPasswordIsValid(true)
+      setConfirmNewPasswordIsValid(true);
+
+      if (inputsValidationStatus["password"] === false) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus[key] = true;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
 
     if ((value !== newPasswordValue && confirmNewPasswordIsValid === true) || (!checkValue(value) && confirmNewPasswordIsValid === true)) {
       setConfirmNewPasswordIsValid(false);
+
+      if (inputsValidationStatus["password"] === true) {
+        const newInputsValidationStatus = {};
+        for (let key of Object.keys(inputsValidationStatus)){
+          if (key !== "password"){
+            newInputsValidationStatus[key]= inputsValidationStatus[key];
+          } else {
+            newInputsValidationStatus[key] = false;
+          }
+        }
+        setInputsValidationStatus(newInputsValidationStatus);
+      }
     }
 
     const newFormInputsData = {};
     for (let key of Object.keys(formInputsData)){
-      if (key !== name){
+      if (key !== "password"){
         newFormInputsData[key] = formInputsData[key];
       }
       else {
@@ -374,7 +516,7 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
       }
     }
     
-    setFormInputsData(newFormInputsData);
+    return setFormInputsData(newFormInputsData);
   }
 
   return (
@@ -384,8 +526,8 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
         <input id = "formerPassword" name = "formerPassword" type = "password" maxLength = {data["password"].maxLength} autoComplete = "off" onChange = { handleFormerPasswordOnChange } />
       </StyledInput>
       <StyledInput className = {className} inputIsValid = {newPasswordIsValid} >
-        <label htmlFor = "password" >New password : </label>
-        <input id = "password" name = "password" type = "password" maxLength = {data["password"].maxLength } autoComplete = "off" onChange = { handleNewPasswordOnChange } />
+        <label htmlFor = "newPassword" >New password : </label>
+        <input id = "newPassword" name = "newPassword" type = "password" maxLength = {data["password"].maxLength } autoComplete = "off" onChange = { handleNewPasswordOnChange } />
       </StyledInput>
       <StyledInput className = {className} inputIsValid = {confirmNewPasswordIsValid} >
         <label htmlFor = "confirmNewPassword" >Confirm new password : </label>
