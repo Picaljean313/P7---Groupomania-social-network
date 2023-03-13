@@ -8,6 +8,7 @@ import LogIn from './components/pages/LogIn';
 import Home from './components/pages/Home';
 import MyProfile from './components/pages/MyProfile';
 import ModifyMyProfile from './components/pages/ModifyMyProfile';
+import CreateUser from './components/pages/CreateUser';
 import Error from './components/pages/Error';
 import {ContextProvider} from './utils/Context';
 import TokenRedirectionLayout from './utils/TokenRedirectionLayout';
@@ -30,6 +31,7 @@ root.render(
             <Route path="/home" element= {<Home />}/>
             <Route path="/myProfile" element= {<MyProfile />}/>
             <Route path="/modifyMyProfile" element= {<ModifyMyProfile />}/>
+            <Route path="/createUser" element= {<CreateUser />}/>
           </Route>
           <Route path="*" element= {<Error />}/>
         </Routes>

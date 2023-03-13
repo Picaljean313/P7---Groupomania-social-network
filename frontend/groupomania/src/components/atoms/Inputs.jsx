@@ -157,12 +157,19 @@ function SelectInput ({name, className, defaultValue, inputsValidationStatus, se
     theme : {
       label : "Theme : ",
       options : [
-        {name : "original", label : "Original"}, 
-        {name : "christmas", label : "Christmas"}, 
-        {name : "cliffs", label : "Cliffs"}, 
-        {name : "river", label : "River"}, 
-        {name : "sea", label : "Sea"}, 
-        {name : "sun", label : "Sun"}
+        {name : "original", value : "original", label : "Original"}, 
+        {name : "christmas", value : "christmas", label : "Christmas"}, 
+        {name : "cliffs", value : "cliffs", label : "Cliffs"}, 
+        {name : "river", value : "river", label : "River"}, 
+        {name : "sea", value : "sea", label : "Sea"}, 
+        {name : "sun", value : "sun", label : "Sun"}
+      ]
+    },
+    isAdmin : {
+      label : "User is admin : ",
+      options : [
+        {name : "false", value : false, label : "False"},
+        {name : "true", value : true, label : "True"}
       ]
     }
   };
@@ -202,7 +209,7 @@ function SelectInput ({name, className, defaultValue, inputsValidationStatus, se
       <label htmlFor={name}>{data[name].label}</label>
       <select id = {name} name = {name} defaultValue = {defaultValue} onChange = { handleOnChange } >
         {data[name].options.map(e =>
-          <option key={e.name} value = {e.name} >{e.label}</option>
+          <option key={e.name} value = {e.value} >{e.label}</option>
         )}
       </select>
     </StyledInput>

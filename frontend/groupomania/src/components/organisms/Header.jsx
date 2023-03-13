@@ -24,6 +24,7 @@ function Header() {
     case "/home" : title = "Home"; break;
     case "/myProfile" : title = "My profile"; break;
     case "/modifyMyProfile" : title = "Modify my profile"; break;
+    case "/createUser" : title = "Create new user"; break;
     default : title = "Undefined";
   }
 
