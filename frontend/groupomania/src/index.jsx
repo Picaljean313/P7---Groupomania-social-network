@@ -13,6 +13,7 @@ import Error from './components/pages/Error';
 import {ContextProvider} from './utils/Context';
 import TokenRedirectionLayout from './utils/TokenRedirectionLayout';
 import NoTokenRedirectionLayout from './utils/NoTokenRedirectionLayout';
+import NoIsAdminRedirectionLayout from './utils/NoIsAdminRedirectionLayout';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -31,7 +32,9 @@ root.render(
             <Route path="/home" element= {<Home />}/>
             <Route path="/myProfile" element= {<MyProfile />}/>
             <Route path="/modifyMyProfile" element= {<ModifyMyProfile />}/>
-            <Route path="/createUser" element= {<CreateUser />}/>
+            <Route element= {<NoIsAdminRedirectionLayout />}>
+              <Route path="/createUser" element= {<CreateUser />}/>
+            </Route>
           </Route>
           <Route path="*" element= {<Error />}/>
         </Routes>

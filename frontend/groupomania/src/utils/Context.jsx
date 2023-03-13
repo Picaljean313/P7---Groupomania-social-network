@@ -9,6 +9,8 @@ export const ContextProvider = ({children}) => {
   const initialToken = savedToken !== null ? savedToken : "none";
   const [token, setToken] = useState(initialToken);
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
   const [theme, setTheme] = useState("original");
 
   const savedUserData = JSON.parse(sessionStorage.getItem("GroupomaniaUserData"));
@@ -24,6 +26,9 @@ export const ContextProvider = ({children}) => {
       }
       if (theme !== "original"){
         setTheme("original");
+      }
+      if (isAdmin !== false){
+        setIsAdmin(false);
       }
     }
     else {
@@ -46,6 +51,12 @@ export const ContextProvider = ({children}) => {
             }
           }
           setUserData(newUserData);
+
+          if (newUserData.isAdmin === true){
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
         }
         else if (res.status === 400 || res.status === 401 || res.status === 403) {
           setToken("none");
@@ -64,7 +75,7 @@ export const ContextProvider = ({children}) => {
   }, [token]);
   
   return (
-    <Context.Provider value={{token, setToken, userData, setUserData, theme, setTheme}}>
+    <Context.Provider value={{token, setToken, userData, setUserData, theme, setTheme, isAdmin, setIsAdmin}}>
       {children}
     </Context.Provider>
   )
