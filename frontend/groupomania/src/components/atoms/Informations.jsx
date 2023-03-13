@@ -40,7 +40,7 @@ function Informations() {
 
   return (
     <StyledInformations>
-      <img src={'images/logo/logo.svg'} alt='Groupomania logo' className = "logo"/>
+      <img src={'/images/logo/logo.svg'} alt='Groupomania logo' className = "logo"/>
       {userData !== "none" && <div className="user">
           <img src={imageUrl} alt='Avatar' className = "avatar"/>
           <p>{pseudo}</p>

@@ -50,6 +50,7 @@ img {
 }
 
 .postUserData {
+  text-decoration : none;
   background-color : blue;
   padding : 5px;
   border-radius : 25px;
@@ -420,10 +421,10 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   return (
     <StyledPost>
       <div className="post" >
-        <div className="postUserData">
+        <a className="postUserData" href={`/userProfile/${postUserData._id}`} >
           <img src={postUserData.imageUrl} alt='Avatar'/>
           <p>{postUserData.pseudo}</p>
-        </div>
+        </a>
         <div className="postReactions">
           {postReactions.heart !== 0 && (<div className="postReaction">
             <div className="iconPostReactionBackground">

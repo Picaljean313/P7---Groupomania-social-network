@@ -10,7 +10,7 @@ const opacityChange = keyframes`
 
 const StyledBackground = styled.div`
 position : relative;
-background: url('images/themes/sea.jpeg');
+background: url('/images/themes/sea.jpeg');
 background-size: cover;
 background-position : center;
 height: 100%;

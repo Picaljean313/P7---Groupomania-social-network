@@ -12,10 +12,6 @@ const StyledHeader = styled.div`
 function Header() {
 
   let title;
-
-  // if (/^\/profile\/\S+/.test(window.location.pathname)){
-  //   title = "User Profile";
-  // }
   
   switch(window.location.pathname){
     case "/" : title = "Welcome"; break;
@@ -25,7 +21,12 @@ function Header() {
     case "/myProfile" : title = "My profile"; break;
     case "/modifyMyProfile" : title = "Modify my profile"; break;
     case "/createUser" : title = "Create new user"; break;
+    case "/createUser" : title = "Create new user"; break;
     default : title = "Undefined";
+  }
+
+  if (/^\/userProfile\/\S+/.test(window.location.pathname)){
+    title = "User Profile";
   }
 
   return (

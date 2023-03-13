@@ -22,10 +22,6 @@ function Nav() {
   const viewAllCommentsButton = {key : "viewAllComments", title : "All comments", link : "/viewAllComments"}; 
   const viewAllReportsButton = {key : "viewAllReports", title : "All reports", link : "/viewAllReports"}; 
 
-  // if (/^\/profile\/\S+/.test(window.location.pathname)){
-  //   buttons = 
-  // }
-
   switch(window.location.pathname){
     case "/" : navButtons = []; break;
     case "/signUp" : navButtons = [welcomeButton]; break;
@@ -36,6 +32,10 @@ function Nav() {
     case "/createUser" : navButtons = [logOutButton, homeButton];  break;
     default : navButtons = [];
   }
+
+  if (/^\/userProfile\/\S+/.test(window.location.pathname)){
+    navButtons = [logOutButton, homeButton];
+  };
 
   if (window.location.pathname === "/home" && userData.isAdmin){
     navButtons.push(createUserButton, viewAllProfilesButton, viewAllPostsButton, viewAllCommentsButton, viewAllReportsButton);

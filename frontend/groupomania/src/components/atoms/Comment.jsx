@@ -37,6 +37,7 @@ background-color : blue;
 }
 
 .commentUserData {
+  text-decoration : none;
   background-color : purple;
   padding : 3px;
   border-radius : 13px;
@@ -360,10 +361,10 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
   return (
     <StyledComment>
       <div className="comment">
-        <div className="commentUserData">
+        <a className="commentUserData" href={`/userProfile/${commentUserData._id}`} >
           <img src={commentUserData.imageUrl} alt='Avatar'/>
           <p>{commentUserData.pseudo}</p>
-        </div>
+        </a>
         <div className="commentReactions">
           {commentReactions.heart !== 0 && (<div className="commentReaction">
             <div className="iconCommentReactionBackground">
