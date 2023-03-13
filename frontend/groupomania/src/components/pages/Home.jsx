@@ -35,6 +35,8 @@ height: 100%;
 `
 
 function Home () {
+  sessionStorage.removeItem("GroupomaniaProfileData");
+  
   const {token} = useContext(Context);
 
   const [homePosts, setHomePosts] = useState("none");

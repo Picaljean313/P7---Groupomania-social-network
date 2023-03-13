@@ -26,7 +26,11 @@ function Header() {
   }
 
   if (/^\/userProfile\/\S+/.test(window.location.pathname)){
-    title = "User Profile";
+    title = "User profile";
+  }
+
+  if (/^\/modifyProfile\/\S+/.test(window.location.pathname)){
+    title = "Modify profile";
   }
 
   return (

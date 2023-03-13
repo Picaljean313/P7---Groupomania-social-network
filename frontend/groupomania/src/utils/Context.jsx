@@ -17,10 +17,15 @@ export const ContextProvider = ({children}) => {
   const initialUserData = savedUserData !== null ? savedUserData : "none";
   const [userData, setUserData] = useState(initialUserData);
 
+  const savedProfileData = JSON.parse(sessionStorage.getItem("GroupomaniaProfileData"));
+  const initialProfileData = savedProfileData !== null ? savedProfileData : "none";
+  const [profileData, setProfileData] = useState(initialProfileData);
+
   const getUserData = async function () {
     if (token === "none") {
       sessionStorage.removeItem("GroupomaniaUserData");
       sessionStorage.removeItem("GroupomaniaSessionToken");
+      sessionStorage.removeItem("GroupomaniaProfileData");
       if (userData !== "none"){
         setUserData("none");
       }
@@ -75,7 +80,7 @@ export const ContextProvider = ({children}) => {
   }, [token]);
   
   return (
-    <Context.Provider value={{token, setToken, userData, setUserData, theme, setTheme, isAdmin, setIsAdmin}}>
+    <Context.Provider value={{token, setToken, userData, setUserData, theme, setTheme, isAdmin, setIsAdmin, profileData, setProfileData}}>
       {children}
     </Context.Provider>
   )

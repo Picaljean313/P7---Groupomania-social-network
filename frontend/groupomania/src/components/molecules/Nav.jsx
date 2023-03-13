@@ -37,6 +37,10 @@ function Nav() {
     navButtons = [logOutButton, homeButton];
   };
 
+  if (/^\/modifyProfile\/\S+/.test(window.location.pathname)){
+    navButtons = [logOutButton, homeButton];
+  };
+
   if (window.location.pathname === "/home" && userData.isAdmin){
     navButtons.push(createUserButton, viewAllProfilesButton, viewAllPostsButton, viewAllCommentsButton, viewAllReportsButton);
   }

@@ -2,18 +2,18 @@ import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import Header from '../organisms/Header';
 import { Context } from '../../utils/Context';
-import { FileInput, TextInput, SelectInput, ChangePasswordInput } from '../atoms/Inputs';
+import { FileInput, TextInput, SelectInput, ConfirmPasswordInput } from '../atoms/Inputs';
 import basePath from '../../utils/basePath';
 import { useNavigate } from 'react-router';
 
-const StyledModifyMyProfile = styled.div`
+const StyledModifyProfile = styled.div`
 display: flex;
 flex-direction: column;
 align-items : center;
 with : 100%;
 height: 100%;
 
-.mainModifyMyProfile {
+.mainModifyProfile {
   display : flex;
   flex-direction: column;
   justify-content : center;
@@ -21,17 +21,17 @@ height: 100%;
   flex : 1;
 }
 
-.changePasswordContainer {
+.confirmPasswordContainer {
   display : flex;
 }
 
-.changePasswordContainer button {
+.confirmPasswordContainer button {
   margin : 0 0 0 50px;
 }
 `
 
-function ModifyMyProfile () {
-  const {userData, setUserData, token, setTheme} = useContext(Context);
+function ModifyProfile () {
+  const {userData, setUserData, token, setTheme, profileData, setProfileData} = useContext(Context);
   const navigate = useNavigate();
 
   const initialInputsValidationStatus = {
@@ -39,17 +39,17 @@ function ModifyMyProfile () {
     avatar : true,
     theme : true,
     email : true,
-    formerPassword : false,
+    isAdmin : true,
     password : false
   }
   const [inputsValidationStatus, setInputsValidationStatus] = useState(initialInputsValidationStatus);
 
   const initialFormInputsData = {
-    pseudo : userData.pseudo,
+    pseudo : profileData.pseudo,
     avatar : undefined,
-    theme : userData.theme,
-    email : userData.email,
-    formerPassword : "",
+    theme : profileData.theme,
+    email : profileData.email,
+    isAdmin : profileData.isAdmin,
     password : ""
   };
   
@@ -85,7 +85,7 @@ function ModifyMyProfile () {
     if (!isChangePassword){
       const newInputsValidationStatus = {};
       for (let key of Object.keys(inputsValidationStatus)){
-        if (["pseudo", "avatar", "theme", "email"].includes(key)){
+        if (["pseudo", "avatar", "theme", "email", "isAdmin"].includes(key)){
           newInputsValidationStatus[key] = inputsValidationStatus[key];
         }
       };
@@ -94,6 +94,10 @@ function ModifyMyProfile () {
         if (["pseudo", "theme", "email"].includes(key) && formInputsData[key] !== initialFormInputsData[key]){
           isDataChanged = true;
           dataToSend[key] = formInputsData[key];
+        }
+        if (key === "isAdmin" && formInputsData[key] !== initialFormInputsData[key]){
+          isDataChanged = true;
+          dataToSend[key] = formInputsData[key] === "true";
         }
       };
 
@@ -104,6 +108,10 @@ function ModifyMyProfile () {
         if (["pseudo", "theme", "email"].includes(key) && formInputsData[key] !== initialFormInputsData[key]){
           isDataChanged = true;
           dataToSend[key] = formInputsData[key];
+        }
+        if (key === "isAdmin" && formInputsData[key] !== initialFormInputsData[key]){
+          isDataChanged = true;
+          dataToSend[key] = formInputsData[key] === "true";
         }
         if (key === "password" && formInputsData[key] !== initialFormInputsData[key]){
           isDataChanged = true;
@@ -116,26 +124,6 @@ function ModifyMyProfile () {
 
     if (!isFormValid) return alert ("Changes are not valid");
 
-    if (isChangePassword){
-      const res = await fetch(`${basePath}/users/logIn`,{
-        method : "POST",
-        headers: { 
-          'Accept': 'application/json', 
-          'Content-Type': 'application/json' 
-          },
-        body : JSON.stringify({
-          email : userData.email,
-          password : document.getElementById("formerPassword").value
-        })
-      });
-      if (res.status === 200){
-        console.log("Password change allowed");
-      }
-      else {
-        return alert ("Check your former password");
-      }
-    }
-
     if (isImageToSend) {
       const formData = new FormData();
       formData.append("image", document.getElementById("avatar").files[0]);
@@ -144,7 +132,7 @@ function ModifyMyProfile () {
         formData.append("user", JSON.stringify(dataToSend));
       }
 
-      const res = await fetch(`${basePath}/users/${userData._id}`, {
+      const res = await fetch(`${basePath}/users/${profileData._id}`, {
         method : "PUT",
         headers : {
           'Authorization' : `Bearer ${token}`
@@ -156,13 +144,9 @@ function ModifyMyProfile () {
         const newUserData = await res.json();
         document.getElementById("avatar").value = "";
 
-        newUserData["activity"] = userData.activity;
-        sessionStorage.setItem("GroupomaniaUserData", JSON.stringify(newUserData));
-        setUserData(newUserData);
-
-        if (newUserData.theme !== userData.theme){
-          setTheme(newUserData.theme);
-        }
+        newUserData["activity"] = profileData.activity;
+        sessionStorage.setItem("GroupomaniaProfileData", JSON.stringify(newUserData));
+        setProfileData(newUserData);
 
         alert ("Changes succeeded")
       }
@@ -171,7 +155,8 @@ function ModifyMyProfile () {
       }
     }
     else {
-      const res = await fetch(`${basePath}/users/${userData._id}`, {
+      console.log(dataToSend)
+      const res = await fetch(`${basePath}/users/${profileData._id}`, {
         method : "PUT",
         headers: { 
           'Accept': 'application/json', 
@@ -184,13 +169,9 @@ function ModifyMyProfile () {
       if (res.status === 200){
         const newUserData = await res.json();
 
-        newUserData["activity"] = userData.activity;
-        sessionStorage.setItem("GroupomaniaUserData", JSON.stringify(newUserData));
-        setUserData(newUserData);
-
-        if (newUserData.theme !== userData.theme){
-          setTheme(newUserData.theme);
-        }
+        newUserData["activity"] = profileData.activity;
+        sessionStorage.setItem("GroupomaniaProfileData", JSON.stringify(newUserData));
+        setProfileData(newUserData);
 
         alert ("Changes succeeded");
       }
@@ -199,36 +180,37 @@ function ModifyMyProfile () {
       }
     }
 
-    return navigate("/myProfile");
+    return navigate(`/userProfile/${profileData._id}`);
   };
 
   return (
-      <StyledModifyMyProfile>
+      <StyledModifyProfile>
         <Header />
-        <div className="mainModifyMyProfile">
-          <h2>Change your data :</h2>
+        <div className="mainModifyProfile">
+          <h2>Change user data :</h2>
           <form onSubmit={handleOnSubmit} >
-            <TextInput name="pseudo" defaultValue={userData.pseudo} className="modifyMyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <FileInput name="avatar" defaultValue={undefined} className="modifyMyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <SelectInput name="theme" defaultValue={userData.theme} className="modifyMyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <TextInput name="email" defaultValue={userData.email} className="modifyMyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <TextInput name="pseudo" defaultValue={profileData.pseudo} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <FileInput name="avatar" defaultValue={undefined} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <SelectInput name="theme" defaultValue={profileData.theme} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <TextInput name="email" defaultValue={profileData.email} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <SelectInput name="isAdmin" defaultValue={profileData.isAdmin} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
             {!isChangePassword ?
             <button onClick={changePasswordOnClick} >
-              Change your password
+              Change user password
             </button> : 
-            <div className="changePasswordContainer" >
-              <ChangePasswordInput name="password" defaultValue="" className="modifyMyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <div className="confirmPasswordContainer" >
+              <ConfirmPasswordInput name="password" defaultValue="" className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
               <button onClick={cancelChangePasswordOnClick} >
                 Don't change password
               </button>
             </div>} 
-            <div className="modifyMyProfileFormButtonsContainer">
+            <div className="modifyProfileFormButtonsContainer">
               <button type="submit">Submit</button>
               <button type="button" onClick={handleCancelOnClick}>Cancel</button>
             </div>
           </form>
         </div>
-      </StyledModifyMyProfile>
+      </StyledModifyProfile>
     )
 }
-export default ModifyMyProfile;
+export default ModifyProfile;

@@ -7,6 +7,7 @@ import Header from '../organisms/Header';
 import Button from '../atoms/Button';
 import basePath from '../../utils/basePath';
 import { useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router';
 
 const StyledUserProfile = styled.div`
 display : flex;
@@ -19,13 +20,13 @@ align-items : center;
   align-items : center;
 }
 
-.profileUserAvatarAndPseudo {
+.userProfileAvatarAndPseudo {
   display : flex;
   align-items : center;
   margin-top : 50px;
 }
 
-.profileUserAvatarAndPseudo img {
+.userProfileAvatarAndPseudo img {
 height : 120px;
 width : 120px;
 border-radius : 50%;
@@ -33,28 +34,28 @@ object-fit : cover;
 margin : 0 20px 0 0;
 }
 
-.profileUserAvatarAndPseudo p {
+.userProfileAvatarAndPseudo p {
 font-size : 40px;
 margin : 0 0 0 20px;
 }
 
-.profileUserActivityContainer {
+.userProfileActivityContainer {
   display : flex;
 }
 
-.profileUserActivity {
+.userProfileActivity {
   margin : 0 0 0 30px;
 }
 
-.profileUserActivity p {
+.userProfileActivity p {
   margin : 0;
 }
 
-.profileUserButton {
+.userProfileButton {
   margin : 20px;
 }
 
-.profileUserCancelButton {
+.userProfileCancelButton {
   margin : 0 0 0 30px;
 }
 
@@ -64,21 +65,20 @@ margin : 0 0 0 20px;
 `
 
 function UserProfile () {
-  const {isAdmin, userData, token } = useContext(Context);
-
-  const [userProfileData, setUserProfileData] = useState("none");
+  const {isAdmin, userData, token, profileData, setProfileData } = useContext(Context);
+  const navigate = useNavigate();
 
   const userId = window.location.pathname.split("userProfile/")[1];
 
   let date;
   try {
-    const day = parseInt(userProfileData.creationDate.split('T')[0].split('-')[2]).toString();
+    const day = parseInt(profileData.creationDate.split('T')[0].split('-')[2]).toString();
 
-    const monthNumber = parseInt(userProfileData.creationDate.split('T')[0].split('-')[1]).toString();
+    const monthNumber = parseInt(profileData.creationDate.split('T')[0].split('-')[1]).toString();
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const month = months[monthNumber - 1];
 
-    const year = userProfileData.creationDate.split('T')[0].split('-')[0];
+    const year = profileData.creationDate.split('T')[0].split('-')[0];
 
     date = `${day} ${month} ${year}`;
   } catch {
@@ -96,9 +96,10 @@ function UserProfile () {
     });
   
     if (res.status === 200) {
-      const apiUserProfileData = await res.json();
+      const apiProfileData = await res.json();
+      sessionStorage.setItem("GroupomaniaProfileData", JSON.stringify(apiProfileData));
 
-      return setUserProfileData(apiUserProfileData);
+      return setProfileData(apiProfileData);
     } else {
       return console.log("Fail")
     }
@@ -128,7 +129,7 @@ function UserProfile () {
         },
       body : JSON.stringify({
         email : userData.email,
-        password : document.getElementById("profileUserPassword").value
+        password : document.getElementById("userProfilePassword").value
       })
     });
     if (res.status === 200){
@@ -139,7 +140,9 @@ function UserProfile () {
         }
       });
       if (res.status === 200){
-        alert ("Profile is deleted")
+        alert ("Profile is deleted");
+        sessionStorage.removeItem("GroupomaniaProfileData");
+        return navigate(-1);
       }
       else {
         console.log("Can't delete profile")
@@ -154,42 +157,42 @@ function UserProfile () {
     <StyledUserProfile>
       <Header />
       <div className="mainUserProfile">
-        {userProfileData !== "none" &&
-        <div className="profileUserData">
-          <div className="profileUserAvatarAndPseudo" >
-            <img src={userProfileData.imageUrl} alt='Avatar'/>
-            <p>{userProfileData.pseudo}</p>
+        {profileData !== "none" &&
+        <div className="userProfileData">
+          <div className="userProfileAvatarAndPseudo" >
+            <img src={profileData.imageUrl} alt='Avatar'/>
+            <p>{profileData.pseudo}</p>
           </div>
-          <p>Email : {userProfileData.email}</p>
-          <p>Theme : {userProfileData.theme}</p>
-          <p>Status : {userProfileData.isAdmin ? "admin" : "classic user"}</p>
+          <p>Email : {profileData.email}</p>
+          <p>Theme : {profileData.theme}</p>
+          <p>Status : {profileData.isAdmin ? "admin" : "classic user"}</p>
           <p>Creation date : {date}</p>
-          <div className="profileUserActivityContainer">
+          <div className="userProfileActivityContainer">
             <p>Activity :</p>
-            {userProfileData.activity !== undefined &&
-            <div className="profileUserActivity">
-              <p>Posts : {userProfileData.activity.posts}</p>
-              <p>Comments : {userProfileData.activity.comments}</p>
-              <p>Reactions : {userProfileData.activity.reactions}</p>
+            {profileData.activity !== undefined &&
+            <div className="userProfileActivity">
+              <p>Posts : {profileData.activity.posts}</p>
+              <p>Comments : {profileData.activity.comments}</p>
+              <p>Reactions : {profileData.activity.reactions}</p>
             </div>}
           </div>
         </div>}
-        {userProfileData === "none" && 
+        {profileData === "none" && 
         <p>There is no profile associated to that ID</p>}
-        {!isPasswordNeeded && isAdmin && userProfileData !== "none" &&
-        <div className="profileUserButtons" >
-          <Button title = "Modify profile" link= {`/modifyProfile/${userId}`} className="profileUserButton" />
-          <button onClick={handleDeleteProfileOnClick} className="profileUserButton" >Delete profile</button>
+        {!isPasswordNeeded && isAdmin && profileData !== "none" &&
+        <div className="userProfileButtons" >
+          <Button title = "Modify profile" link= {`/modifyProfile/${userId}`} className="userProfileButton" />
+          <button onClick={handleDeleteProfileOnClick} className="userProfileButton" >Delete profile</button>
         </div>}
         {isPasswordNeeded && isAdmin && 
         <div className="isPasswordNeeded" >
           <form onSubmit={handlePasswordOnSubmit} >
             <div>
-              <label htmlFor="profileUserPassword" >Password is needed to delete profile : </label>
-              <input id="profileUserPassword" type = "password" autoComplete="off" />
+              <label htmlFor="userProfilePassword" >Password is needed to delete profile : </label>
+              <input id="userProfilePassword" type = "password" autoComplete="off" />
             </div>
             <button type="submit">Validate</button>
-            <button onClick={handleCancelDeleteProfileOnClick} className="profileUserCancelButton">Cancel</button>
+            <button onClick={handleCancelDeleteProfileOnClick} className="userProfileCancelButton">Cancel</button>
           </form>
         </div>}
       </div>
