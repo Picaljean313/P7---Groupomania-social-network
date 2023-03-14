@@ -112,7 +112,7 @@ function AllProfiles () {
       <div className = "mainAllProfiles" >
         {(Array.isArray(allProfiles) && allProfiles.length !== 0) ? allProfiles.map(e => 
         <ProfileOverview key={e._id} _id ={e._id} pseudo={e.pseudo} imageUrl={e.imageUrl} email={e.email} isAdmin={e.isAdmin} activity={e.activity} />
-        ) : <p>No profile to show</p>}
+        ) : <p>No profiles to show</p>}
         <div className="allProfilesContainer" >
           {Array.isArray(allProfiles) && (isMoreProfilesToShow ?
           <button className="allProfilesButton" onClick={handleMoreProfilesOnClick}>

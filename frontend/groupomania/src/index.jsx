@@ -13,6 +13,7 @@ import UserProfile from './components/pages/UserProfile';
 import ModifyProfile from './components/pages/ModifyProfile';
 import AllProfiles from './components/pages/AllProfiles';
 import AllPosts from './components/pages/AllPosts';
+import AllComments from './components/pages/AllComments';
 import Error from './components/pages/Error';
 import {ContextProvider} from './utils/Context';
 import TokenRedirectionLayout from './utils/TokenRedirectionLayout';
@@ -42,6 +43,7 @@ root.render(
               <Route path="/modifyProfile/:userId" element= {<ModifyProfile />}/>
               <Route path="/allProfiles" element= {<AllProfiles />}/>
               <Route path="/allPosts" element= {<AllPosts />}/>
+              <Route path="/allComments" element= {<AllComments />}/>
             </Route>
           </Route>
           <Route path="*" element= {<Error />}/>
