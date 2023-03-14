@@ -11,6 +11,7 @@ import ModifyMyProfile from './components/pages/ModifyMyProfile';
 import CreateUser from './components/pages/CreateUser';
 import UserProfile from './components/pages/UserProfile';
 import ModifyProfile from './components/pages/ModifyProfile';
+import AllProfiles from './components/pages/AllProfiles';
 import Error from './components/pages/Error';
 import {ContextProvider} from './utils/Context';
 import TokenRedirectionLayout from './utils/TokenRedirectionLayout';
@@ -38,6 +39,7 @@ root.render(
             <Route element= {<NoIsAdminRedirectionLayout />}>
               <Route path="/createUser" element= {<CreateUser />}/>
               <Route path="/modifyProfile/:userId" element= {<ModifyProfile />}/>
+              <Route path="/allProfiles" element= {<AllProfiles />}/>
             </Route>
           </Route>
           <Route path="*" element= {<Error />}/>

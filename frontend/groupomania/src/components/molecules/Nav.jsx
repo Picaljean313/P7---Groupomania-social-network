@@ -17,10 +17,10 @@ function Nav() {
   const homeButton = {key : "home", title : "Home", link : "/home"}; 
   const myProfileButton = {key : "myProfile", title : "My profile", link : "/myProfile"}; 
   const createUserButton = {key : "createUser", title : "Create new user", link : "/createUser"}; 
-  const viewAllProfilesButton = {key : "viewAllProfiles", title : "All Profiles", link : "/viewAllProfiles"}; 
-  const viewAllPostsButton = {key : "viewAllPosts", title : "All posts", link : "/viewAllPosts"}; 
-  const viewAllCommentsButton = {key : "viewAllComments", title : "All comments", link : "/viewAllComments"}; 
-  const viewAllReportsButton = {key : "viewAllReports", title : "All reports", link : "/viewAllReports"}; 
+  const viewAllProfilesButton = {key : "viewAllProfiles", title : "All Profiles", link : "/allProfiles"}; 
+  const viewAllPostsButton = {key : "viewAllPosts", title : "All posts", link : "/allPosts"}; 
+  const viewAllCommentsButton = {key : "viewAllComments", title : "All comments", link : "/allComments"}; 
+  const viewAllReportsButton = {key : "viewAllReports", title : "All reports", link : "/allReports"}; 
 
   switch(window.location.pathname){
     case "/" : navButtons = []; break;
@@ -30,6 +30,7 @@ function Nav() {
     case "/myProfile" : navButtons = [logOutButton, homeButton]; break;
     case "/modifyMyProfile" : navButtons = [logOutButton, homeButton, myProfileButton];
     case "/createUser" : navButtons = [logOutButton, homeButton];  break;
+    case "/allProfiles" : navButtons = [logOutButton, homeButton];  break;
     default : navButtons = [];
   }
 

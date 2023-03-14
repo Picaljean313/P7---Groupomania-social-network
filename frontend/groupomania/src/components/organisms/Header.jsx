@@ -21,7 +21,7 @@ function Header() {
     case "/myProfile" : title = "My profile"; break;
     case "/modifyMyProfile" : title = "Modify my profile"; break;
     case "/createUser" : title = "Create new user"; break;
-    case "/createUser" : title = "Create new user"; break;
+    case "/allProfiles" : title = "All profiles"; break;
     default : title = "Undefined";
   }
 
