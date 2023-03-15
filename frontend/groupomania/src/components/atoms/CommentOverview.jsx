@@ -64,9 +64,7 @@ function CommentOverview ({commentData, userData}) {
       </div>
       <div className="commentOverviewActivityContainer" >
         <p>Activity : </p>
-        <div>
-          <p>{`${commentData.reactions.length} reactions`}</p>
-        </div>
+        <p>{`${commentData.reactions.length} reactions`}</p>
       </div>
       <div className="commentOverviewButtonsContainer" >
         <button onClick={handleShowCommentOnClick} >Show post associated</button>

@@ -114,7 +114,7 @@ function AllProfiles () {
         <ProfileOverview key={e._id} _id ={e._id} pseudo={e.pseudo} imageUrl={e.imageUrl} email={e.email} isAdmin={e.isAdmin} activity={e.activity} />
         ) : <p>No profiles to show</p>}
         <div className="allProfilesContainer" >
-          {Array.isArray(allProfiles) && (isMoreProfilesToShow ?
+          {Array.isArray(allProfiles) && allProfiles.length !== 0 && (isMoreProfilesToShow ?
           <button className="allProfilesButton" onClick={handleMoreProfilesOnClick}>
             View more profiles
           </button> : 

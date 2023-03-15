@@ -33,6 +33,7 @@ function Nav() {
     case "/allProfiles" : navButtons = [logOutButton, homeButton];  break;
     case "/allPosts" : navButtons = [logOutButton, homeButton];  break;
     case "/allComments" : navButtons = [logOutButton, homeButton];  break;
+    case "/allReports" : navButtons = [logOutButton, homeButton];  break;
     default : navButtons = [];
   }
 

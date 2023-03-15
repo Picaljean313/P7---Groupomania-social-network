@@ -114,7 +114,7 @@ function AllPosts () {
         <PostOverview key={e._id} postData={e} userData={e.userData} />
         ) : <p>No posts to show</p>}
         <div className="allPostsContainer" >
-          {Array.isArray(allPosts) && (isMorePostsToShow ?
+          {Array.isArray(allPosts) && allPosts.length !==0 && (isMorePostsToShow ?
           <button className="allPostsButton" onClick={handleMorePostsOnClick}>
             View more posts
           </button> : 

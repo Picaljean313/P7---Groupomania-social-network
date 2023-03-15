@@ -74,7 +74,7 @@ exports.createOneReport = async function (req, res, next) {
 };
 
 exports.getAllReports = async function (req, res, next) {
-  const allowedQueries = ["minDate", "maxDate", "limit", "sort", "fromUserId", "fromPostId", "fromCommentId"]; 
+  const allowedQueries = ["minDate", "maxDate", "limit", "sort", "fromUserId", "fromPostId", "fromCommentId", "userData"]; 
   const reqQueriesObject = url.parse(req.url, true).query;
   const reqQueriesKeys = Object.keys(reqQueriesObject);
   const invalidReqQueries = reqQueriesKeys.map(x => allowedQueries.includes(x)).includes(false);
@@ -140,6 +140,25 @@ exports.getAllReports = async function (req, res, next) {
     console.log("Can't find reports.");
     return functions.response(res, 500);
   } 
+
+  if (req.query.userData === "true"){
+    let results;
+    try {
+      const promises = [];
+      for (let i in reports) {
+        const promise = UsersModel.findOne({ _id : reports[i].userId }).lean();
+        promises.push(promise);
+      }
+      results = await Promise.all(promises);
+    } catch {
+      console.log("Can't find all posts reactions.");
+      return functions.response(res, 500);
+    }
+
+    for (let i in reports) {
+      reports[i]["userData"] = results[i];
+    }
+  }
 
   return res.status(200).json(reports);
 };

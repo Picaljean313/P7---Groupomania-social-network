@@ -24,6 +24,7 @@ function Header() {
     case "/allProfiles" : title = "All profiles"; break;
     case "/allPosts" : title = "All posts"; break;
     case "/allComments" : title = "All comments"; break;
+    case "/allReports" : title = "All reports"; break;
     default : title = "Undefined";
   }
 

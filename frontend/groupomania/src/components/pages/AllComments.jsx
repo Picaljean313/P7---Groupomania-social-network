@@ -114,7 +114,7 @@ function AllComments () {
         <CommentOverview key={e._id} commentData={e} userData={e.userData} />
         ) : <p>No comments to show</p>}
         <div className="allCommentsContainer" >
-          {Array.isArray(allComments) && (isMoreCommentsToShow ?
+          {Array.isArray(allComments) && allComments.length !== 0 && (isMoreCommentsToShow ?
           <button className="allCommentsButton" onClick={handleMoreCommentsOnClick}>
             View more comments
           </button> : 
