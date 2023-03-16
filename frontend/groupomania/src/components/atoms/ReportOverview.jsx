@@ -5,6 +5,7 @@ import basePath from "../../utils/basePath";
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
+import PostDisplayed from "./postDisplayed";
 
 const StyledReportOverview = styled.div`
 display : flex;
@@ -51,25 +52,47 @@ p {
   display : flex;
   flex-direction : column;
 }
+
+.postAssociated {
+  position : absolute;
+  top : 0;
+  width : 100%;
+  height : 100%;
+  display : flex;
+  justify-content : center;
+}
+
+.postAssociatedBackground {
+  position : absolute;
+  z-index : 1;
+  width : 100%;
+  height : 100%;
+  background-color : white;
+  opacity : 0.5;
+  top : 0px;
+}
 `
 
-function ReportOverview ({type, _id, userData}) {
+function ReportOverview ({type, postOrCommentId, reportUserData}) {
   const navigate = useNavigate();
   const {token} = useContext(Context);
 
   const [postData, setPostData] = useState("none");
   const [commentData, setCommentData] = useState("none");
+  const [postAssociatedData, setPostAssociatedData] = useState("none");
+  const [isPostDisplayed, setIsPostDisplayed] = useState(false);
 
-  const handleShowReportOnClick = () => {
+  const handleShowPostReportOnClick = () => {
+    setIsPostDisplayed(true);
   };
 
   const handleShowUserOnClick = () => {
-    navigate(`/userProfile/${userData._id}`);
+    navigate(`/userProfile/${reportUserData._id}`);
   };
 
   const getReportPostOrCommentData = async function () {
     if (type === "post"){
-      const res = await fetch(`${basePath}/posts/${_id}`, {
+      const res = await fetch(`${basePath}/posts/${postOrCommentId}?comments=true&reactions=true&commentsReactions=true&userData=true&commentsUserData=true`, {
         method : "GET",
         headers : {
           'Authorization' : `Bearer ${token}`
@@ -79,12 +102,13 @@ function ReportOverview ({type, _id, userData}) {
         const data = await res.json();
 
         setPostData(data);
+        setPostAssociatedData(data);
       } else {
         console.log("Can't display post");
       }
     }
     if (type === "comment"){
-      const res = await fetch(`${basePath}/comments/${_id}`, {
+      const res = await fetch(`${basePath}/comments/${postOrCommentId}?reactions=true&userData=true`, {
         method : "GET",
         headers : {
           'Authorization' : `Bearer ${token}`
@@ -94,6 +118,23 @@ function ReportOverview ({type, _id, userData}) {
         const data = await res.json();
 
         setCommentData(data);
+
+        const postRes = await fetch(`${basePath}/posts/${data.postId}?comments=true&reactions=true&commentsReactions=true&userData=true&commentsUserData=true`, {
+          method : "GET",
+          headers : {
+            'Authorization' : `Bearer ${token}`
+          }
+        });
+
+        if (postRes.status === 200){
+          const data = await postRes.json();
+
+          setPostAssociatedData(data);
+        } 
+        else {
+          console.log("Can't get associated post data");
+        }
+
       } else {
         console.log("Can't display comment");
       }
@@ -102,7 +143,7 @@ function ReportOverview ({type, _id, userData}) {
 
   useEffect(()=>{
     getReportPostOrCommentData();
-  },[])
+  },[]);
   
   
   return (
@@ -116,14 +157,18 @@ function ReportOverview ({type, _id, userData}) {
       <div>
         <p>From : </p>
         <div className="reportOverviewUserDataContainer" >
-          <img src={userData.imageUrl} alt='User avatar' className = "reportOverviewUserImage"/>
-          <p>{userData.pseudo}</p>
+          <img src={reportUserData.imageUrl} alt='User avatar' className = "reportOverviewUserImage"/>
+          <p>{reportUserData.pseudo}</p>
         </div>
       </div>
       <div className="reportOverviewButtonsContainer" >
-        <button onClick={handleShowReportOnClick} >Show associated post</button>
+        <button onClick={handleShowPostReportOnClick} >Show associated post</button>
         <button onClick={handleShowUserOnClick} >Show user</button>
       </div>
+      {isPostDisplayed && <div className="postAssociated">
+        <div className="postAssociatedBackground"></div>
+        <PostDisplayed postDisplayedData={postAssociatedData}  setIsPostDisplayed={setIsPostDisplayed} />
+      </div>} 
     </StyledReportOverview>
   );
 }

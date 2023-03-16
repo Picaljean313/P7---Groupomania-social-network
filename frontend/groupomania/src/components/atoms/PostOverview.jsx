@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import PostDisplayed from "./postDisplayed";
 
 const StyledPostOverview = styled.div`
 display : flex;
@@ -53,12 +55,34 @@ p {
   display : flex;
   flex-direction : column;
 }
+
+.postAssociated {
+  position : absolute;
+  top : 0;
+  width : 100%;
+  height : 100%;
+  display : flex;
+  justify-content : center;
+}
+
+.postAssociatedBackground {
+  position : absolute;
+  z-index : 1;
+  width : 100%;
+  height : 100%;
+  background-color : white;
+  opacity : 0.5;
+  top : 0px;
+}
 `
 
 function PostOverview ({postData, userData}) {
   const navigate = useNavigate();
 
+  const [isPostDisplayed, setIsPostDisplayed] = useState(false);
+
   const handleShowPostOnClick = () => {
+    setIsPostDisplayed(true);
   };
 
   const handleShowUserOnClick = () => {
@@ -90,6 +114,10 @@ function PostOverview ({postData, userData}) {
         <button onClick={handleShowPostOnClick} >Show post</button>
         <button onClick={handleShowUserOnClick} >Show user</button>
       </div>
+      {isPostDisplayed && <div className="postAssociated">
+        <div className="postAssociatedBackground"></div>
+        <PostDisplayed postDisplayedData={postData}  setIsPostDisplayed={setIsPostDisplayed} />
+      </div>} 
     </StyledPostOverview>
   );
 }

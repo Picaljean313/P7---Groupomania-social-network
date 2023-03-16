@@ -12,9 +12,9 @@ flex-direction: column;
 align-items : center;
 with : 100%;
 height: 100%;
+position : relative;
 
 .mainAllReports {
-  position : relative;
   overflow : scroll;
 }
 
@@ -112,7 +112,7 @@ function AllReports () {
       <Header />
       <div className = "mainAllReports" >
         {(Array.isArray(allReports) && allReports.length !== 0) ? allReports.map(e => 
-        <ReportOverview key={e._id} type={e.postId !== undefined ? "post" : "comment"} _id={e.postId !== undefined ? e.postId : e.commentId} userData={e.userData} />
+        <ReportOverview key={e._id} type={e.postId !== undefined ? "post" : "comment"} postOrCommentId={e.postId !== undefined ? e.postId : e.commentId} reportUserData={e.userData} />
         ) : <p>No reports to show</p>}
         <div className="allReportsContainer" >
           {Array.isArray(allReports) && allReports.length !==0 && (isMoreReportsToShow ?

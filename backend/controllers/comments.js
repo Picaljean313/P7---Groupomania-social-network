@@ -159,7 +159,7 @@ exports.deleteAllComments = async function (req, res, next) {
 };
 
 exports.getOneComment = async function (req, res, next) {
-  const allowedQueries = ["reactions"]; 
+  const allowedQueries = ["reactions", "userData"]; 
   const reqQueriesObject = url.parse(req.url, true).query;
   const reqQueriesKeys = Object.keys(reqQueriesObject);
   const invalidReqQueries = reqQueriesKeys.map(x => allowedQueries.includes(x)).includes(false);
@@ -177,6 +177,17 @@ exports.getOneComment = async function (req, res, next) {
     return functions.response(res, 500);
   }
   if (comment === null) return functions.response(res, 400);
+
+  if (req.query.userData === "true"){
+    let result;
+    try {
+      result = await UsersModel.findOne({ _id : comment.userId }).lean();
+    } catch {
+      console.log("Can't comment user.");
+      return functions.response(res, 500);
+    }
+    comment["userData"] = result;
+  }
 
   if (req.query.reactions === "true"){
     let reactions;

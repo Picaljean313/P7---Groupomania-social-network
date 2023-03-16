@@ -313,7 +313,7 @@ exports.getOnePost = async function (req, res, next) {
     try {
       result = await UsersModel.findOne({ _id : post.userId }).lean();
     } catch {
-      console.log("Can't find all posts reactions.");
+      console.log("Can't find post user.");
       return functions.response(res, 500);
     }
     post["userData"] = result;

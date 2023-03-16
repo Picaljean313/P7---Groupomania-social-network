@@ -331,15 +331,15 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
     return console.log("Check onClick");
   };
 
-  const commmentsLimit = 2;
+  const commentsLimit = 2;
 
-  const initialIsMoreCommentsToShow = comments.length > commmentsLimit;
+  const initialIsMoreCommentsToShow = comments.length > commentsLimit;
   const [isMoreCommentsToShow, setIsMoreCommentsToShow] = useState (initialIsMoreCommentsToShow);
 
   let initialPostComments = [];
-  if (comments.length > commmentsLimit) {
+  if (comments.length > commentsLimit) {
     let i = 0;
-    while (i < commmentsLimit) {
+    while (i < commentsLimit) {
       initialPostComments.push(comments[i]);
       i++;
     }
@@ -353,7 +353,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   const handleMoreCommentsOnClick = () => {
     const newPostComments = [];
     let i = 0;
-    while (i < postComments.length + commmentsLimit && i < totalPostComments.length){
+    while (i < postComments.length + commentsLimit && i < totalPostComments.length){
       newPostComments.push(totalPostComments[i]);
       i++;
     }
@@ -410,7 +410,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   const handleHideCommentsOnClick = () => {
     const newPostComments = [];
     let i = 0;
-    while (i < commmentsLimit) {
+    while (i < commentsLimit) {
       newPostComments.push(totalPostComments[i]);
       i++;
     }
@@ -487,7 +487,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
             View older comments
           </button> : 
           <p>No more comments to show</p>)}
-          {(postComments.length > commmentsLimit) && 
+          {(postComments.length > commentsLimit) && 
           <button onClick={handleHideCommentsOnClick}>
             Hide extra comments 
           </button>}

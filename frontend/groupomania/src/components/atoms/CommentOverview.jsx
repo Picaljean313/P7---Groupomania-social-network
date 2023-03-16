@@ -1,5 +1,11 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import PostDisplayed from "./postDisplayed";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { Context } from "../../utils/Context";
+import basePath from "../../utils/basePath";
 
 const StyledCommentOverview = styled.div`
 display : flex;
@@ -39,17 +45,63 @@ p {
   display : flex;
   flex-direction : column;
 }
+
+.postAssociated {
+  position : absolute;
+  top : 0;
+  width : 100%;
+  height : 100%;
+  display : flex;
+  justify-content : center;
+}
+
+.postAssociatedBackground {
+  position : absolute;
+  z-index : 1;
+  width : 100%;
+  height : 100%;
+  background-color : white;
+  opacity : 0.5;
+  top : 0px;
+}
 `
 
 function CommentOverview ({commentData, userData}) {
   const navigate = useNavigate();
+  const {token} = useContext(Context);
+
+  const [isPostDisplayed, setIsPostDisplayed] = useState(false);
+  const [postAssociatedData, setPostAssociatedData] = useState("none");
 
   const handleShowCommentOnClick = () => {
+    setIsPostDisplayed(true);
   };
 
   const handleShowUserOnClick = () => {
     navigate(`/userProfile/${userData._id}`);
   };
+
+  const getPostAssociatedData = async function () {
+    const res = await fetch(`${basePath}/posts/${commentData.postId}?comments=true&reactions=true&commentsReactions=true&userData=true&commentsUserData=true`, {
+      method : "GET",
+      headers : {
+        'Authorization' : `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 200){
+      const data = await res.json();
+
+      setPostAssociatedData(data);
+    } 
+    else {
+      console.log("Can't get associated post data");
+    }
+  };
+
+  useEffect(()=>{
+    getPostAssociatedData();
+  }, [])
   
   
   return (
@@ -67,9 +119,13 @@ function CommentOverview ({commentData, userData}) {
         <p>{`${commentData.reactions.length} reactions`}</p>
       </div>
       <div className="commentOverviewButtonsContainer" >
-        <button onClick={handleShowCommentOnClick} >Show post associated</button>
+        <button onClick={handleShowCommentOnClick} >Show associated post</button>
         <button onClick={handleShowUserOnClick} >Show user</button>
       </div>
+      {isPostDisplayed && <div className="postAssociated">
+        <div className="postAssociatedBackground"></div>
+        <PostDisplayed postDisplayedData={postAssociatedData}  setIsPostDisplayed={setIsPostDisplayed} />
+      </div>} 
     </StyledCommentOverview>
   );
 }
