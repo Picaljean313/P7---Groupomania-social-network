@@ -8,6 +8,7 @@ import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
 import React from "react";
+import ModifyPost from "../atoms/ModifyPost";
 
 const reactionHover = keyframes`
 0% {
@@ -160,11 +161,34 @@ img {
   right : 30px;
   bottom : -15px;
 }
+
+.modifyPostButton {
+  background-color : white;
+  height : 30px;
+  border-radius : 15px;
+  position : absolute;
+  left : 30px;
+  bottom : -15px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.modifyPostButton p {
+  margin : 0 15px 0 15px;
+}
+
+.modifyPostButton:hover {
+  color : green;
+}
 `
 
 
 function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   const {token, userData} = useContext(Context);
+
+  const [postContent, setPostContent] = useState(content);
+  const [postImageUrl, setPostImageUrl] = useState(imageUrl);
 
   let initialUserReaction = "none";
 
@@ -417,6 +441,13 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
     setPostComments(newPostComments);
     setIsMoreCommentsToShow(true);
   };
+
+  const modifyPost = (userData._id === postUserData._id || userData.isAdmin); 
+  const [isModifyPost, setIsModifyPost] = useState(false);
+
+  const handleModifyPost = () => {
+    setIsModifyPost(true);
+  };
   
   return (
     <StyledPost>
@@ -467,8 +498,11 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
             </div>
           </div>)}
         </div>
-        <p>{content}</p>
-        {imageUrl && <img src={imageUrl} alt={`Post from ${postUserData.pseudo}`}/>}
+        {postContent && <p>{postContent}</p>}
+        {postImageUrl && <img src={postImageUrl} alt={`Post from ${postUserData.pseudo}`}/>}
+        {modifyPost && <div className="modifyPostButton" onClick={handleModifyPost} >
+          <p>Modify post</p>
+        </div>}
         <div className="postUserReactions" >
           <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={()=> {handlePostReactionOnClick("heart")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={()=> {handlePostReactionOnClick("thumbs-up")}} />
@@ -477,6 +511,8 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
           <FontAwesomeIcon className={`icon ${userReaction.type === "face-angry" ? "isSelected" : ""}`} icon={solid("face-angry")} onClick={()=> {handlePostReactionOnClick("face-angry")}} />
         </div>
       </div>
+      {isModifyPost && 
+      <ModifyPost postId={_id} content={postContent} imageUrl={postImageUrl} setIsModifyPost={setIsModifyPost} setPostContent={setPostContent} setPostImageUrl={setPostImageUrl} />}
       <div className="comments" >
         {(Array.isArray(postComments) && postComments.length !== 0) ? postComments.map(e => 
           <Comment key={e._id} _id={e._id} content={e.content} commentUserData={e.userData} reactions={e.reactions} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} />

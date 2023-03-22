@@ -5,7 +5,7 @@ import basePath from "../../utils/basePath";
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
-import PostDisplayed from "./postDisplayed";
+import PostDisplayed from "./PostDisplayed";
 
 const StyledReportOverview = styled.div`
 display : flex;

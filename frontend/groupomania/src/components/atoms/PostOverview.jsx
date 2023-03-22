@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import PostDisplayed from "./postDisplayed";
+import PostDisplayed from "./PostDisplayed";
 
 const StyledPostOverview = styled.div`
 display : flex;

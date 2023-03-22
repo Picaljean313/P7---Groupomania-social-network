@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
-import CommentDisplayed from "../atoms/CommentDisplayed";
+import CommentDisplayed from "./CommentDisplayed";
 
 const StyledPostDisplayed = styled.div `
 margin : 80px;

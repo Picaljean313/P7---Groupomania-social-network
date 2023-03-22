@@ -495,7 +495,6 @@ exports.modifyOneUser = async function (req, res, next) {
       userModified = await UsersModel.findOne({_id : req.params.userId});
     } catch {
       console.log("Can't send back user.");
-      return functions.unlinkFile(req, res, 500);
     }
 
     return res.status(200).json(userModified);

@@ -127,14 +127,15 @@ function Home () {
     event.preventDefault();
 
     const content = document.getElementById("userNewPostContent").value;
-    
-    if (content.length < 1 || content.length > 1000){
-      return alert ("Fill correctly post content");
-    }
 
     const image = document.getElementById("userNewPostImage").files[0];
 
     if (image === undefined){
+    
+      if (content.length < 1 || content.length > 1000){
+        return alert ("Fill correctly post content");
+      }
+
       const res = await fetch (`${basePath}/posts`, {
         method : "POST",
         headers: { 
@@ -154,8 +155,14 @@ function Home () {
       }
     } 
     else {
+      if (content !== "" && (content.length < 1 || content.length > 1000)){
+        return alert ("Fill correctly post content");
+      } 
+
       const formData = new FormData();
-      formData.append("post", JSON.stringify({content : content}));
+      if (content !== ""){
+        formData.append("post", JSON.stringify({content : content}));
+      }
       formData.append("image", image);
 
       const res = await fetch (`${basePath}/posts`, {

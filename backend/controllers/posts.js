@@ -455,7 +455,14 @@ exports.modifyOnePost = async function (req, res, next) {
         .catch(()=> console.log(`Can't delete ${imageToDelete}.`));
     }
 
-    return functions.response(res,200);
+    let postUpdated;
+    try {
+      postUpdated = await PostsModel.findOne({ _id : req.params.postId });
+    } catch {
+      console.log("Can't get user updated.");
+    }
+
+    return res.status(200).json(postUpdated);
   } 
   else {
     const invalidPostId = !rules.valid(id.idToValidate, req.params.postId);
