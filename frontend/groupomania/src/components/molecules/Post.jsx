@@ -221,6 +221,10 @@ img {
   margin-left: 30px;
   height : 30px;
 }
+
+.createComment {
+  margin-top : 50px;
+}
 `
 
 
@@ -397,22 +401,22 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
 
   const commentsLimit = 2;
 
-  const initialIsMoreCommentsToShow = comments.length > commentsLimit;
+  const [totalPostComments, setTotalPostComments] = useState(comments);
+
+  const initialIsMoreCommentsToShow = totalPostComments.length > commentsLimit;
   const [isMoreCommentsToShow, setIsMoreCommentsToShow] = useState (initialIsMoreCommentsToShow);
 
   let initialPostComments = [];
-  if (comments.length > commentsLimit) {
+  if (totalPostComments.length > commentsLimit) {
     let i = 0;
     while (i < commentsLimit) {
-      initialPostComments.push(comments[i]);
+      initialPostComments.push(totalPostComments[i]);
       i++;
     }
   } else {
-    initialPostComments = comments;
+    initialPostComments = totalPostComments;
   }
   const [postComments, setPostComments] = useState(initialPostComments);
-
-  const [totalPostComments, setTotalPostComments] = useState(comments);
 
   const handleMoreCommentsOnClick = () => {
     const newPostComments = [];
@@ -591,9 +595,14 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         <button onClick={handleDeletePost} >Yes</button>
         <button onClick={handleCancelDeletePost}>No</button>
       </div>}
+      <form onSubmit = { handleCommentSubmit } className="createComment" >
+        <label htmlFor = "userComment" >Write your comment : </label>
+        <textarea id = {`userComment-${_id}`} name = "userComment" type = "text" maxLength = "1000" />
+        <button type="submit">Envoyer</button>
+      </form>
       <div className="comments" >
         {(Array.isArray(postComments) && postComments.length !== 0) ? postComments.map(e => 
-          <Comment key={e._id} _id={e._id} content={e.content} commentUserData={e.userData} reactions={e.reactions} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} />
+          <Comment key={e._id} _id={e._id} content={e.content} commentUserData={e.userData} reactions={e.reactions} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} commentsLimit={commentsLimit} />
         ) : <p>No comments to show</p>}
         <div>
           {(Array.isArray(postComments) && postComments.length !== 0) && (isMoreCommentsToShow ?
@@ -607,11 +616,6 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
           </button>}
         </div>
       </div>
-      <form onSubmit = { handleCommentSubmit }>
-        <label htmlFor = "userComment" >Write your comment : </label>
-        <textarea id = {`userComment-${_id}`} name = "userComment" type = "text" maxLength = "1000" />
-        <button type="submit">Envoyer</button>
-      </form>
     </StyledPost>
   );
 }

@@ -6,6 +6,7 @@ import basePath from '../../utils/basePath';
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
+import ModifyComment from "./ModifyComment";
 
 const reactionHover = keyframes`
 0% {
@@ -143,11 +144,72 @@ background-color : blue;
   right : -15px;
   bottom : -15px;
 }
+
+.changeComment {
+  position : absolute;
+  left : 30px;
+  bottom : -15px;
+}
+
+.modifyCommentButton {
+  background-color : white;
+  height : 30px;
+  border-radius : 15px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.modifyCommentButton p {
+  margin : 0 15px 0 15px;
+}
+
+.modifyCommentButton:hover {
+  color : green;
+}
+
+.deleteCommentButton {
+  position : absolute;
+  left : 160px;
+  bottom : 0;
+  width : 30px;
+  height : 30px;
+  border-radius : 50%;
+  background-color : red;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.deleteCommentButton:hover {
+  background-color : green;
+}
+
+.crossDeleteCommentButton {
+  color : white;
+  font-size : 22px;
+}
+
+.confirmDeleteComment{
+  width : 600px;
+  heigth : 100px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  margin-top: 50px;
+}
+
+.confirmDeleteComment button{
+  margin-left: 30px;
+  height : 30px;
+}
 `
 
 
-function Comment ({_id, content, commentUserData, reactions, totalPostComments, setTotalPostComments}) {
+function Comment ({_id, content, commentUserData, reactions, totalPostComments, setTotalPostComments, postComments, setPostComments, commentsLimit}) {
   const {token, userData} = useContext(Context);
+
+  const [commentContent, setCommentContent] = useState(content);
 
   let initialUserReaction = "none";
 
@@ -357,6 +419,62 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
     }
     return console.log("Check onClick");
   };
+
+  const changeComment = (userData._id === commentUserData._id || userData.isAdmin); 
+  const [isModifyComment, setIsModifyComment] = useState(false);
+
+  const handleModifyComment = () => {
+    setIsModifyComment(true);
+    setConfirmDeleteComment(false);
+  };
+
+  const [confirmDeleteComment, setConfirmDeleteComment] = useState(false);
+
+  const handleDeleteCommentButtonOnClick = () => {
+    setConfirmDeleteComment(true);
+    setIsModifyComment(false);
+  };
+
+  const handleDeleteComment = async function () {
+    const res = await fetch(`${basePath}/comments/${_id}`, {
+      method : "DELETE",
+      headers : {
+        'Authorization' : `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 200){
+      const newTotalPostComments = [];
+      for (let comment of totalPostComments){
+        if (comment._id !== _id){
+          newTotalPostComments.push(comment);
+        }
+      }
+
+      const newPostComments = [];
+      if (newTotalPostComments.length > commentsLimit) {
+        let i = 0;
+        while (i < commentsLimit) {
+          newPostComments.push(newTotalPostComments[i]);
+          i++;
+        }
+      } else {
+        newPostComments = newTotalPostComments;
+      }
+
+      setTotalPostComments(newTotalPostComments);
+      setPostComments(newPostComments);
+
+      return alert ("Comment deleted")
+    }
+    else console.log("Deletion failed")
+  };
+
+  const handleCancelDeleteComment = () => {
+    setConfirmDeleteComment(false);
+  };
+
+
   
   return (
     <StyledComment>
@@ -407,7 +525,15 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
             </div>
           </div>)}
         </div>
-        <p>{content}</p>
+        <p>{commentContent}</p>
+        {changeComment && (<div className="changeComment" >
+          <div className="modifyCommentButton" onClick={handleModifyComment} >
+            <p>Modify comment</p>
+          </div>
+          <div className="deleteCommentButton" onClick={handleDeleteCommentButtonOnClick} >
+            <FontAwesomeIcon className="crossDeleteCommentButton" icon={solid("xmark")} />
+          </div>
+        </div>)}
         <div className="commentUserReaction" >
           <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={() => {handleCommentReactionOnClick("heart")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={() => {handleCommentReactionOnClick("thumbs-up")}} />
@@ -415,6 +541,14 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
           <FontAwesomeIcon className={`icon ${userReaction.type === "face-surprise" ? "isSelected" : ""}`} icon={solid("face-surprise")} onClick={() => {handleCommentReactionOnClick("face-surprise")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "face-angry" ? "isSelected" : ""}`} icon={solid("face-angry")} onClick={() => {handleCommentReactionOnClick("face-angry")}} />
         </div>
+        {isModifyComment && 
+        <ModifyComment commentId={_id} content={commentContent} setIsModifyComment={setIsModifyComment} setCommentContent={setCommentContent} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} />}
+        {confirmDeleteComment && 
+        <div className="confirmDeleteComment" >
+          <p>Confirm comment deletion : </p>
+          <button onClick={handleDeleteComment} >Yes</button>
+          <button onClick={handleCancelDeleteComment}>No</button>
+        </div>}
       </div>
     </StyledComment>
   );
