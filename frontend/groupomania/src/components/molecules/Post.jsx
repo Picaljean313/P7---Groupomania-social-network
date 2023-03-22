@@ -9,6 +9,7 @@ import { Context } from "../../utils/Context";
 import { useState } from "react";
 import React from "react";
 import ModifyPost from "../atoms/ModifyPost";
+import { useNavigate } from "react-router";
 
 const reactionHover = keyframes`
 0% {
@@ -162,13 +163,16 @@ img {
   bottom : -15px;
 }
 
+.changePost {
+  position : absolute;
+  left : 30px;
+  bottom : -15px;
+}
+
 .modifyPostButton {
   background-color : white;
   height : 30px;
   border-radius : 15px;
-  position : absolute;
-  left : 30px;
-  bottom : -15px;
   display : flex;
   justify-content : center;
   align-items : center;
@@ -180,6 +184,42 @@ img {
 
 .modifyPostButton:hover {
   color : green;
+}
+
+.deletePostButton {
+  position : absolute;
+  left : 130px;
+  bottom : 0;
+  width : 30px;
+  height : 30px;
+  border-radius : 50%;
+  background-color : red;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.deletePostButton:hover {
+  background-color : green;
+}
+
+.crossDeletePostButton {
+  color : white;
+  font-size : 22px;
+}
+
+.confirmDeletePost{
+  width : 600px;
+  heigth : 100px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  margin-top: 50px;
+}
+
+.confirmDeletePost button{
+  margin-left: 30px;
+  height : 30px;
 }
 `
 
@@ -442,11 +482,38 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
     setIsMoreCommentsToShow(true);
   };
 
-  const modifyPost = (userData._id === postUserData._id || userData.isAdmin); 
+  const changePost = (userData._id === postUserData._id || userData.isAdmin); 
   const [isModifyPost, setIsModifyPost] = useState(false);
 
   const handleModifyPost = () => {
     setIsModifyPost(true);
+    setConfirmDeletePost(false);
+  };
+
+  const [confirmDeletePost, setConfirmDeletePost] = useState(false);
+
+  const handleDeletePostButtonOnClick = () => {
+    setConfirmDeletePost(true);
+    setIsModifyPost(false);
+  };
+
+  const handleDeletePost = async function () {
+    const res = await fetch(`${basePath}/posts/${_id}`, {
+      method : "DELETE",
+      headers : {
+        'Authorization' : `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 200) {
+      alert ("Post deleted");
+      return window.location.reload();
+    }
+    else console.log("Deletion failed")
+  };
+
+  const handleCancelDeletePost = () => {
+    setConfirmDeletePost(false);
   };
   
   return (
@@ -500,9 +567,14 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         </div>
         {postContent && <p>{postContent}</p>}
         {postImageUrl && <img src={postImageUrl} alt={`Post from ${postUserData.pseudo}`}/>}
-        {modifyPost && <div className="modifyPostButton" onClick={handleModifyPost} >
-          <p>Modify post</p>
-        </div>}
+        {changePost && (<div className="changePost" >
+          <div className="modifyPostButton" onClick={handleModifyPost} >
+            <p>Modify post</p>
+          </div>
+          <div className="deletePostButton" onClick={handleDeletePostButtonOnClick} >
+            <FontAwesomeIcon className="crossDeletePostButton" icon={solid("xmark")} />
+          </div>
+        </div>)}
         <div className="postUserReactions" >
           <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={()=> {handlePostReactionOnClick("heart")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={()=> {handlePostReactionOnClick("thumbs-up")}} />
@@ -513,6 +585,12 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       </div>
       {isModifyPost && 
       <ModifyPost postId={_id} content={postContent} imageUrl={postImageUrl} setIsModifyPost={setIsModifyPost} setPostContent={setPostContent} setPostImageUrl={setPostImageUrl} />}
+      {confirmDeletePost && 
+      <div className="confirmDeletePost" >
+        <p>Confirm post deletion : </p>
+        <button onClick={handleDeletePost} >Yes</button>
+        <button onClick={handleCancelDeletePost}>No</button>
+      </div>}
       <div className="comments" >
         {(Array.isArray(postComments) && postComments.length !== 0) ? postComments.map(e => 
           <Comment key={e._id} _id={e._id} content={e.content} commentUserData={e.userData} reactions={e.reactions} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} />
