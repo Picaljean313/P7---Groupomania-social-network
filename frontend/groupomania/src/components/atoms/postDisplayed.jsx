@@ -255,14 +255,18 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
     }
   };
 
+  const [totalPostComments, setTotalPostComments] = useState(postDisplayedData.comments);
+
   const commentsLimit = 2;
 
-  const [isMoreCommentsToShow, setIsMoreCommentsToShow] = useState(postDisplayedData.comments.length > commentsLimit);
+  const initialIsMoreCommentsToShow = totalPostComments.length > commentsLimit;
+
+  const [isMoreCommentsToShow, setIsMoreCommentsToShow] = useState(initialIsMoreCommentsToShow);
 
   const initialPostComments = [];
   let i = 0;
-  while (i < postDisplayedData.comments.length && i < commentsLimit){
-    initialPostComments.push(postDisplayedData.comments[i]);
+  while (i < totalPostComments.length && i < commentsLimit){
+    initialPostComments.push(totalPostComments[i]);
     i++;
   };
 
@@ -271,12 +275,12 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
   const handleMoreCommentsOnClick = () => {
     const newPostComments = [];
     let i = 0;
-    while (i < postComments.length + commentsLimit && i < postDisplayedData.comments.length){
-      newPostComments.push(postDisplayedData.comments[i]);
+    while (i < postComments.length + commentsLimit && i < totalPostComments.length){
+      newPostComments.push(totalPostComments[i]);
       i++;
     }
 
-    if (newPostComments.length === postDisplayedData.comments.length){
+    if (newPostComments.length === totalPostComments.length){
       setIsMoreCommentsToShow(false);
     }
 
@@ -287,7 +291,7 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
     const newPostComments = [];
     let i = 0;
     while (i < commentsLimit) {
-      newPostComments.push(postDisplayedData.comments[i]);
+      newPostComments.push(totalPostComments[i]);
       i++;
     }
     setPostComments(newPostComments);
@@ -297,7 +301,7 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
   const handleClosePostDisplayed = () => {
     setIsPostDisplayed(false);
 
-    if (postContent !== postDisplayedData.content || postImageUrl !== postDisplayedData.imageUrl){
+    if (postContent !== postDisplayedData.content || postImageUrl !== postDisplayedData.imageUrl || totalPostComments !== postDisplayedData.comments){
       window.location.reload();
     }
   };
@@ -409,7 +413,7 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
       </div>}
       <div className="postDisplayedComments" >
         {(Array.isArray(postComments) && postComments.length !== 0) ? postComments.map(e => 
-          <CommentDisplayed key={e._id} commentData={e} />
+          <CommentDisplayed key={e._id} commentData={e}  totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} commentsLimit={commentsLimit} />
         ) : <p>No comments to show</p>}
         <div>
           {(Array.isArray(postComments) && postComments.length !== 0) && (isMoreCommentsToShow ?

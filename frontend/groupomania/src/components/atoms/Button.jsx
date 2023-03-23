@@ -53,6 +53,9 @@ function Button({title, link, className}) {
       }
       setToken("none");
     }
+    else if (title === "Back") {
+      navigate(-1);
+    }
     else {
       navigate(link);
     }

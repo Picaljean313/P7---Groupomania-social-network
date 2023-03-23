@@ -210,7 +210,6 @@ function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent
 
       if (addImageSelection === "addImage") {
         const addImageValue = document.getElementById(`modifyPostAddImage${postId}`).files[0];
-        console.log(addImageValue)
         if (addImageValue === undefined) return
 
         if (modifyContentSelection === "keepContent"){

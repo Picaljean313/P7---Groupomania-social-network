@@ -452,14 +452,10 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
       }
 
       const newPostComments = [];
-      if (newTotalPostComments.length > commentsLimit) {
-        let i = 0;
-        while (i < commentsLimit) {
-          newPostComments.push(newTotalPostComments[i]);
-          i++;
+      for (let comment of postComments){
+        if (comment._id !== _id){
+          newPostComments.push(comment);
         }
-      } else {
-        newPostComments = newTotalPostComments;
       }
 
       setTotalPostComments(newTotalPostComments);
@@ -473,8 +469,6 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
   const handleCancelDeleteComment = () => {
     setConfirmDeleteComment(false);
   };
-
-
   
   return (
     <StyledComment>
@@ -541,15 +535,15 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
           <FontAwesomeIcon className={`icon ${userReaction.type === "face-surprise" ? "isSelected" : ""}`} icon={solid("face-surprise")} onClick={() => {handleCommentReactionOnClick("face-surprise")}} />
           <FontAwesomeIcon className={`icon ${userReaction.type === "face-angry" ? "isSelected" : ""}`} icon={solid("face-angry")} onClick={() => {handleCommentReactionOnClick("face-angry")}} />
         </div>
-        {isModifyComment && 
-        <ModifyComment commentId={_id} content={commentContent} setIsModifyComment={setIsModifyComment} setCommentContent={setCommentContent} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} />}
-        {confirmDeleteComment && 
-        <div className="confirmDeleteComment" >
-          <p>Confirm comment deletion : </p>
-          <button onClick={handleDeleteComment} >Yes</button>
-          <button onClick={handleCancelDeleteComment}>No</button>
-        </div>}
       </div>
+      {isModifyComment && 
+      <ModifyComment commentId={_id} content={commentContent} setIsModifyComment={setIsModifyComment} setCommentContent={setCommentContent} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} />}
+      {confirmDeleteComment && 
+      <div className="confirmDeleteComment" >
+        <p>Confirm comment deletion : </p>
+        <button onClick={handleDeleteComment} >Yes</button>
+        <button onClick={handleCancelDeleteComment}>No</button>
+      </div>}
     </StyledComment>
   );
 }

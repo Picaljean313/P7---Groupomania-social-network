@@ -209,14 +209,17 @@ exports.modifyOneComment = async function (req, res, next) {
 
   let comment;
   try {
-    comment = await CommentsModel.findOne({ _id : req.params.commentId });
+    if (!req.auth.isAdmin){
+      comment = await CommentsModel.findOne({ _id : req.params.commentId, userId : req.auth.userId }).lean();
+    }
+    else {
+      comment = await CommentsModel.findOne({ _id : req.params.commentId }).lean();
+    }
   } catch {
     console.log("Can't find comment.");
     return functions.response(res, 500);
   }
   if (comment === null) return functions.response(res, 400);
-
-  if (!req.auth.isAdmin && req.auth.userId !== comment.userId) return functions.response(res, 401);
 
   const validCommentJson = rules.valid(modifyOneComment.commentJsonDataToValidate, req.body);
   if (!validCommentJson) return functions.response(res, 400);
@@ -240,14 +243,17 @@ exports.deleteOneComment = async function (req, res, next) {
 
   let comment;
   try {
-    comment = await CommentsModel.findOne({ _id : req.params.commentId });
+    if (!req.auth.isAdmin){
+      comment = await CommentsModel.findOne({ _id : req.params.commentId, userId : req.auth.userId }).lean();
+    }
+    else {
+      comment = await CommentsModel.findOne({ _id : req.params.commentId }).lean();
+    }
   } catch {
     console.log("Can't find comment.");
     return functions.response(res, 500);
   }
   if (comment === null) return functions.response(res, 400);
-
-  if (!req.auth.isAdmin && req.auth.userId !== comment.userId) return functions.response(res, 401);
 
   let failedPromises = 0;
   const deletedReactions = ReactionsModel.deleteMany({ commentId : req.params.commentId })

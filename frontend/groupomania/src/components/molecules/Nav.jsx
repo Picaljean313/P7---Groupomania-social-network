@@ -21,6 +21,7 @@ function Nav() {
   const viewAllPostsButton = {key : "viewAllPosts", title : "All posts", link : "/allPosts"}; 
   const viewAllCommentsButton = {key : "viewAllComments", title : "All comments", link : "/allComments"}; 
   const viewAllReportsButton = {key : "viewAllReports", title : "All reports", link : "/allReports"}; 
+  const backButton = {key : "back", title : "Back", link : ""}; 
 
   switch(window.location.pathname){
     case "/" : navButtons = []; break;
@@ -38,11 +39,11 @@ function Nav() {
   }
 
   if (/^\/userProfile\/\S+/.test(window.location.pathname)){
-    navButtons = [logOutButton, homeButton];
+    navButtons = [logOutButton, homeButton, backButton];
   };
 
   if (/^\/modifyProfile\/\S+/.test(window.location.pathname)){
-    navButtons = [logOutButton, homeButton];
+    navButtons = [logOutButton, homeButton, backButton];
   };
 
   if (window.location.pathname === "/home" && userData.isAdmin){

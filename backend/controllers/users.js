@@ -402,8 +402,6 @@ exports.getOneUser = async function (req, res, next) {
   }
   if (user === null) return functions.response(res, 400);
 
-  // if (!req.auth.isAdmin && req.auth.userId !== req.params.userId && req.params.userId !== "me") return functions.response(res, 401); -> tout les membres du réseau social peuvent avoir les infos des autres
-
   if (req.query.activity === "true"){
     let activityArray;
     try {

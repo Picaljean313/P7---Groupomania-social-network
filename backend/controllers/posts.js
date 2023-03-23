@@ -392,14 +392,17 @@ exports.modifyOnePost = async function (req, res, next) {
 
     let post;
     try {
-      post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+      if (!req.auth.isAdmin){
+        post = await PostsModel.findOne({ _id : req.params.postId, userId : req.auth.userId }).lean();
+      }
+      else {
+        post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+      }
     } catch {
       console.log("Can't find post.");
       return functions.unlinkFile(req, res, 500);
     }
     if (post === null) return functions.unlinkFile(req, res, 400);
-
-    if (!req.auth.isAdmin && req.auth.userId !== post.userId) return functions.unlinkFile(req, res, 401);
 
     if (req.body.post){
       const validPostFormData = rules.valid(modifyOnePost.postFormDataToValidate, req.body.post);
@@ -470,14 +473,17 @@ exports.modifyOnePost = async function (req, res, next) {
 
     let post;
     try {
-      post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+      if (!req.auth.isAdmin){
+        post = await PostsModel.findOne({ _id : req.params.postId, userId : req.auth.userId }).lean();
+      }
+      else {
+        post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+      }
     } catch {
       console.log("Can't find post.");
       return functions.response(res, 500);
     }
     if (post === null) return functions.response(res, 400);
-
-    if (!req.auth.isAdmin && req.auth.userId !== post.userId) return functions.response(res, 401);
 
     const validPostJson = rules.valid(modifyOnePost.postJsonDataToValidate, req.body);
     if (!validPostJson) return functions.response(res, 400);
@@ -550,14 +556,17 @@ exports.deleteOnePost = async function (req, res, next) {
 
   let post;
   try {
-    post = await PostsModel.findOne({ _id : req.params.postId });
+    if (!req.auth.isAdmin){
+      post = await PostsModel.findOne({ _id : req.params.postId, userId : req.auth.userId }).lean();
+    }
+    else {
+      post = await PostsModel.findOne({ _id : req.params.postId }).lean();
+    }
   } catch {
     console.log("Can't find post.");
     return functions.response(res, 500);
   }
   if (post === null) return functions.response(res, 400);
-
-  if (!req.auth.isAdmin && req.auth.userId !== post.userId) return functions.response(res, 401);
 
   const commentsIds = [];
 
