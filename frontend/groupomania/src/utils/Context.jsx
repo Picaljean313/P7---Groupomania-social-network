@@ -9,7 +9,7 @@ export const ContextProvider = ({children}) => {
   const initialToken = savedToken !== null ? savedToken : "none";
   const [token, setToken] = useState(initialToken);
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
 
   const [theme, setTheme] = useState("original");
 

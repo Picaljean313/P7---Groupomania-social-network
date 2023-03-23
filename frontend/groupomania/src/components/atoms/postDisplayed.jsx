@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import {Context} from "../../utils/Context";
 import styled from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import CommentDisplayed from "./CommentDisplayed";
+import basePath from "../../utils/basePath";
+import ModifyPost from "../atoms/ModifyPost";
 
 const StyledPostDisplayed = styled.div `
 margin : 80px;
@@ -159,9 +162,73 @@ img {
   color : white;
   font-size : 40px;
 }
+
+.changePostDisplayed {
+  position : absolute;
+  left : 30px;
+  bottom : -15px;
+}
+
+.modifyPostDisplayedButton {
+  background-color : white;
+  height : 30px;
+  border-radius : 15px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.modifyPostDisplayedButton p {
+  margin : 0 15px 0 15px;
+}
+
+.modifyPostDisplayedButton:hover {
+  color : green;
+}
+
+.deletePostDisplayedButton {
+  position : absolute;
+  left : 130px;
+  bottom : 0;
+  width : 30px;
+  height : 30px;
+  border-radius : 50%;
+  background-color : red;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+}
+
+.deletePostDisplayedButton:hover {
+  background-color : green;
+}
+
+.crossDeletePostDisplayedButton {
+  color : white;
+  font-size : 22px;
+}
+
+.confirmDeletePostDisplayed{
+  width : 600px;
+  heigth : 100px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  margin-top: 50px;
+}
+
+.confirmDeletePostDisplayed button{
+  margin-left: 30px;
+  height : 30px;
+}
 `
 
 function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
+  const {userData, token} = useContext(Context);
+
+  const [postContent, setPostContent] = useState(postDisplayedData.content);
+  const [postImageUrl, setPostImageUrl] = useState(postDisplayedData.imageUrl);
+
   const postDisplayedReactions = {
     heart : 0,
     thumbsUp : 0,
@@ -229,6 +296,44 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
 
   const handleClosePostDisplayed = () => {
     setIsPostDisplayed(false);
+
+    if (postContent !== postDisplayedData.content || postImageUrl !== postDisplayedData.imageUrl){
+      window.location.reload();
+    }
+  };
+
+  const changePost = userData.isAdmin === true; 
+  const [isModifyPost, setIsModifyPost] = useState(false);
+
+  const handleModifyPost = () => {
+    setIsModifyPost(true);
+    setConfirmDeletePost(false);
+  };
+
+  const [confirmDeletePost, setConfirmDeletePost] = useState(false);
+
+  const handleDeletePostButtonOnClick = () => {
+    setConfirmDeletePost(true);
+    setIsModifyPost(false);
+  };
+
+  const handleDeletePost = async function () {
+    const res = await fetch(`${basePath}/posts/${postDisplayedData._id}`, {
+      method : "DELETE",
+      headers : {
+        'Authorization' : `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 200) {
+      alert ("Post deleted");
+      return window.location.reload();
+    }
+    else console.log("Deletion failed")
+  };
+
+  const handleCancelDeletePost = () => {
+    setConfirmDeletePost(false);
   };
 
   return (
@@ -283,9 +388,25 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
         <div onClick={handleClosePostDisplayed} className="circleClosePostDisplayed" >
           <FontAwesomeIcon className="crossClosePostDisplayed" icon={solid("xmark")} />
         </div>
-        <p>{postDisplayedData.content}</p>
-        {postDisplayedData.imageUrl && <img src={postDisplayedData.imageUrl} alt={`Post from ${postDisplayedData["userData"].pseudo}`}/>}
+        <p>{postContent}</p>
+        {postImageUrl && <img src={postImageUrl} alt={`Post from ${postDisplayedData["userData"].pseudo}`}/>}
+        {changePost && (<div className="changePostDisplayed" >
+          <div className="modifyPostDisplayedButton" onClick={handleModifyPost} >
+            <p>Modify post</p>
+          </div>
+          <div className="deletePostDisplayedButton" onClick={handleDeletePostButtonOnClick} >
+            <FontAwesomeIcon className="crossDeletePostDisplayedButton" icon={solid("xmark")} />
+          </div>
+        </div>)}
       </div>
+      {isModifyPost && 
+      <ModifyPost postId={postDisplayedData._id} content={postContent} imageUrl={postImageUrl} setIsModifyPost={setIsModifyPost} setPostContent={setPostContent} setPostImageUrl={setPostImageUrl} />}
+      {confirmDeletePost && 
+      <div className="confirmDeletePostDisplayed" >
+        <p>Confirm post deletion : </p>
+        <button onClick={handleDeletePost} >Yes</button>
+        <button onClick={handleCancelDeletePost}>No</button>
+      </div>}
       <div className="postDisplayedComments" >
         {(Array.isArray(postComments) && postComments.length !== 0) ? postComments.map(e => 
           <CommentDisplayed key={e._id} commentData={e} />

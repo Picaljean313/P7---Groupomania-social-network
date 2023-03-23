@@ -73,7 +73,7 @@ p {
 }
 `
 
-function ReportOverview ({type, postOrCommentId, reportUserData}) {
+function ReportOverview ({reportId, type, postOrCommentId, reportUserData, allReports, setAllReports}) {
   const navigate = useNavigate();
   const {token} = useContext(Context);
 
@@ -144,6 +144,26 @@ function ReportOverview ({type, postOrCommentId, reportUserData}) {
   useEffect(()=>{
     getReportPostOrCommentData();
   },[]);
+
+  const handleDeleteReportOnClick = async function () {
+    const res = await fetch (`${basePath}/reports/${reportId}`, {
+      method : "DELETE",
+      headers : {
+        'Authorization' : `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 200) {
+      const newAllReports = [];
+      for (let report of allReports){
+        if (report._id !== reportId){
+          newAllReports.push(report);
+        }
+      }
+
+      setAllReports(newAllReports);
+    }
+  };
   
   
   return (
@@ -164,6 +184,7 @@ function ReportOverview ({type, postOrCommentId, reportUserData}) {
       <div className="reportOverviewButtonsContainer" >
         <button onClick={handleShowPostReportOnClick} >Show associated post</button>
         <button onClick={handleShowUserOnClick} >Show user</button>
+        <button onClick={handleDeleteReportOnClick} >Delete report</button>
       </div>
       {isPostDisplayed && <div className="postAssociated">
         <div className="postAssociatedBackground"></div>

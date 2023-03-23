@@ -112,7 +112,7 @@ function AllReports () {
       <Header />
       <div className = "mainAllReports" >
         {(Array.isArray(allReports) && allReports.length !== 0) ? allReports.map(e => 
-        <ReportOverview key={e._id} type={e.postId !== undefined ? "post" : "comment"} postOrCommentId={e.postId !== undefined ? e.postId : e.commentId} reportUserData={e.userData} />
+        <ReportOverview key={e._id} reportId={e._id} type={e.postId !== undefined ? "post" : "comment"} postOrCommentId={e.postId !== undefined ? e.postId : e.commentId } reportUserData={e.userData} allReports={allReports} setAllReports={setAllReports} />
         ) : <p>No reports to show</p>}
         <div className="allReportsContainer" >
           {Array.isArray(allReports) && allReports.length !==0 && (isMoreReportsToShow ?

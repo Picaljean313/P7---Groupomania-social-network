@@ -9,7 +9,6 @@ import { Context } from "../../utils/Context";
 import { useState } from "react";
 import React from "react";
 import ModifyPost from "../atoms/ModifyPost";
-import { useNavigate } from "react-router";
 
 const reactionHover = keyframes`
 0% {
