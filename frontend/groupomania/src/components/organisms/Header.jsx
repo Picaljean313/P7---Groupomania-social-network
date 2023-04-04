@@ -1,12 +1,26 @@
 import Nav from '../molecules/Nav';
 import Informations from '../atoms/Informations';
 import styled from 'styled-components';
+import colors from '../../utils/colors';
 
 const StyledHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
+  position : relative;
   height: 100px;
   width : 100%;
+
+  .headerTitle {
+    display : flex;
+    align-items : center;
+    justify-content : center;
+    height : 100px;
+  }
+
+  h1 {
+    margin : 0;
+    color : ${colors.primary};
+    font-size : 50px;
+    text-shadow : 2px 2px 2px #ca2400;
+  }
 `
 
 function Header() {
@@ -39,7 +53,9 @@ function Header() {
   return (
     <StyledHeader>
       <Informations />
-      <h1>{title}</h1>
+      <div className="headerTitle" >
+        <h1>{title}</h1>
+      </div>
       <Nav />
     </StyledHeader>
   );

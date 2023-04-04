@@ -4,6 +4,7 @@ import basePath from '../../utils/basePath';
 import { Context } from '../../utils/Context';
 import Header from '../organisms/Header';
 import PostOverview from '../atoms/PostOverview';
+import colors from '../../utils/colors';
 
 
 const StyledAllPosts = styled.div`
@@ -14,10 +15,52 @@ with : 100%;
 height: 100%;
 
 .mainAllPosts {
-  position : relative;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  flex : 1;
+  width : 100%;
   overflow : scroll;
 }
 
+.allPostsContainer {
+  display : flex;
+  flex-direction: column;
+  align-items : center;
+  margin : 40px 0 40px 0;
+}
+
+.allPostsButton {
+  height : 40px;
+  width : 200px;
+  margin : 40px 0 40px 0;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 18px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  border-width : 3px;
+  cursor : pointer;
+}
+
+.allPostsNoPosts {
+  margin : 40px 0 40px 0;
+  width : 490px;
+  height : 70px;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 25px;
+  display : flex;
+  flex-direction : column;
+  align-items: center;
+  justify-content : center;
+}
+
+.allPostsNoPosts p {
+  color : ${colors.secondary};
+  font-size : 20px;
+  margin : 0;
+}
 `
 
 function AllPosts () {
@@ -110,15 +153,20 @@ function AllPosts () {
     <StyledAllPosts>
       <Header />
       <div className = "mainAllPosts" >
-        {(Array.isArray(allPosts) && allPosts.length !== 0) ? allPosts.map(e => 
-        <PostOverview key={e._id} postData={e} userData={e.userData} />
-        ) : <p>No posts to show</p>}
         <div className="allPostsContainer" >
+          {(Array.isArray(allPosts) && allPosts.length !== 0) ? allPosts.map(e => 
+          <PostOverview key={e._id} postData={e} userData={e.userData} />
+          ) : 
+          <div className="allPostsNoPosts" >
+            <p>No posts to show</p>
+          </div>}
           {Array.isArray(allPosts) && allPosts.length !==0 && (isMorePostsToShow ?
           <button className="allPostsButton" onClick={handleMorePostsOnClick}>
             View more posts
           </button> : 
-          <p>No more posts to show</p>)}
+            <div className="allPostsNoPosts" >
+              <p>No more posts to show</p>
+            </div>)}
         </div>  
       </div>
     </StyledAllPosts>

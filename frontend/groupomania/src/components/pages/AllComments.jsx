@@ -4,6 +4,7 @@ import basePath from '../../utils/basePath';
 import { Context } from '../../utils/Context';
 import Header from '../organisms/Header';
 import CommentOverview from '../atoms/CommentOverview';
+import colors from '../../utils/colors';
 
 
 const StyledAllComments = styled.div`
@@ -14,10 +15,52 @@ with : 100%;
 height: 100%;
 
 .mainAllComments {
-  position : relative;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  flex : 1;
+  width : 100%;
   overflow : scroll;
 }
 
+.allCommentsContainer {
+  display : flex;
+  flex-direction: column;
+  align-items : center;
+  margin : 40px 0 40px 0;
+}
+
+.allCommentsButton {
+  height : 40px;
+  width : 200px;
+  margin : 40px 0 40px 0;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 18px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  border-width : 3px;
+  cursor : pointer;
+}
+
+.allCommentsNoComments {
+  margin : 40px 0 40px 0;
+  width : 490px;
+  height : 70px;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 25px;
+  display : flex;
+  flex-direction : column;
+  align-items: center;
+  justify-content : center;
+}
+
+.allCommentsNoComments p {
+  color : ${colors.secondary};
+  font-size : 20px;
+  margin : 0;
+}
 `
 
 function AllComments () {
@@ -110,15 +153,20 @@ function AllComments () {
     <StyledAllComments>
       <Header />
       <div className = "mainAllComments" >
-        {(Array.isArray(allComments) && allComments.length !== 0) ? allComments.map(e => 
-        <CommentOverview key={e._id} commentData={e} userData={e.userData} />
-        ) : <p>No comments to show</p>}
         <div className="allCommentsContainer" >
+          {(Array.isArray(allComments) && allComments.length !== 0) ? allComments.map(e => 
+          <CommentOverview key={e._id} commentData={e} userData={e.userData} />
+          ) : 
+          <div className="allCommentsNoComments" >
+            <p>No comments to show</p>
+          </div>}
           {Array.isArray(allComments) && allComments.length !== 0 && (isMoreCommentsToShow ?
           <button className="allCommentsButton" onClick={handleMoreCommentsOnClick}>
             View more comments
           </button> : 
-          <p>No more comments to show</p>)}
+            <div className="allCommentsNoComments" >
+              <p>No more comments to show</p>
+            </div>)}
         </div>  
       </div>
     </StyledAllComments>

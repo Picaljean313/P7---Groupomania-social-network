@@ -12,10 +12,24 @@ height: 100%;
 
 .mainWelcome {
   display : flex;
-  flex-direction: column;
-  justify-content : center;
+  flex-direction : column;
   align-items : center;
   flex : 1;
+  width : 100%;
+  overflow : scroll;
+}
+
+.mainWelcomeContainer {
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  margin : 40px 0 40px 0;
+}
+
+.mainWelcome h2 {
+  color : #46485b;
+  font-size : 40px;
+  text-shadow : 1px 1px 1px #3f4051;
 }
 `
 
@@ -24,9 +38,11 @@ function Welcome () {
     <StyledWelcome>
       <Header />
       <div className="mainWelcome">
-        <h2>Groupomania social network</h2>
-        <Button title="Sign up" link= "/signUp" className="isWelcome"/>
-        <Button title="Log in" link= "/logIn" className="isWelcome"/>
+        <div className="mainWelcomeContainer">
+          <h2>Groupomania social network</h2>
+          <Button title="Sign up" link= "/signUp" className="isWelcome"/>
+          <Button title="Log in" link= "/logIn" className="isWelcome"/>
+        </div>
       </div>
     </StyledWelcome>
     )

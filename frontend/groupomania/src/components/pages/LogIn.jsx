@@ -5,6 +5,7 @@ import basePath from '../../utils/basePath';
 import { TextInput } from '../atoms/Inputs';
 import { useNavigate } from 'react-router';
 import { Context } from '../../utils/Context';
+import colors from '../../utils/colors';
 
 const StyledLogIn = styled.div`
 display: flex;
@@ -15,15 +16,58 @@ height: 100%;
 
 .mainLogin {
   display : flex;
+  flex-direction : column;
+  align-items : center;
+  flex : 1;
+  width : 100%;
+  overflow : scroll;
+}
+
+.loginForm {
+  display : flex;
   flex-direction: column;
   justify-content : center;
   align-items : center;
-  flex : 1;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 20px;
+  margin : 100px 0 40px 0;
+  padding : 20px 0 10px 0;
+  width :490px;
+}
+
+.loginTextInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.loginTextInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.loginTextInput input {
+  flex:1;
+  font-size : 16px;
+  color : ${colors.tertiary};
 }
 
 .loginFormButtonsContainer {
   display : flex;
-  justify-content : space-around;
+}
+
+.loginFormButtonsContainer button {
+  height : 30px;
+  border-radius : 10px;
+  width : 80px;
+  margin : 20px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
 }
 `
 
@@ -77,9 +121,9 @@ function LogIn () {
     <StyledLogIn>
       <Header />
       <div className="mainLogin">
-        <form onSubmit={handleOnSubmit} >
-          <TextInput name="email" defaultValue="" className="logIn" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-          <TextInput name="password" defaultValue="" className="logIn" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+        <form className="loginForm" onSubmit={handleOnSubmit} >
+          <TextInput name="email" defaultValue="" className="loginTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+          <TextInput name="password" defaultValue="" className="loginTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
           <div className="loginFormButtonsContainer">
             <button type="submit">Submit</button>
             <button type="button" onClick={handleCancelOnClick}>Cancel</button>

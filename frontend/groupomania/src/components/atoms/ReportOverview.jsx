@@ -6,46 +6,114 @@ import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
 import PostDisplayed from "./PostDisplayed";
+import colors from "../../utils/colors";
 
-const StyledReportOverview = styled.div`
-display : flex;
-width : 700px;
-height : 100px;
-border : 1px solid green;
-justify-content : space-around;
-align-items : center;
+const StyledReportOverview = styled.div `
 margin : 20px 0 20px 0;
+width : 580px;
+background-color : ${colors.tertiary};
+box-shadow : 10px 5px 2px #46485b;
+border-radius : 25px;
+padding : 20px;
+display : flex;
+align-items : center;
+justify-content : space-between;
 
-p {
-  margin : 0;
-}
-
-.reportOverviewPostDataContainer{
-  display : flex;
-}
-
-.reportOverviewPostDataContainer img {
-  height : 60px;
-  width : 80px;
+.reportOverviewPostContainer {
+  background-color : #ececf0;
+  border : outset 2px #ececf0;
+  padding : 10px;
   border-radius : 10px;
-  margin : 0 10px 0 0;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  width : 170px;
 }
 
-.reportOverviewPostDataContainer p {
-  width : 200px;
-  heigth : 60px;
+.reportOverviewPostContainer img {
+  margin : 5px 0 5px 0;
+  width : 120px;
+  height : 90px;
+  object-fit : cover;
+}
+
+.reportOverviewPostContainer p {
+  margin : 5px 0 5px 0;
+  max-width : 170px;
+  max-height : 50px;
+  display : block;
   overflow : scroll;
+  font-size : 14px;
+  color : #46485b;
+  cursor : default;
+}
+
+.reportOverviewCommentContainer {
+  background-color : #ececf0;
+  border : outset 2px #ececf0;
+  padding : 10px;
+  border-radius : 10px;
+  display : flex;
+  flex-direction : column;
+  width : 170px;
+}
+
+.reportOverviewCommentLabel {
+  align-self : center;
+  color : #46485b;
+  font-size : 16px;
+  margin : 5px 0 5px 0;
+}
+
+.reportOverviewCommentContent {
+  margin : 5px 0 5px 0;
+  max-width : 170px;
+  max-height : 50px;
+  overflow : scroll;
+  font-size : 14px;
+  color : #46485b;
+  cursor : default;
 }
 
 .reportOverviewUserDataContainer {
+  background-color : #ececf0;
+  border : outset 2px #ececf0;
+  padding : 10px;
+  border-radius : 10px;
+  margin : 0 10px 0 10px;
   display : flex;
+  flex-direction : column;
+  width : 210px;
 }
 
-.reportOverviewUserImage {
+.reportOverviewUserDataLabel {
+  margin : 0 10px 0 0;
+  color : #46485b;
+  font-size : 16px;
+  cursor : default;
+  align-self : center;
+}
+
+.reportOverviewUserData {
+  display : flex;
+  align-items : center;
+}
+
+.reportOverviewUserData img {
   height : 40px;
   width : 40px;
   border-radius : 50%;
   margin : 0 10px 0 0;
+}
+
+.reportOverviewUserData p {
+  max-width : 160px;
+  overflow : hidden;
+  text-overflow : ellipsis;
+  color : #46485b;
+  margin : 0;
+  cursor : default;
+  font-size : 16px;
 }
 
 .reportOverviewButtonsContainer {
@@ -53,25 +121,43 @@ p {
   flex-direction : column;
 }
 
-.postAssociated {
-  position : absolute;
-  top : 0;
-  width : 100%;
-  height : 100%;
-  display : flex;
-  justify-content : center;
+.reportOverviewButtonsContainer button {
+  height : 30px;
+  width : 120px;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
+  margin : 5px 0 5px 0;
 }
 
-.postAssociatedBackground {
+.reportOverviewPostAssociatedReferencePosition {
   position : absolute;
   z-index : 1;
   width : 100%;
   height : 100%;
+  transform : translate(-50%, -50%);
+  top : 50%;
+  left : 50%;
+}
+
+.reportOverviewPostAssociatedBackground {
+  width : 100%;
+  height : 100%;
   background-color : white;
   opacity : 0.5;
-  top : 0px;
 }
-`
+
+.reportOverviewPostAssociatedContainer {
+  position : absolute;
+  width : 100%;
+  height : 100%;
+  overflow : scroll;
+  top : 0;
+  z-index : 2;
+}`
 
 function ReportOverview ({reportId, type, postOrCommentId, reportUserData, allReports, setAllReports}) {
   const navigate = useNavigate();
@@ -169,26 +255,31 @@ function ReportOverview ({reportId, type, postOrCommentId, reportUserData, allRe
   return (
     <StyledReportOverview>
       {type === "post" ? (postData !== "none" &&
-      <div className="reportOverviewPostDataContainer">
-        <img src={postData.imageUrl} alt='Post image' />
-        <p>{postData.content}</p>
+      <div className="reportOverviewPostContainer">
+        {postData.imageUrl && <img src={postData.imageUrl} alt='Post image' />}
+        {postData.content && <p>{postData.content}</p>}
       </div>) : (commentData !== "none" &&
-      <p>{commentData.content}</p>)}
-      <div>
-        <p>From : </p>
-        <div className="reportOverviewUserDataContainer" >
-          <img src={reportUserData.imageUrl} alt='User avatar' className = "reportOverviewUserImage"/>
+      <div className="reportOverviewCommentContainer">
+        <p className="reportOverviewCommentLabel">Comment : </p>
+        <p className="reportOverviewCommentContent">{commentData.content}</p>
+      </div>)}
+      <div className="reportOverviewUserDataContainer">
+        <p className="reportOverviewUserDataLabel">From : </p>
+        <div className="reportOverviewUserData" >
+          <img src={reportUserData.imageUrl} alt='User avatar'/>
           <p>{reportUserData.pseudo}</p>
         </div>
       </div>
       <div className="reportOverviewButtonsContainer" >
-        <button onClick={handleShowPostReportOnClick} >Show associated post</button>
+        <button onClick={handleShowPostReportOnClick} >Show post</button>
         <button onClick={handleShowUserOnClick} >Show user</button>
         <button onClick={handleDeleteReportOnClick} >Delete report</button>
       </div>
-      {isPostDisplayed && <div className="postAssociated">
-        <div className="postAssociatedBackground"></div>
-        <PostDisplayed postDisplayedData={postAssociatedData}  setIsPostDisplayed={setIsPostDisplayed} />
+      {isPostDisplayed && <div className="reportOverviewPostAssociatedReferencePosition">
+        <div className="reportOverviewPostAssociatedBackground"></div>
+        <div className="reportOverviewPostAssociatedContainer">
+          <PostDisplayed postDisplayedData={postAssociatedData}  setIsPostDisplayed={setIsPostDisplayed} />
+        </div>
       </div>} 
     </StyledReportOverview>
   );

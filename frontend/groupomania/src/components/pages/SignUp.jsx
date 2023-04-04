@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import { Context } from '../../utils/Context';
 import { FileInput, TextInput, SelectInput, ConfirmPasswordInput } from '../atoms/Inputs';
 import basePath from '../../utils/basePath';
+import colors from '../../utils/colors';
 
 const StyledSignUp = styled.div`
 display: flex;
@@ -15,10 +16,110 @@ height: 100%;
 
 .mainSignup {
   display : flex;
-  flex-direction: column;
-  justify-content : center;
+  flex-direction : column;
   align-items : center;
   flex : 1;
+  width : 100%;
+  overflow : scroll;
+}
+
+.signupForm {
+  display : flex;
+  flex-direction: column;
+  align-items : center;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 20px;
+  margin : 40px 0 40px 0;
+  padding : 20px 0 10px 0;
+  width :490px;
+}
+
+.signupTextInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.signupTextInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.signupTextInput input {
+  flex:1;
+  font-size : 16px;
+  color : ${colors.tertiary};
+}
+
+.signupSelectInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.signupSelectInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.signupSelectInput select {
+  flex : 1;
+  font-size : 16px;
+  text-align : center;
+}
+
+.signupFileInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.signupFileInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.signupFileInput input {
+  flex : 1;
+  font-size : 16px;
+}
+
+.signupConfirmPasswordInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.signupConfirmPasswordInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.signupConfirmPasswordInput input {
+  width : 300px;
+  font-size : 16px;
+  color : ${colors.tertiary};
+}
+
+.signupFormButtonsContainer {
+  display : flex;
+}
+
+.signupFormButtonsContainer button {
+  height : 30px;
+  border-radius : 10px;
+  width : 80px;
+  margin : 20px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
 }
 `
 
@@ -129,13 +230,13 @@ function SignUp () {
     <StyledSignUp>
       <Header />
       <div className="mainSignup">
-        <form onSubmit={handleOnSubmit} >
-          <TextInput name="pseudo" defaultValue="" className="signUp" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-          <FileInput name="avatar" defaultValue={undefined} className="signUp" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-          <SelectInput name="theme" defaultValue="" className="signUp" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-          <TextInput name="email" defaultValue="" className="signUp" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-          <ConfirmPasswordInput name="password" className="signUp" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-          <div className="loginFormButtonsContainer">
+        <form  className="signupForm" onSubmit={handleOnSubmit} >
+          <TextInput name="pseudo" defaultValue="" className="signupTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+          <FileInput name="avatar" defaultValue={undefined} className="signupFileInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+          <SelectInput name="theme" defaultValue="" className="signupSelectInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+          <TextInput name="email" defaultValue="" className="signupTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+          <ConfirmPasswordInput name="password" className="signupConfirmPasswordInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+          <div className="signupFormButtonsContainer">
             <button type="submit">Submit</button>
             <button type="button" onClick={handleCancelOnClick}>Cancel</button>
           </div>

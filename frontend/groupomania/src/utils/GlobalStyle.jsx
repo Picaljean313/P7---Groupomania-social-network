@@ -7,7 +7,7 @@ const StyledGlobalStyle = createGlobalStyle`
 body {
   margin : 0;
   padding : 0;
-  font-family: Helvetica, Sans-Serif;
+  font-family: Lato, Sans-Serif;
 }
 
 #root {

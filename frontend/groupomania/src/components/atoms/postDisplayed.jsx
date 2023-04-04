@@ -6,118 +6,177 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import CommentDisplayed from "./CommentDisplayed";
 import basePath from "../../utils/basePath";
 import ModifyPost from "../atoms/ModifyPost";
+import colors from "../../utils/colors";
 
 const StyledPostDisplayed = styled.div `
-margin : 80px;
-z-index : 2;
-background-color : yellow;
+position : absolute;
+top : 0;
+left : 50%;
+transform : translateX(-50%);
+margin-top : 60px;
+background-color : ${colors.tertiary};
+box-shadow : 10px 5px 2px #46485b;
 border-radius : 25px;
+width : 490px;
 display : flex;
 flex-direction : column;
 align-items: center;
 
 .postDisplayed {
   position : relative;
-  width : 600px;
+  width : 100%;
   display : flex;
   flex-direction :column;
-  justify-content : center;
   align-items : center;
 }
 
-img {
-  width : 500px;
-  height : 350px;
-  object-fit : cover;;
-  margin : 10px;
+.postDisplayedImageWithContent {
+  width : 444px;
+  height : 297px;
+  object-fit : cover;
+  border-radius : 0 0 10px 10px;
+  border-right : outset 3px white;
+  border-bottom : outset 3px white;
+  border-left : outset 3px white;
+}
+
+.postDisplayedImageWithoutContent {
+  width : 450px;
+  height : 300px;
+  object-fit : cover;
   border-radius : 10px;
+  margin-top : 30px;
+}
+
+.postDisplayedContentWithImage {
+  cursor : default;
+  width : 424px;
+  margin : 30px 0 0 0;
+  border-bottom : solid 2px ${colors.tertiary};
+  border-right : outset 3px white;
+  border-top : outset 3px white;
+  border-left : outset 3px white;
+  border-radius : 10px 10px 0 0;
+  padding : 10px;
+  background-color : white;
+  color : #46485b;
+  font-size : 20px;
+}
+
+.postDisplayedContentWithoutImage {
+  cursor : default;
+  width : 430px;
+  margin : 30px 0 0px 0;
+  border-radius : 10px;
+  padding : 20px 10px 25px 10px;
+  background-color : white;
+  color : #46485b;
+  font-size : 20px;
+  border-style: outset;
+  border-width :3px;
 }
 
 .postDisplayedUserData {
   text-decoration : none;
-  background-color : blue;
-  padding : 5px;
-  border-radius : 25px;
+  border : solid 4px ${colors.tertiary};
+  background-color : #ffebeb;
+  padding : 2px;
+  border-radius : 18px;
   position : absolute;
-  top : -25px;
-  left : 0px;
+  top : -19px;
+  left : 25px;
   display : flex;
   justify-content : center;
   align-items : center;
 }
 
 .postDisplayedUserData p {
-  font-size : 20px;
+  max-width : 90px;
+  overflow : hidden;
+  text-overflow : ellipsis;
+  font-size : 14px;
   margin : 0 10px 0 10px;
-  color : white;
+  color : #46485b;
 }
 
 .postDisplayedUserData img {
-  height : 40px;
-  width : 40px;
+  height : 24px;
+  width : 24px;
   border-radius : 50%;
-  margin : 0 10px 0 0;
-}
-
-.icon {
-  font-size : 20px;
-  margin : 5px;
-}
-
-.isSelected {
-  color : red;
 }
 
 .postDisplayedReactions {
   display : flex;
   position : absolute;
   top : -15px;
-  right : -10px;
+  right : 35px;
 }
 
 .postDisplayedReaction {
   position : relative;
+  margin-right : -10px;
 }
 
-.iconPostDisplayedReaction {
+.postDisplayedHeartPosition {
+  z-index : 5;
+}
+
+.postDisplayedThumbsUpPosition {
+  z-index : 4;
+}
+
+.postDisplayedFaceGrinTearsPosition {
+  z-index : 3;
+}
+
+.postDisplayedFaceSurprisePosition {
+  z-index : 2;
+}
+
+.postDisplayedFaceAngryPosition {
+  z-index : 1;
+}
+
+.postDisplayedReactionIcon {
   margin : 0;
   font-size : 20px;
 }
 
-.iconPostDisplayedReactionBackground {
-  height : 30px;
-  width : 30px;
+.postDisplayedReactionIconBackground {
+  height : 28px;
+  width : 28px;
   border-radius : 50%;
+  border : outset 1px white;
   background-color : white;
   display : flex;
   justify-content : center;
   align-items : center;
 }
 
-.heart {
-  color : red;
+.postDisplayedHeart {
+  color : ${colors.primary};
 }
 
-.thumbsUp {
+.postDisplayedThumbsUp {
   color : blue;
 }
 
-.faceGrinTears {
-  color : orange;
+.postDisplayedFaceGrinTears {
+  color : #f5a742;
 }
 
-.faceSurprise {
-  color : orange;
+.postDisplayedFaceSurprise {
+  color : #f5a742;
 }
 
-.faceAngry {
-  color : orange;
+.postDisplayedFaceAngry {
+  color : #f56042;
 }
 
 .postDisplayedReactionNumber {
   position : absolute;
   left : 19px;
-  bottom : 0px;
+  bottom : -2px;
   background-color : green;
   height : 12px;
   width : 12px;
@@ -133,45 +192,18 @@ img {
   font-size : 8px;
 }
 
-.postDisplayedUserReactions {
-  background-color : white;
-  border-radius : 15px;
-  position : absolute;
-  right : 30px;
-  bottom : -15px;
-}
-
-.circleClosePostDisplayed {
-  position : absolute;
-  right : -55px;
-  top : 20px;
-  width : 50px;
-  height : 50px;
-  border-radius : 50%;
-  background-color : red;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-}
-
-.circleClosePostDisplayed:hover {
-  background-color : green;
-}
-
-.crossClosePostDisplayed {
-  color : white;
-  font-size : 40px;
-}
-
 .changePostDisplayed {
   position : absolute;
   left : 30px;
-  bottom : -15px;
+  bottom : -13px;
+  display : flex;
 }
 
 .modifyPostDisplayedButton {
-  background-color : white;
-  height : 30px;
+  background-color : #ffebeb;
+  border : outset 2px ${colors.secondary};
+  cursor : pointer;
+  height : 22px;
   border-radius : 15px;
   display : flex;
   justify-content : center;
@@ -179,28 +211,22 @@ img {
 }
 
 .modifyPostDisplayedButton p {
-  margin : 0 15px 0 15px;
-}
-
-.modifyPostDisplayedButton:hover {
-  color : green;
+  color : #46485b;
+  margin : 0 13px 0 13px;
+  font-size: 16px;
 }
 
 .deletePostDisplayedButton {
-  position : absolute;
-  left : 130px;
-  bottom : 0;
-  width : 30px;
-  height : 30px;
+  margin-left : 20px;
+  cursor : pointer;
+  width : 22px;
+  height : 22px;
   border-radius : 50%;
-  background-color : red;
+  background-color : ${colors.primary};
+  border : outset 2px ${colors.primary};
   display : flex;
   justify-content : center;
   align-items : center;
-}
-
-.deletePostDisplayedButton:hover {
-  background-color : green;
 }
 
 .crossDeletePostDisplayedButton {
@@ -208,18 +234,82 @@ img {
   font-size : 22px;
 }
 
-.confirmDeletePostDisplayed{
-  width : 600px;
-  heigth : 100px;
+.postDisplayedConfirmDeletePost{
   display : flex;
   justify-content : center;
   align-items : center;
-  margin-top: 50px;
+  margin-top: 30px;
+  padding : 20px;
+  border-radius : 20px;
+  background-color : white;
+  border : outset 3px ${colors.primary};
 }
 
-.confirmDeletePostDisplayed button{
-  margin-left: 30px;
+.postDisplayedConfirmDeletePost p {
+  margin : 0;
+  font-size : 20px;
+  color : #46485b;
+}
+
+.postDisplayedConfirmDeletePost button{
+  cursor : pointer;
+  color : #46485b;
+  border : outset 2px ${colors.primary};
+  border-radius : 5px;
+  margin-left: 20px;
   height : 30px;
+}
+
+.postDisplayedComments {
+  margin : 30px 0 20px 0;
+  width : 404px;
+  padding : 20px;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  background-color : #ececf0;
+  border-radius : 10px;
+  border: outset 3px #ececf0;
+  overflow : scroll;
+}
+
+.postDisplayedNoCommentsToShow {
+  cursor : default;
+  text-align : center;
+  color : #46485b;
+  margin : 0;
+  font-size : 18px;
+}
+
+.postDisplayedHandleCommentsButton {
+  height : 30px;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
+  margin : 20px;
+}
+
+.closePostDisplayedContainer {
+  position : absolute;
+  right : -34px;
+  top : 10px;
+  width : 60px;
+  height : 40px;
+  border-radius : 20px;
+  background-color : white;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  border : outset 4px ${colors.primary};
+  cursor : pointer;
+}
+
+.closePostDisplayedContainer p {
+  color : ${colors.primary};
+  font-size : 20px;
 }
 `
 
@@ -343,57 +433,57 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
   return (
     <StyledPostDisplayed>
       <div className="postDisplayed" >
-        <div className="postDisplayedUserData" >
+        <a className="postDisplayedUserData"  href={postDisplayedData.userId !== userData._id ? `/userProfile/${postDisplayedData.userId}` : '/myProfile'} >
           <img src={postDisplayedData["userData"].imageUrl} alt='Avatar'/>
           <p>{postDisplayedData["userData"].pseudo}</p>
-        </div>
+        </a>
         <div className="postDisplayedReactions">
-          {postDisplayedReactions.heart !== 0 && (<div className="postDisplayedReaction">
-            <div className="iconPostDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconPostDisplayedReaction heart" icon={solid("heart")} />
+          {postDisplayedReactions.heart !== 0 && (<div className="postDisplayedReaction postDisplayedHeartPosition">
+            <div className="postDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="postDisplayedReactionIcon postDisplayedHeart" icon={solid("heart")} />
             </div>
             <div className="postDisplayedReactionNumber">
               <p>{postDisplayedReactions.heart}</p>
             </div>
           </div>)}
-          {postDisplayedReactions.thumbsUp !== 0 && (<div className="postDisplayedReaction">
-            <div className="iconPostDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconPostDisplayedReaction thumbsUp" icon={solid("thumbs-up")} />
+          {postDisplayedReactions.thumbsUp !== 0 && (<div className="postDisplayedReaction postDisplayedThumbsUpPosition">
+            <div className="postDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="postDisplayedReactionIcon postDisplayedThumbsUp" icon={solid("thumbs-up")} />
             </div>
             <div className="postDisplayedReactionNumber">
               <p>{postDisplayedReactions.thumbsUp}</p>
             </div>
           </div>)}
-          {postDisplayedReactions.faceGrinTears !== 0 && (<div className="postDisplayedReaction">
-            <div className="iconPostDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconPostDisplayedReaction faceGrinTears" icon={solid("face-grin-tears")} />
+          {postDisplayedReactions.faceGrinTears !== 0 && (<div className="postDisplayedReaction postDisplayedFaceGrinTearsPosition">
+            <div className="postDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="postDisplayedReactionIcon postDisplayedFaceGrinTears" icon={solid("face-grin-tears")} />
             </div>
             <div className="postDisplayedReactionNumber">
               <p>{postDisplayedReactions.faceGrinTears}</p>
             </div>
           </div>)}
-          {postDisplayedReactions.faceSurprise !== 0 && (<div className="postDisplayedReaction">
-            <div className="iconPostDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconPostDisplayedReaction faceSurprise" icon={solid("face-surprise")} />
+          {postDisplayedReactions.faceSurprise !== 0 && (<div className="postDisplayedReaction postDisplayedFaceSurprisePosition">
+            <div className="postDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="postDisplayedReactionIcon postDisplayedFaceSurprise" icon={solid("face-surprise")} />
             </div>
             <div className="postDisplayedReactionNumber">
               <p>{postDisplayedReactions.faceSurprise}</p>
             </div>
           </div>)}
-          {postDisplayedReactions.faceAngry !== 0 && (<div className="postDisplayedReaction">
-            <div className="iconPostDisplayedReactionBackground">
-            <FontAwesomeIcon className="iconPostDisplayedReaction faceAngry" icon={solid("face-angry")} />
+          {postDisplayedReactions.faceAngry !== 0 && (<div className="postDisplayedReaction postDisplayedFaceAngryPosition">
+            <div className="postDisplayedReactionIconBackground">
+            <FontAwesomeIcon className="postDisplayedReactionIcon postDisplayedFaceAngry" icon={solid("face-angry")} />
             </div>
             <div className="postDisplayedReactionNumber">
               <p>{postDisplayedReactions.faceAngry}</p>
             </div>
           </div>)}
         </div>
-        <div onClick={handleClosePostDisplayed} className="circleClosePostDisplayed" >
-          <FontAwesomeIcon className="crossClosePostDisplayed" icon={solid("xmark")} />
+        <div onClick={handleClosePostDisplayed} className="closePostDisplayedContainer" >
+          <p>Close</p>
         </div>
-        <p>{postContent}</p>
-        {postImageUrl && <img src={postImageUrl} alt={`Post from ${postDisplayedData["userData"].pseudo}`}/>}
+        {postContent && (postImageUrl ? <p className="postDisplayedContentWithImage">{postContent}</p> : <p className="postDisplayedContentWithoutImage">{postContent}</p>)}
+        {postImageUrl && (postContent ? <img className="postDisplayedImageWithContent" src={postImageUrl} alt={`Post from ${postDisplayedData["userData"].pseudo}`}/> : <img className="postDisplayedImageWithoutContent" src={postImageUrl} alt={`Post from ${postDisplayedData["userData"].pseudo}`}/>)}
         {changePost && (<div className="changePostDisplayed" >
           <div className="modifyPostDisplayedButton" onClick={handleModifyPost} >
             <p>Modify post</p>
@@ -406,7 +496,7 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
       {isModifyPost && 
       <ModifyPost postId={postDisplayedData._id} content={postContent} imageUrl={postImageUrl} setIsModifyPost={setIsModifyPost} setPostContent={setPostContent} setPostImageUrl={setPostImageUrl} />}
       {confirmDeletePost && 
-      <div className="confirmDeletePostDisplayed" >
+      <div className="postDisplayedConfirmDeletePost" >
         <p>Confirm post deletion : </p>
         <button onClick={handleDeletePost} >Yes</button>
         <button onClick={handleCancelDeletePost}>No</button>
@@ -414,18 +504,16 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
       <div className="postDisplayedComments" >
         {(Array.isArray(postComments) && postComments.length !== 0) ? postComments.map(e => 
           <CommentDisplayed key={e._id} commentData={e}  totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} commentsLimit={commentsLimit} />
-        ) : <p>No comments to show</p>}
-        <div>
-          {(Array.isArray(postComments) && postComments.length !== 0) && (isMoreCommentsToShow ?
-          <button onClick={handleMoreCommentsOnClick}>
-            View older comments
-          </button> : 
-          <p>No more comments to show</p>)}
-          {(postComments.length > commentsLimit) && 
-          <button onClick={handleHideCommentsOnClick}>
-            Hide extra comments 
-          </button>}
-        </div>
+        ) : <p className="postDisplayedNoCommentsToShow">No comments to show</p>}
+        {(Array.isArray(postComments) && postComments.length !== 0) && (isMoreCommentsToShow ?
+        <button className="postDisplayedHandleCommentsButton" onClick={handleMoreCommentsOnClick}>
+          View older comments
+        </button> : 
+        <p className="postDisplayedNoCommentsToShow">No more comments to show</p>)}
+        {(postComments.length > commentsLimit) && 
+        <button className="postDisplayedHandleCommentsButton" onClick={handleHideCommentsOnClick}>
+          Hide extra comments 
+        </button>}
       </div>
     </StyledPostDisplayed>
   )

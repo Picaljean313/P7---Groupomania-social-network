@@ -4,6 +4,7 @@ import basePath from '../../utils/basePath';
 import { Context } from '../../utils/Context';
 import Header from '../organisms/Header';
 import ReportOverview from '../atoms/ReportOverview';
+import colors from '../../utils/colors';
 
 
 const StyledAllReports = styled.div`
@@ -12,12 +13,54 @@ flex-direction: column;
 align-items : center;
 with : 100%;
 height: 100%;
-position : relative;
 
 .mainAllReports {
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  flex : 1;
+  width : 100%;
   overflow : scroll;
 }
 
+.allReportsContainer {
+  display : flex;
+  flex-direction: column;
+  align-items : center;
+  margin : 40px 0 40px 0;
+}
+
+.allReportsButton {
+  height : 40px;
+  width : 200px;
+  margin : 40px 0 40px 0;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 18px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  border-width : 3px;
+  cursor : pointer;
+}
+
+.allReportsNoReports {
+  margin : 40px 0 40px 0;
+  width : 490px;
+  height : 70px;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 25px;
+  display : flex;
+  flex-direction : column;
+  align-items: center;
+  justify-content : center;
+}
+
+.allReportsNoReports p {
+  color : ${colors.secondary};
+  font-size : 20px;
+  margin : 0;
+}
 `
 
 function AllReports () {
@@ -111,15 +154,20 @@ function AllReports () {
     <StyledAllReports>
       <Header />
       <div className = "mainAllReports" >
-        {(Array.isArray(allReports) && allReports.length !== 0) ? allReports.map(e => 
-        <ReportOverview key={e._id} reportId={e._id} type={e.postId !== undefined ? "post" : "comment"} postOrCommentId={e.postId !== undefined ? e.postId : e.commentId } reportUserData={e.userData} allReports={allReports} setAllReports={setAllReports} />
-        ) : <p>No reports to show</p>}
         <div className="allReportsContainer" >
+          {(Array.isArray(allReports) && allReports.length !== 0) ? allReports.map(e => 
+          <ReportOverview key={e._id} reportId={e._id} type={e.postId !== undefined ? "post" : "comment"} postOrCommentId={e.postId !== undefined ? e.postId : e.commentId } reportUserData={e.userData} allReports={allReports} setAllReports={setAllReports} />
+          ) : 
+          <div className="allReportsNoReports" >
+            <p>No reports to show</p>
+          </div>}
           {Array.isArray(allReports) && allReports.length !==0 && (isMoreReportsToShow ?
           <button className="allReportsButton" onClick={handleMoreReportsOnClick}>
             View more reports
           </button> : 
-          <p>No more reports to show</p>)}
+            <div className="allReportsNoReports" >
+              <p>No more reports to show</p>
+            </div>)}
         </div>  
       </div>
     </StyledAllReports>

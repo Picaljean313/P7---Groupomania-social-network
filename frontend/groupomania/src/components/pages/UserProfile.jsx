@@ -7,61 +7,125 @@ import Header from '../organisms/Header';
 import Button from '../atoms/Button';
 import basePath from '../../utils/basePath';
 import { useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
+import colors from '../../utils/colors';
 
 const StyledUserProfile = styled.div`
 display : flex;
 flex-direction : column;
 align-items : center;
+with : 100%;
+height: 100%;
 
 .mainUserProfile {
   display : flex;
   flex-direction : column;
   align-items : center;
+  flex : 1;
+  width : 100%;
+  overflow : scroll;
+}
+
+.userProfileContainer {
+  width : 490px;
+  border-radius : 20px;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  padding : 20px;
+  margin : 20px;
+}
+
+.userProfileData {
+  color : ${colors.secondary};
 }
 
 .userProfileAvatarAndPseudo {
   display : flex;
   align-items : center;
-  margin-top : 50px;
+  padding : 5px;
+  background-color : #ececf0;
+  border-radius : 65px;
+  border: outset 3px #ececf0;
 }
 
 .userProfileAvatarAndPseudo img {
-height : 120px;
-width : 120px;
-border-radius : 50%;
-object-fit : cover;
-margin : 0 20px 0 0;
+  height : 120px;
+  width : 120px;
+  border-radius : 50%;
+  object-fit : cover;
 }
 
 .userProfileAvatarAndPseudo p {
-font-size : 40px;
-margin : 0 0 0 20px;
+  color : ${colors.tertiary};
+  font-size : 30px;
+  margin : 0;
+  flex : 1;
+  overflow : hidden;
+  text-overflow : ellipsis;
+  padding-left : 20px;
+}
+
+.userProfileDataBlock {
+  display : flex;
+  padding : 20px 10px 10px 10px;
+}
+
+.userProfileDataBlock p {
+  word-break : break-all;
+}
+
+.userProfileDataBlock div {
+  flex : 1;
+  padding : 10px;
 }
 
 .userProfileActivityContainer {
   display : flex;
+  align-items : center;
+  padding-left : 30px;
 }
 
 .userProfileActivity {
-  margin : 0 0 0 30px;
+  margin : 0 0 0 20px;
 }
 
 .userProfileActivity p {
-  margin : 0;
+  margin : 5px 0 5px 0;
+}
+
+.userProfileButtons{
+  display : flex;
+  justify-content : center;
+  padding : 40px 20px 20px 20px;
 }
 
 .userProfileButton {
-  margin : 20px;
+  height : 30px;
+  width : 120px;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  border-width : 2px;
+  cursor : pointer;
+  margin : 0 20px 0 20px;
 }
 
-.userProfileCancelButton {
-  margin : 0 0 0 30px;
+.userProfileIsPasswordNeeded {
+  background-color : white;
+  border : outset 3px ${colors.primary};
+  border-radius : 20px;
+  display : flex;
+  flex-direction : column;
+  align-items: center;
+  margin-top : 30px;
+  padding : 20px;
+  color : ${colors.tertiary};
 }
 
-.isPasswordNeeded {
-  margin : 20px;
-}
+.userProfileButtonsContainer {
+  margin-top : 30px;
 `
 
 function UserProfile () {
@@ -84,7 +148,7 @@ function UserProfile () {
   } catch {
     date = "Can't get date"
   }
-  
+
   const [isPasswordNeeded, setIsPasswordNeeded] = useState(false);
 
   const getUserData = async function () {
@@ -94,7 +158,7 @@ function UserProfile () {
         'Authorization' : `Bearer ${token}`
       }
     });
-  
+
     if (res.status === 200) {
       const apiProfileData = await res.json();
       sessionStorage.setItem("GroupomaniaProfileData", JSON.stringify(apiProfileData));
@@ -123,9 +187,9 @@ function UserProfile () {
 
     const res = await fetch(`${basePath}/users/logIn`,{
       method : "POST",
-      headers: { 
-        'Accept': 'application/json', 
-        'Content-Type': 'application/json' 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
         },
       body : JSON.stringify({
         email : userData.email,
@@ -147,7 +211,7 @@ function UserProfile () {
       else {
         console.log("Can't delete profile")
       }
-    } 
+    }
     else {
       console.log("Password issue")
     }
@@ -157,44 +221,52 @@ function UserProfile () {
     <StyledUserProfile>
       <Header />
       <div className="mainUserProfile">
-        {profileData !== "none" &&
-        <div className="userProfileData">
-          <div className="userProfileAvatarAndPseudo" >
-            <img src={profileData.imageUrl} alt='Avatar'/>
-            <p>{profileData.pseudo}</p>
-          </div>
-          <p>Email : {profileData.email}</p>
-          <p>Theme : {profileData.theme}</p>
-          <p>Status : {profileData.isAdmin ? "admin" : "classic user"}</p>
-          <p>Creation date : {date}</p>
-          <div className="userProfileActivityContainer">
-            <p>Activity :</p>
-            {profileData.activity !== undefined &&
-            <div className="userProfileActivity">
-              <p>Posts : {profileData.activity.posts}</p>
-              <p>Comments : {profileData.activity.comments}</p>
-              <p>Reactions : {profileData.activity.reactions}</p>
-            </div>}
-          </div>
-        </div>}
-        {profileData === "none" && 
-        <p>There is no profile associated to that ID</p>}
-        {!isPasswordNeeded && isAdmin && profileData !== "none" &&
-        <div className="userProfileButtons" >
-          <Button title = "Modify profile" link= {`/modifyProfile/${userId}`} className="userProfileButton" />
-          <button onClick={handleDeleteProfileOnClick} className="userProfileButton" >Delete profile</button>
-        </div>}
-        {isPasswordNeeded && isAdmin && 
-        <div className="isPasswordNeeded" >
-          <form onSubmit={handlePasswordOnSubmit} >
+        <div className="userProfileContainer">
+          {profileData !== "none" &&
+          <div className="userProfileData">
+            <div className="userProfileAvatarAndPseudo" >
+              <img src={profileData.imageUrl} alt='Avatar'/>
+              <p>{profileData.pseudo}</p>
+            </div>
+            <div className="userProfileDataBlock">
+              <div>
+                <p>Email : {profileData.email}</p>
+                <p>Status : {profileData.isAdmin ? "admin" : "classic user"}</p>
+              </div>
+              <div>
+                <p>Theme : {profileData.theme}</p>
+                <p>Creation : {date}</p>
+              </div>
+            </div>
+            <div className="userProfileActivityContainer">
+              <p>Activity :</p>
+              {profileData.activity !== undefined &&
+              <div className="userProfileActivity">
+                <p>Posts : {profileData.activity.posts}</p>
+                <p>Comments : {profileData.activity.comments}</p>
+                <p>Reactions : {profileData.activity.reactions}</p>
+              </div>}
+            </div>
+          </div>}
+          {profileData === "none" &&
+          <p>There is no profile associated to that ID</p>}
+          {!isPasswordNeeded && isAdmin && profileData !== "none" &&
+          <div className="userProfileButtons" >
+            <Button title = "Modify profile" link= {`/modifyProfile/${userId}`} className="userProfileButton" />
+            <button onClick={handleDeleteProfileOnClick} className="userProfileButton" >Delete profile</button>
+          </div>}
+          {isPasswordNeeded && isAdmin &&
+          <form className="userProfileIsPasswordNeeded" onSubmit={handlePasswordOnSubmit} >
             <div>
               <label htmlFor="userProfilePassword" >Password is needed to delete profile : </label>
               <input id="userProfilePassword" type = "password" autoComplete="off" />
             </div>
-            <button type="submit">Validate</button>
-            <button onClick={handleCancelDeleteProfileOnClick} className="userProfileCancelButton">Cancel</button>
-          </form>
-        </div>}
+            <div className="userProfileButtonsContainer">
+              <button className="userProfileButton" type="submit">Validate</button>
+              <button onClick={handleCancelDeleteProfileOnClick} className="userProfileButton">Cancel</button>
+            </div>
+          </form>}
+        </div>  
       </div>
     </StyledUserProfile>
     )

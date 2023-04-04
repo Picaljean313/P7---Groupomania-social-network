@@ -4,6 +4,7 @@ import basePath from '../../utils/basePath';
 import { Context } from '../../utils/Context';
 import Header from '../organisms/Header';
 import ProfileOverview from '../atoms/ProfileOverview';
+import colors from '../../utils/colors';
 
 
 const StyledAllProfiles = styled.div`
@@ -14,10 +15,52 @@ with : 100%;
 height: 100%;
 
 .mainAllProfiles {
-  position : relative;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  flex : 1;
+  width : 100%;
   overflow : scroll;
 }
 
+.allProfilesContainer {
+  display : flex;
+  flex-direction: column;
+  align-items : center;
+  margin : 40px 0 40px 0;
+}
+
+.allProfilesButton {
+  height : 40px;
+  width : 200px;
+  margin : 40px 0 40px 0;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 18px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  border-width : 3px;
+  cursor : pointer;
+}
+
+.allProfilesNoProfiles {
+  margin : 40px 0 40px 0;
+  width : 490px;
+  height : 70px;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 25px;
+  display : flex;
+  flex-direction : column;
+  align-items: center;
+  justify-content : center;
+}
+
+.allProfilesNoProfiles p {
+  color : ${colors.secondary};
+  font-size : 20px;
+  margin : 0;
+}
 `
 
 function AllProfiles () {
@@ -110,16 +153,21 @@ function AllProfiles () {
     <StyledAllProfiles>
       <Header />
       <div className = "mainAllProfiles" >
-        {(Array.isArray(allProfiles) && allProfiles.length !== 0) ? allProfiles.map(e => 
-        <ProfileOverview key={e._id} _id ={e._id} pseudo={e.pseudo} imageUrl={e.imageUrl} email={e.email} isAdmin={e.isAdmin} activity={e.activity} />
-        ) : <p>No profiles to show</p>}
         <div className="allProfilesContainer" >
+          {(Array.isArray(allProfiles) && allProfiles.length !== 0) ? allProfiles.map(e => 
+          <ProfileOverview key={e._id} _id ={e._id} pseudo={e.pseudo} imageUrl={e.imageUrl} email={e.email} isAdmin={e.isAdmin} activity={e.activity} />
+          ) : 
+          <div className="allProfilesNoProfiles" >
+            <p>No profiles to show</p>
+          </div>}
           {Array.isArray(allProfiles) && allProfiles.length !== 0 && (isMoreProfilesToShow ?
           <button className="allProfilesButton" onClick={handleMoreProfilesOnClick}>
             View more profiles
           </button> : 
-          <p>No more profiles to show</p>)}
-        </div>  
+            <div className="allProfilesNoProfiles" >
+              <p>No more profiles to show</p>
+            </div>)}
+        </div>
       </div>
     </StyledAllProfiles>
   )

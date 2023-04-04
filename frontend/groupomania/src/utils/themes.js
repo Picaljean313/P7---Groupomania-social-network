@@ -1,6 +1,8 @@
+import colors from "./colors";
+
 export const themes = {
   original : {
-    background: "linear-gradient(0.25turn, #3f87a6, #ebf8e1, #f69d3c)"
+    background: `linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), linear-gradient(0.25turn, ${colors.primary}, ${colors.secondary}, ${colors.tertiary})` 
   },
   cliffs : {
     background: "linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), url('/images/themes/cliffs.jpeg')"

@@ -3,10 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { keyframes } from "styled-components";
 import basePath from '../../utils/basePath';
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Context } from "../../utils/Context";
 import { useState } from "react";
 import ModifyComment from "./ModifyComment";
+import colors from "../../utils/colors";
 
 const reactionHover = keyframes`
 0% {
@@ -24,26 +25,29 @@ const reactionHover = keyframes`
 `
 
 const StyledComment = styled.div `
-margin : 80px;
-background-color : blue;
+margin : 10px 0 40px 0;
+width : 364px;
+background-color : ${colors.tertiary};
+border : outset 3px ${colors.tertiary};
+position : relative;
+border-radius : 10px;
+padding : 40px 20px 40px 20px;
 
-.comment {
-  position : relative;
-  width : 500px;
-  border-radius : 25px 25px 0 0;
-  display : flex;
-  flex-direction :column;
-  justify-content : center;
-  align-items : center;
+.commentContent {
+  margin : 0;
+  font-size : 16px;
+  color : white;
 }
+
 
 .commentUserData {
   text-decoration : none;
-  background-color : purple;
-  padding : 3px;
-  border-radius : 13px;
+  border : solid 2px ${colors.tertiary};
+  background-color : #ffebeb;
+  padding : 2px;
+  border-radius : 18px;
   position : absolute;
-  top : -13px;
+  top : -14px;
   left : 10px;
   display : flex;
   justify-content : center;
@@ -51,71 +55,144 @@ background-color : blue;
 }
 
 .commentUserData p {
-  font-size : 10px;
-  margin : 0 5px 0 5px;
-  color : white;
+  max-width : 90px;
+  overflow : hidden;
+  text-overflow : ellipsis;
+  font-size : 14px;
+  margin : 0 10px 0 10px;
+  color : #46485b;
 }
 
 .commentUserData img {
   height : 20px;
   width : 20px;
   border-radius : 50%;
-  margin : 0 5px 0 0;
 }
 
-.icon {
-  font-size : 20px;
-  margin : 5px;
+.commentUserReactions {
+  border : outset 2px ${colors.secondary};
+  background-color : #ffebeb;
+  padding : 0 2px 0 2px;
+  border-radius : 13px;
+  position : absolute;
+  right : 10px;
+  bottom : -13px;
 }
 
-.icon:hover {
+.commentUserReactionIcon {
+  color : #46485b;
+  font-size : 16px;
+  margin : 3px 2px 3px 2px;
+  vertical-align : -3.5px;
+}
+
+.commentReport {
+  border : outset 2px ${colors.secondary};
+  background-color : #ffebeb;
+  height : 22px;
+  width : 22px;
+  border-radius : 13px;
+  position : absolute;
+  right : 140px;
+  bottom : -13px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  cursor : pointer;
+  color : ${colors.tertiary};
+  font-size : 14px;
+}
+
+.commentReport p {
+  margin : 0;
+}
+
+.isCommentReported {
+  background-color : white;
+  border : outset 3px ${colors.primary};
+  color : ${colors.primary};
+  font-size : 18px;
+  width: 30px;
+  height : 30px;
+  bottom : -18px;
+  right : 136px;
+  border-radius : 18px;
+}
+
+.commentUserReactionIcon:hover {
   animation : ${reactionHover} 1000ms linear;
+}
+
+.commentIsSelected {
+  color : green;
 }
 
 .commentReactions {
   display : flex;
   position : absolute;
   top : -15px;
-  right : -10px;
+  right : 20px;
 }
 
 .commentReaction {
   position : relative;
+  margin-right : -10px;
 }
 
-.iconCommentReaction {
+.commentHeartPosition {
+  z-index : 5;
+}
+
+.commentThumbsUpPosition {
+  z-index : 4;
+}
+
+.commentFaceGrinTearsPosition {
+  z-index : 3;
+}
+
+.commentFaceSurprisePosition {
+  z-index : 2;
+}
+
+.commentFaceAngryPosition {
+  z-index : 1;
+}
+
+.commentReactionIcon {
   margin : 0;
   font-size : 20px;
 }
 
-.iconCommentReactionBackground {
-  height : 30px;
-  width : 30px;
+.commentReactionIconBackground {
+  height : 28px;
+  width : 28px;
   border-radius : 50%;
+  border : outset 1px white;
   background-color : white;
   display : flex;
   justify-content : center;
   align-items : center;
 }
 
-.heart {
-  color : red;
+.commentHeart {
+  color : ${colors.primary};
 }
 
-.thumbsUp {
+.commentThumbsUp {
   color : blue;
 }
 
-.faceGrinTears {
-  color : orange;
+.commentFaceGrinTears {
+  color : #f5a742;
 }
 
-.faceSurprise {
-  color : orange;
+.commentFaceSurprise {
+  color : #f5a742;
 }
 
-.faceAngry {
-  color : orange;
+.commentFaceAngry {
+  color : #f56042;
 }
 
 .commentReactionNumber {
@@ -147,13 +224,16 @@ background-color : blue;
 
 .changeComment {
   position : absolute;
-  left : 30px;
-  bottom : -15px;
+  left : 10px;
+  bottom : -12px;
+  display : flex;
 }
 
 .modifyCommentButton {
-  background-color : white;
-  height : 30px;
+  background-color : #ffebeb;
+  border : outset 2px ${colors.secondary};
+  cursor : pointer;
+  height : 18px;
   border-radius : 15px;
   display : flex;
   justify-content : center;
@@ -161,28 +241,22 @@ background-color : blue;
 }
 
 .modifyCommentButton p {
-  margin : 0 15px 0 15px;
-}
-
-.modifyCommentButton:hover {
-  color : green;
+  color : #46485b;
+  margin : 0 13px 0 13px;
+  font-size : 12px;
 }
 
 .deleteCommentButton {
-  position : absolute;
-  left : 160px;
-  bottom : 0;
-  width : 30px;
-  height : 30px;
+  margin-left : 20px;
+  cursor : pointer;
+  width : 18px;
+  height : 18px;
   border-radius : 50%;
-  background-color : red;
+  background-color : ${colors.primary};
+  border : outset 2px ${colors.primary};
   display : flex;
   justify-content : center;
   align-items : center;
-}
-
-.deleteCommentButton:hover {
-  background-color : green;
 }
 
 .crossDeleteCommentButton {
@@ -191,16 +265,28 @@ background-color : blue;
 }
 
 .confirmDeleteComment{
-  width : 600px;
-  heigth : 100px;
   display : flex;
   justify-content : center;
   align-items : center;
-  margin-top: 50px;
+  margin-top: 30px;
+  padding : 20px;
+  border-radius : 20px;
+  background-color : white;
+  border : outset 3px ${colors.primary};
+}
+
+.confirmDeleteComment p {
+  margin : 0;
+  font-size : 20px;
+  color : #46485b;
 }
 
 .confirmDeleteComment button{
-  margin-left: 30px;
+  cursor : pointer;
+  color : #46485b;
+  border : outset 2px ${colors.primary};
+  border-radius : 5px;
+  margin-left: 20px;
   height : 30px;
 }
 `
@@ -210,6 +296,9 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
   const {token, userData} = useContext(Context);
 
   const [commentContent, setCommentContent] = useState(content);
+
+  const [isCommentReported, setIsCommentReported] = useState(false);
+  const [reportId, setReportId] = useState("none");
 
   let initialUserReaction = "none";
 
@@ -469,80 +558,146 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
   const handleCancelDeleteComment = () => {
     setConfirmDeleteComment(false);
   };
+
+  const hasUserReportedComment = async function () {
+    const res = await fetch(`${basePath}/reports?fromUserId=${userData._id}&fromCommentId=${_id}`, {
+      method : "GET",
+      headers : {
+        'Authorization' : `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 200) {
+      const resJson = await res.json();
+      if (resJson.length === 1){
+        setIsCommentReported(true);
+        setReportId(resJson[0]._id);
+      }
+    }
+  };
+
+  useEffect(()=> {
+    hasUserReportedComment();
+  },[]);
+
+  const handleCommentReportOnClick = async function () {
+    if (isCommentReported === false) {
+      const res = await fetch (`${basePath}/reports`, {
+        method : "POST",
+        headers : {
+          'Accept': 'application/json', 
+          'Content-Type': 'application/json',
+          'Authorization' : `Bearer ${token}`
+        },
+        body : JSON.stringify({commentId : _id })
+      });
+
+      if (res.status === 200 || res.status === 201) {
+        const resJson = await res.json();
+        const report = resJson.report;
+        setReportId(report._id);
+        setIsCommentReported(true);
+        return alert("Comment reported. Click once more to cancel report")
+      } else {
+        return console.log("Report failed")
+      }
+    }
+
+    if (isCommentReported === true) {
+      if (reportId === "none") return console.log("Report deletion failed")
+
+      const res = await fetch (`${basePath}/reports/${reportId}`, {
+        method : "DELETE",
+        headers : {
+          'Authorization' : `Bearer ${token}`
+        }
+      });
+
+      if (res.status === 200) {
+        setReportId("none");
+        setIsCommentReported(false);
+        return alert("Comment report canceled")
+      } else {
+        return console.log("Report deletion failed")
+      }
+    }
+  };
   
   return (
     <StyledComment>
-      <div className="comment">
-        <a className="commentUserData" href={`/userProfile/${commentUserData._id}`} >
-          <img src={commentUserData.imageUrl} alt='Avatar'/>
-          <p>{commentUserData.pseudo}</p>
-        </a>
-        <div className="commentReactions">
-          {commentReactions.heart !== 0 && (<div className="commentReaction">
-            <div className="iconCommentReactionBackground">
-              <FontAwesomeIcon className="iconCommentReaction heart" icon={solid("heart")} />
-            </div>
-            <div className="commentReactionNumber">
-              <p>{commentReactions.heart}</p>
-            </div>
-          </div>)}
-          {commentReactions.thumbsUp !== 0 && (<div className="commentReaction">
-            <div className="iconCommentReactionBackground">
-              <FontAwesomeIcon className="iconCommentReaction thumbsUp" icon={solid("thumbs-up")} />
-            </div>
-            <div className="commentReactionNumber">
-              <p>{commentReactions.thumbsUp}</p>
-            </div>
-          </div>)}
-          {commentReactions.faceGrinTears !== 0 && (<div className="commentReaction">
-            <div className="iconCommentReactionBackground">
-              <FontAwesomeIcon className="iconCommentReaction faceGrinTears" icon={solid("face-grin-tears")} />
-            </div>
-            <div className="commentReactionNumber">
-              <p>{commentReactions.faceGrinTears}</p>
-            </div>
-          </div>)}
-          {commentReactions.faceSurprise !== 0 && (<div className="commentReaction">
-            <div className="iconCommentReactionBackground">
-              <FontAwesomeIcon className="iconCommentReaction faceSurprise" icon={solid("face-surprise")} />
-            </div>
-            <div className="commentReactionNumber">
-              <p>{commentReactions.faceSurprise}</p>
-            </div>
-          </div>)}
-          {commentReactions.faceAngry !== 0 && (<div className="commentReaction">
-            <div className="iconCommentReactionBackground">
-            <FontAwesomeIcon className="iconCommentReaction faceAngry" icon={solid("face-angry")} />
-            </div>
-            <div className="commentReactionNumber">
-              <p>{commentReactions.faceAngry}</p>
-            </div>
-          </div>)}
-        </div>
-        <p>{commentContent}</p>
-        {changeComment && (<div className="changeComment" >
-          <div className="modifyCommentButton" onClick={handleModifyComment} >
-            <p>Modify comment</p>
+      <a className="commentUserData" href={commentUserData._id !== userData._id ? `/userProfile/${commentUserData._id}` : '/myProfile'} >
+        <img src={commentUserData.imageUrl} alt='Avatar'/>
+        <p>{commentUserData.pseudo}</p>
+      </a>
+      <div className="commentReactions">
+        {commentReactions.heart !== 0 && (<div className="commentReaction commentHeartPosition">
+          <div className="commentReactionIconBackground">
+            <FontAwesomeIcon className="commentReactionIcon commentHeart" icon={solid("heart")} />
           </div>
-          <div className="deleteCommentButton" onClick={handleDeleteCommentButtonOnClick} >
-            <FontAwesomeIcon className="crossDeleteCommentButton" icon={solid("xmark")} />
+          <div className="commentReactionNumber">
+            <p>{commentReactions.heart}</p>
           </div>
         </div>)}
-        <div className="commentUserReaction" >
-          <FontAwesomeIcon className={`icon ${userReaction.type === "heart" ? "isSelected" : ""}`} icon={solid("heart")} onClick={() => {handleCommentReactionOnClick("heart")}} />
-          <FontAwesomeIcon className={`icon ${userReaction.type === "thumbs-up" ? "isSelected" : ""}`} icon={solid("thumbs-up")} onClick={() => {handleCommentReactionOnClick("thumbs-up")}} />
-          <FontAwesomeIcon className={`icon ${userReaction.type === "face-grin-tears" ? "isSelected" : ""}`} icon={solid("face-grin-tears")} onClick={() => {handleCommentReactionOnClick("face-grin-tears")}} />
-          <FontAwesomeIcon className={`icon ${userReaction.type === "face-surprise" ? "isSelected" : ""}`} icon={solid("face-surprise")} onClick={() => {handleCommentReactionOnClick("face-surprise")}} />
-          <FontAwesomeIcon className={`icon ${userReaction.type === "face-angry" ? "isSelected" : ""}`} icon={solid("face-angry")} onClick={() => {handleCommentReactionOnClick("face-angry")}} />
-        </div>
+        {commentReactions.thumbsUp !== 0 && (<div className="commentReaction commentThumbsUpPosition">
+          <div className="commentReactionIconBackground">
+            <FontAwesomeIcon className="commentReactionIcon commentThumbsUp" icon={solid("thumbs-up")} />
+          </div>
+          <div className="commentReactionNumber">
+            <p>{commentReactions.thumbsUp}</p>
+          </div>
+        </div>)}
+        {commentReactions.faceGrinTears !== 0 && (<div className="commentReaction commentFaceGrinTearsPosition">
+          <div className="commentReactionIconBackground">
+            <FontAwesomeIcon className="commentReactionIcon commentFaceGrinTears" icon={solid("face-grin-tears")} />
+          </div>
+          <div className="commentReactionNumber">
+            <p>{commentReactions.faceGrinTears}</p>
+          </div>
+        </div>)}
+        {commentReactions.faceSurprise !== 0 && (<div className="commentReaction commentFaceSurprisePosition">
+          <div className="commentReactionIconBackground">
+            <FontAwesomeIcon className="commentReactionIcon commentFaceSurprise" icon={solid("face-surprise")} />
+          </div>
+          <div className="commentReactionNumber">
+            <p>{commentReactions.faceSurprise}</p>
+          </div>
+        </div>)}
+        {commentReactions.faceAngry !== 0 && (<div className="commentReaction commentFaceAngryPosition">
+          <div className="commentReactionIconBackground">
+          <FontAwesomeIcon className="commentReactionIcon commentFaceAngry" icon={solid("face-angry")} />
+          </div>
+          <div className="commentReactionNumber">
+            <p>{commentReactions.faceAngry}</p>
+          </div>
+        </div>)}
       </div>
+      <p className="commentContent ">{commentContent}</p>
+      {changeComment && (<div className="changeComment" >
+        <div className="modifyCommentButton" onClick={handleModifyComment} >
+          <p>Modify comment</p>
+        </div>
+        <div className="deleteCommentButton" onClick={handleDeleteCommentButtonOnClick} >
+          <FontAwesomeIcon className="crossDeleteCommentButton" icon={solid("xmark")} />
+        </div>
+      </div>)}
+      <div className="commentUserReactions" >
+        <FontAwesomeIcon className={`commentUserReactionIcon ${userReaction.type === "heart" ? "commentIsSelected" : ""}`} icon={solid("heart")} onClick={() => {handleCommentReactionOnClick("heart")}} />
+        <FontAwesomeIcon className={`commentUserReactionIcon ${userReaction.type === "thumbs-up" ? "commentIsSelected" : ""}`} icon={solid("thumbs-up")} onClick={() => {handleCommentReactionOnClick("thumbs-up")}} />
+        <FontAwesomeIcon className={`commentUserReactionIcon ${userReaction.type === "face-grin-tears" ? "commentIsSelected" : ""}`} icon={solid("face-grin-tears")} onClick={() => {handleCommentReactionOnClick("face-grin-tears")}} />
+        <FontAwesomeIcon className={`commentUserReactionIcon ${userReaction.type === "face-surprise" ? "commentIsSelected" : ""}`} icon={solid("face-surprise")} onClick={() => {handleCommentReactionOnClick("face-surprise")}} />
+        <FontAwesomeIcon className={`commentUserReactionIcon ${userReaction.type === "face-angry" ? "commentIsSelected" : ""}`} icon={solid("face-angry")} onClick={() => {handleCommentReactionOnClick("face-angry")}} />
+      </div>
+      {commentUserData._id !== userData._id && 
+      <div className={`commentReport ${isCommentReported === true && "isCommentReported"}`} onClick={handleCommentReportOnClick} >
+          <p>R</p>
+      </div>}
       {isModifyComment && 
       <ModifyComment commentId={_id} content={commentContent} setIsModifyComment={setIsModifyComment} setCommentContent={setCommentContent} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} />}
       {confirmDeleteComment && 
       <div className="confirmDeleteComment" >
-        <p>Confirm comment deletion : </p>
+        <p>Confirm deletion : </p>
         <button onClick={handleDeleteComment} >Yes</button>
-        <button onClick={handleCancelDeleteComment}>No</button>
+        <button onClick={handleCancelDeleteComment}>Cancel</button>
       </div>}
     </StyledComment>
   );

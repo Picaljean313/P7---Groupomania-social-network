@@ -2,10 +2,48 @@ import { useContext } from "react";
 import styled from "styled-components";
 import basePath from "../../utils/basePath";
 import { Context } from "../../utils/Context";
+import colors from "../../utils/colors";
 
 const StyledModifyComment = styled.div `
-margin : 80px;
-background-color : blue;
+width : 318px;
+background-color : white;
+border : outset 3px ${colors.primary};
+border-radius : 20px;
+margin-top : 30px;
+padding : 20px;
+
+.modifyCommentForm {
+  display : flex;
+  flex-direction : column;
+  align-items: center;
+}
+
+.modifyCommentForm label {
+  color : #46485b;
+  font-size : 16px;
+}
+
+.modifyCommentForm textarea {
+  min-width : 300px;
+  max-width : 300px;
+  min-height : 20px;
+  max-height : 100px;
+  color : #46485b;
+  font-size : 14px;
+  margin-top : 20px;
+}
+
+.modifyCommentButtonsContainer button {
+  height : 30px;
+  border-radius : 10px;
+  width : 80px;
+  margin : 20px 10px 0 10px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
+}
 `
 
 function ModifyComment ({commentId, content, setIsModifyComment, setCommentContent, totalPostComments, postComments, setTotalPostComments, setPostComments}) {
@@ -63,11 +101,13 @@ function ModifyComment ({commentId, content, setIsModifyComment, setCommentConte
 
   return (
     <StyledModifyComment>
-      <form onSubmit = { handleModifyCommentOnSubmit }>
+      <form className="modifyCommentForm" onSubmit = { handleModifyCommentOnSubmit }>
         <label htmlFor = {`modifyCommentModifyContent${commentId}`} >Modify your content : </label>
         <textarea id = {`modifyCommentModifyContent${commentId}`} type = "text" defaultValue={content} maxLength = "1000" />
-        <button type="submit">Envoyer</button>
-        <button onClick={handleCancelModifyCommentOnClick} >Cancel</button>
+        <div className="modifyCommentButtonsContainer">
+          <button type="submit">Modify</button>
+          <button onClick={handleCancelModifyCommentOnClick} >Cancel</button>
+        </div>
       </form>
     </StyledModifyComment>
   )

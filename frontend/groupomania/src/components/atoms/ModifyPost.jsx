@@ -3,14 +3,78 @@ import { useState } from "react";
 import basePath from "../../utils/basePath";
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
+import colors from "../../utils/colors";
 
 const StyledModifyPost = styled.div `
-background-color : yellow;
-width : 600px;
+width : 402px;
+background-color : white;
+border : outset 3px ${colors.primary};
+border-radius : 20px;
 display : flex;
 flex-direction : column;
 align-items: center;
-margin-top : 50px;
+margin-top : 30px;
+
+.modifyPostForm {
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+}
+
+.modifyPostSelectContainer {
+  width : 362px;
+  margin : 20px 20px 0 20px;
+  display : flex;
+  align-items : center;
+}
+
+.modifyPostSelectContainer label {
+  color : #46485b;
+  margin-right : 10px;
+  font-size : 18px;
+}
+
+.modifyPostSelectContainer select {
+  color : #46485b;
+  font-size : 16px;
+}
+
+.modifyPostForm textarea {
+  min-width : 300px;
+  max-width : 300px;
+  min-height : 20px;
+  max-height : 100px;
+  color : #46485b;
+  font-size : 14px;
+  margin-top : 20px;
+}
+
+.modifyPostForm input {
+  color : #46485b;
+  margin-top : 20px;
+}
+
+.modifyPostForm input::file-selector-button  {
+  color : #46485b;
+}
+
+.modifyPostButtonsContainer {
+  display : flex;
+  margin : 20px;
+  justify-content : center;
+}
+
+.modifyPostButtonsContainer button {
+  height : 30px;
+  border-radius : 10px;
+  width : 80px;
+  margin : 10px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
+}
 `
 
 function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent, setPostImageUrl}) {
@@ -394,9 +458,9 @@ function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent
 
   return (
     <StyledModifyPost>
-      <form onSubmit = { handleModifyPostOnSubmit }>
+      <form className="modifyPostForm" onSubmit = { handleModifyPostOnSubmit }>
         {content ?
-        <div>
+        <div className="modifyPostSelectContainer">
           <label htmlFor = {`modifyPostContentSelection${postId}`} >Modify post content : </label>
           <select id={`modifyPostContentSelection${postId}`} defaultValue="keepContent" onChange={handleModifyContentOnChange} >
             <option value="keepContent" >Don't change content</option>
@@ -404,7 +468,7 @@ function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent
             <option value="deleteContent" >Delete content</option>
           </select>
         </div> :
-        <div>
+        <div className="modifyPostSelectContainer">
           <label htmlFor = {`modifyPostAddContentSelection${postId}`} >Add content : </label>
           <select id={`modifyPostAddContentSelection${postId}`} defaultValue="noContent" onChange={handleAddContentOnChange} >
             <option value="noContent" >Don't add content</option>
@@ -412,17 +476,15 @@ function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent
           </select>
         </div>}
         {isModifyContent &&
-        <div>
-          <label htmlFor = {`modifyPostModifyContent${postId}`} >Modify your content : </label>
+        <div className="modifyPostInputContainer">
           <textarea id = {`modifyPostModifyContent${postId}`} type = "text" defaultValue={content} maxLength = "1000" />
         </div>}
         {isAddContent &&
-        <div>
-          <label htmlFor = {`modifyPostAddContent${postId}`} >Add content : </label>
+        <div className="modifyPostInputContainer">
           <textarea id = {`modifyPostAddContent${postId}`} type = "text" defaultValue="" maxLength = "1000" />
         </div>}
         {imageUrl ?
-        <div>
+        <div className="modifyPostSelectContainer">
           <label htmlFor = {`modifyPostImageSelection${postId}`} >Modify post image : </label>
           <select id={`modifyPostImageSelection${postId}`} defaultValue="keepImage" onChange={handleModifyImageOnChange} >
             <option value="keepImage" >Don't change image</option>
@@ -430,7 +492,7 @@ function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent
             <option value="deleteImage" >Delete image</option>
           </select>
         </div> : 
-        <div>
+        <div className="modifyPostSelectContainer">
           <label htmlFor = {`modifyPostAddImageSelection${postId}`} >Add image : </label>
           <select id={`modifyPostAddImageSelection${postId}`} onChange={handleAddImageOnChange} >
             <option value="noImage" >Don't add image</option>
@@ -438,17 +500,17 @@ function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent
           </select>
         </div>}
         {isModifyImage &&
-        <div>
-          <label htmlFor = {`modifyPostModifyImage${postId}`} >Change post image : </label>
+        <div className="modifyPostInputContainer">
           <input id = {`modifyPostModifyImage${postId}`} type="file" accept= "image/png, image/jpeg, image/jpg" />
         </div>}
         {isAddImage &&
-        <div>
-          <label htmlFor = {`modifyPostAddImage${postId}`} >Add image : </label>
+        <div className="modifyPostInputContainer">
           <input id = {`modifyPostAddImage${postId}`} type="file" accept= "image/png, image/jpeg, image/jpg" />
         </div>}
-        <button type="submit">Envoyer</button>
-        <button onClick={handleCancelModifyPostOnClick} >Cancel</button>
+        <div className="modifyPostButtonsContainer">
+          <button type="submit">Modify</button>
+          <button onClick={handleCancelModifyPostOnClick} >Cancel</button>
+        </div>
       </form>
     </StyledModifyPost>
   )

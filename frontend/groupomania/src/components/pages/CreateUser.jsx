@@ -6,6 +6,7 @@ import basePath from '../../utils/basePath';
 import { useNavigate } from 'react-router';
 import { useContext } from 'react';
 import { Context } from '../../utils/Context';
+import colors from '../../utils/colors';
 
 
 const StyledCreateUser = styled.div`
@@ -17,10 +18,111 @@ height: 100%;
 
 .mainCreateUser {
   display : flex;
+  flex-direction : column;
+  align-items : center;
+  flex : 1;
+  width : 100%;
+  overflow : scroll;
+}
+
+.createUserForm {
+  display : flex;
   flex-direction: column;
   justify-content : center;
   align-items : center;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 20px;
+  margin : 40px 0 40px 0;
+  padding : 20px 0 10px 0;
+  width :490px;
+}
+
+.createUserTextInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.createUserTextInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.createUserTextInput input {
+  flex:1;
+  font-size : 16px;
+  color : ${colors.tertiary};
+}
+
+.createUserSelectInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.createUserSelectInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.createUserSelectInput select {
   flex : 1;
+  font-size : 16px;
+  text-align : center;
+}
+
+.createUserFileInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.createUserFileInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.createUserFileInput input {
+  flex : 1;
+  font-size : 16px;
+}
+
+.createUserConfirmPasswordInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.createUserConfirmPasswordInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.createUserConfirmPasswordInput input {
+  width : 300px;
+  font-size : 16px;
+  color : ${colors.tertiary};
+}
+
+.createUserFormButtonsContainer {
+  display : flex;
+}
+
+.createUserFormButtonsContainer button {
+  height : 30px;
+  border-radius : 10px;
+  width : 80px;
+  margin : 20px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
 }
 `
 
@@ -79,11 +181,7 @@ function CreateUser () {
         });
 
         if (res.status === 200 || res.status === 201) {
-          document.getElementById("pseudo").value = ""; 
-          document.getElementById("theme").value = "original"; 
-          document.getElementById("email").value = ""; 
-          document.getElementById("password").value = ""; 
-          document.getElementById("isAdmin").value = false; 
+          window.location.reload();
           return alert ("User created")
         } 
         else {
@@ -102,11 +200,7 @@ function CreateUser () {
         });
 
         if (res.status === 200 || res.status === 201) {
-          document.getElementById("pseudo").value = ""; 
-          document.getElementById("theme").value = "original"; 
-          document.getElementById("email").value = ""; 
-          document.getElementById("password").value = ""; 
-          document.getElementById("isAdmin").value = false; 
+          window.location.reload();
           return alert ("User created")
         } 
         else {
@@ -124,14 +218,14 @@ function CreateUser () {
       <StyledCreateUser>
         <Header />
         <div className = "mainCreateUser" >
-          <form onSubmit={handleOnSubmit} >
-            <TextInput name="pseudo" defaultValue="" className="createUser" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <FileInput name="avatar" defaultValue={undefined} className="createUser" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <SelectInput name="theme" defaultValue="" className="createUser" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <TextInput name="email" defaultValue="" className="createUser" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <SelectInput name="isAdmin" defaultValue="" className="createUser" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <ConfirmPasswordInput name="password" className="createUser" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <div className="loginFormButtonsContainer">
+          <form className="createUserForm" onSubmit={handleOnSubmit} >
+            <TextInput name="pseudo" defaultValue="" className="createUserTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <FileInput name="avatar" defaultValue={undefined} className="createUserFileInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <SelectInput name="theme" defaultValue="" className="createUserSelectInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <TextInput name="email" defaultValue="" className="createUserTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <SelectInput name="isAdmin" defaultValue="" className="createUserSelectInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <ConfirmPasswordInput name="password" className="createUserConfirmPasswordInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <div className="createUserFormButtonsContainer">
               <button type="submit">Submit</button>
               <button type="button" onClick={handleCancelOnClick}>Cancel</button>
             </div>

@@ -4,8 +4,13 @@ import {useContext} from 'react';
 import { Context } from "../../utils/Context";
 
 const StyledNav = styled.nav`
-width : 200px;
-padding-top : 20px;
+position : absolute;
+z-index : 1;
+right : 0;
+top : 0;
+margin : 20px;
+display : flex;
+flex-direction : column;
 `
 
 function Nav() {
@@ -16,7 +21,7 @@ function Nav() {
   const logOutButton = {key : "logOut", title : "Log out", link : "/"}; 
   const homeButton = {key : "home", title : "Home", link : "/home"}; 
   const myProfileButton = {key : "myProfile", title : "My profile", link : "/myProfile"}; 
-  const createUserButton = {key : "createUser", title : "Create new user", link : "/createUser"}; 
+  const createUserButton = {key : "createUser", title : "Create user", link : "/createUser"}; 
   const viewAllProfilesButton = {key : "viewAllProfiles", title : "All Profiles", link : "/allProfiles"}; 
   const viewAllPostsButton = {key : "viewAllPosts", title : "All posts", link : "/allPosts"}; 
   const viewAllCommentsButton = {key : "viewAllComments", title : "All comments", link : "/allComments"}; 

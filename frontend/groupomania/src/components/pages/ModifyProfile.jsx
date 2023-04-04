@@ -5,6 +5,7 @@ import { Context } from '../../utils/Context';
 import { FileInput, TextInput, SelectInput, ConfirmPasswordInput } from '../atoms/Inputs';
 import basePath from '../../utils/basePath';
 import { useNavigate } from 'react-router';
+import colors from '../../utils/colors';
 
 const StyledModifyProfile = styled.div`
 display: flex;
@@ -15,23 +16,142 @@ height: 100%;
 
 .mainModifyProfile {
   display : flex;
+  flex-direction : column;
+  align-items : center;
+  flex : 1;
+  width : 100%;
+  overflow : scroll;
+}
+
+.modifyProfileForm {
+  display : flex;
   flex-direction: column;
   justify-content : center;
   align-items : center;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 20px;
+  margin : 20px 0 20px 0;
+  width :490px;
+}
+
+.modifyProfileForm h2 {
+  background-color : #ececf0;
+  border-radius : 20px;
+  border: outset 3px #ececf0;
+  color : ${colors.tertiary};
+  font-size : 24px;
+  padding : 10px;
+  margin : 20px 0 10px 0;
+}
+
+.modifyProfileTextInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.modifyProfileTextInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.modifyProfileTextInput input {
+  flex:1;
+  font-size : 16px;
+  color : ${colors.tertiary};
+}
+
+.modifyProfileSelectInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.modifyProfileSelectInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.modifyProfileSelectInput select {
   flex : 1;
+  font-size : 16px;
+  text-align : center;
+}
+
+.modifyProfileFileInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.modifyProfileFileInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.modifyProfileFileInput input {
+  flex : 1;
+  font-size : 16px;
+}
+
+.modifyProfileConfirmPasswordInput {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 15px;
+}
+
+.modifyProfileConfirmPasswordInput label {
+  width : 140px;
+  font-size : 20px;
+}
+
+.modifyProfileConfirmPasswordInput input {
+  width : 300px;
+  font-size : 16px;
+}
+
+.modifyProfileChangePasswordButton {
+  height : 24px;
+  border-radius : 10px;
+  width : 200px;
+  margin : 20px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.tertiary};
+  border-color : white; 
+  cursor : pointer;
 }
 
 .confirmPasswordContainer {
   display : flex;
+  flex-direction : column;
+  align-items : center;
 }
 
-.confirmPasswordContainer button {
-  margin : 0 0 0 50px;
+.modifyProfileFormButtonsContainer {
+  display : flex;
+}
+
+.modifyProfileFormButtonsContainer button {
+  height : 30px;
+  border-radius : 10px;
+  width : 80px;
+  margin : 20px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
 }
 `
 
 function ModifyProfile () {
-  const {userData, setUserData, token, setTheme, profileData, setProfileData} = useContext(Context);
+  const {token, profileData, setProfileData} = useContext(Context);
   const navigate = useNavigate();
 
   const initialInputsValidationStatus = {
@@ -155,7 +275,6 @@ function ModifyProfile () {
       }
     }
     else {
-      console.log(dataToSend)
       const res = await fetch(`${basePath}/users/${profileData._id}`, {
         method : "PUT",
         headers: { 
@@ -187,20 +306,20 @@ function ModifyProfile () {
       <StyledModifyProfile>
         <Header />
         <div className="mainModifyProfile">
-          <h2>Change user data :</h2>
-          <form onSubmit={handleOnSubmit} >
-            <TextInput name="pseudo" defaultValue={profileData.pseudo} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <FileInput name="avatar" defaultValue={undefined} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <SelectInput name="theme" defaultValue={profileData.theme} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <TextInput name="email" defaultValue={profileData.email} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-            <SelectInput name="isAdmin" defaultValue={profileData.isAdmin} className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+          <form className="modifyProfileForm" onSubmit={handleOnSubmit} >
+            <h2>Change user data :</h2>
+            <TextInput name="pseudo" defaultValue={profileData.pseudo} className="modifyProfileTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <FileInput name="avatar" defaultValue={undefined} className="modifyProfileFileInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <SelectInput name="theme" defaultValue={profileData.theme} className="modifyProfileSelectInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <TextInput name="email" defaultValue={profileData.email} className="modifyProfileTextInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+            <SelectInput name="isAdmin" defaultValue={profileData.isAdmin} className="modifyProfileSelectInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
             {!isChangePassword ?
-            <button onClick={changePasswordOnClick} >
+            <button className="modifyProfileChangePasswordButton" onClick={changePasswordOnClick} >
               Change user password
             </button> : 
             <div className="confirmPasswordContainer" >
-              <ConfirmPasswordInput name="password" defaultValue="" className="modifyProfile" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
-              <button onClick={cancelChangePasswordOnClick} >
+              <ConfirmPasswordInput name="password" defaultValue="" className="modifyProfileConfirmPasswordInput" inputsValidationStatus={inputsValidationStatus} setInputsValidationStatus={setInputsValidationStatus} formInputsData={formInputsData} setFormInputsData={setFormInputsData} />
+              <button className="modifyProfileChangePasswordButton" onClick={cancelChangePasswordOnClick} >
                 Don't change password
               </button>
             </div>} 

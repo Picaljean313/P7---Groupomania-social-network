@@ -6,39 +6,97 @@ import { useEffect } from "react";
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
 import basePath from "../../utils/basePath";
+import colors from "../../utils/colors";
 
 const StyledCommentOverview = styled.div`
-display : flex;
-width : 700px;
-height : 100px;
-border : 1px solid green;
-justify-content : space-around;
-align-items : center;
 margin : 20px 0 20px 0;
+width : 580px;
+background-color : ${colors.tertiary};
+box-shadow : 10px 5px 2px #46485b;
+border-radius : 25px;
+padding : 20px;
+display : flex;
+align-items : center;
+justify-content : space-between;
 
-p {
-  margin : 0;
+.commentOverviewContainer {
+  background-color : #ececf0;
+  border : outset 2px #ececf0;
+  padding : 10px;
+  border-radius : 10px;
+  display : flex;
+  flex-direction : column;
+  width : 170px;
 }
 
-.commentOverviewContent {
-  width : 200px;
-  heigth : 60px;
+.commentOverviewContainer p {
+  margin : 5px 0 5px 0;
+  max-width : 170px;
+  max-height : 89px;
   overflow : scroll;
+  font-size : 14px;
+  color : #46485b;
+  cursor : default;
+}
+
+.commentOverviewDataContainer {
+  background-color : #ececf0;
+  border : outset 2px #ececf0;
+  padding : 10px;
+  border-radius : 10px;
+  margin : 0 10px 0 10px;
+  display : flex;
+  flex-direction : column;
+  width : 210px;
 }
 
 .commentOverviewUserDataContainer {
   display : flex;
+  flex-direction : column;
+  align-items : center;
+  margin : 5px 0 5px 0;
 }
 
-.commentOverviewUserImage {
+.commentOverviewLabel {
+  margin : 0 10px 0 0;
+  color : #46485b;
+  font-size : 16px;
+  cursor : default;
+}
+
+.commentOverviewUserData {
+  display : flex;
+  align-items : center;
+}
+
+.commentOverviewUserData p {
+  max-width : 160px;
+  overflow : hidden;
+  text-overflow : ellipsis;
+  color : #46485b;
+  margin : 0;
+  cursor : default;
+}
+
+.commentOverviewUserData img {
   height : 40px;
   width : 40px;
   border-radius : 50%;
   margin : 0 10px 0 0;
 }
 
-.commentOverviewActivityContainer p {
-  margin : 0 30px 0 0;
+.commentOverviewActivityContainer {
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  margin : 5px 0 5px 0;
+}
+
+.commentOverviewReactions {
+  color : #46485b;
+  margin : 0;
+  font-size : 14px;
+  cursor : default;
 }
 
 .commentOverviewButtonsContainer {
@@ -46,23 +104,42 @@ p {
   flex-direction : column;
 }
 
-.postAssociated {
-  position : absolute;
-  top : 0;
-  width : 100%;
-  height : 100%;
-  display : flex;
-  justify-content : center;
+.commentOverviewButtonsContainer button {
+  height : 30px;
+  width : 120px;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
+  margin : 5px 0 5px 0;
 }
 
-.postAssociatedBackground {
+.commentOverviewPostAssociatedReferencePosition {
   position : absolute;
   z-index : 1;
   width : 100%;
   height : 100%;
+  transform : translate(-50%, -50%);
+  top : 50%;
+  left : 50%;
+}
+
+.commentOverviewPostAssociatedBackground {
+  width : 100%;
+  height : 100%;
   background-color : white;
   opacity : 0.5;
-  top : 0px;
+}
+
+.commentOverviewPostAssociatedContainer {
+  position : absolute;
+  width : 100%;
+  height : 100%;
+  overflow : scroll;
+  top : 0;
+  z-index : 2;
 }
 `
 
@@ -106,25 +183,31 @@ function CommentOverview ({commentData, userData}) {
   
   return (
     <StyledCommentOverview>
-      <p className="commentOverviewContent" >{commentData.content}</p>
-      <div>
-        <p>From : </p>
+      <div className="commentOverviewContainer">
+        <p>{commentData.content}</p>
+      </div>
+      <div className="commentOverviewDataContainer">
         <div className="commentOverviewUserDataContainer" >
-          <img src={userData.imageUrl} alt='User avatar' className = "commentOverviewUserImage"/>
-          <p>{userData.pseudo}</p>
+          <p className="commentOverviewLabel">From : </p>
+          <div className="commentOverviewUserData" >
+            <img src={userData.imageUrl} alt='User avatar'/>
+            <p>{userData.pseudo}</p>
+          </div>
+        </div>
+        <div className="commentOverviewActivityContainer" >
+          <p className="commentOverviewLabel">Activity : </p>
+          <p className="commentOverviewReactions">{`${commentData.reactions.length} reactions`}</p>
         </div>
       </div>
-      <div className="commentOverviewActivityContainer" >
-        <p>Activity : </p>
-        <p>{`${commentData.reactions.length} reactions`}</p>
-      </div>
       <div className="commentOverviewButtonsContainer" >
-        <button onClick={handleShowCommentOnClick} >Show associated post</button>
+        <button onClick={handleShowCommentOnClick} >Show post</button>
         <button onClick={handleShowUserOnClick} >Show user</button>
       </div>
-      {isPostDisplayed && <div className="postAssociated">
-        <div className="postAssociatedBackground"></div>
-        <PostDisplayed postDisplayedData={postAssociatedData}  setIsPostDisplayed={setIsPostDisplayed} />
+      {isPostDisplayed && <div className="commentOverviewPostAssociatedReferencePosition">
+        <div className="commentOverviewPostAssociatedBackground"></div>
+        <div className="commentOverviewPostAssociatedContainer">
+          <PostDisplayed postDisplayedData={postAssociatedData}  setIsPostDisplayed={setIsPostDisplayed} />
+        </div>
       </div>} 
     </StyledCommentOverview>
   );

@@ -5,28 +5,32 @@ import { useContext, useState } from "react";
 import { Context } from "../../utils/Context";
 import basePath from "../../utils/basePath";
 import ModifyComment from "./ModifyComment";
+import colors from "../../utils/colors";
 
 const StyledCommentDisplayed = styled.div `
-margin : 80px;
-background-color : blue;
+margin : 10px 0 40px 0;
+width : 364px;
+background-color : ${colors.tertiary};
+border : outset 3px ${colors.tertiary};
+position : relative;
+border-radius : 10px;
+padding : 40px 20px 40px 20px;
 
-.commentDisplayed {
-  position : relative;
-  width : 500px;
-  border-radius : 25px 25px 0 0;
-  display : flex;
-  flex-direction :column;
-  justify-content : center;
-  align-items : center;
+.commentDisplayedContent {
+  margin : 0;
+  font-size : 16px;
+  color : white;
 }
+
 
 .commentDisplayedUserData {
   text-decoration : none;
-  background-color : purple;
-  padding : 3px;
-  border-radius : 13px;
+  border : solid 2px ${colors.tertiary};
+  background-color : #ffebeb;
+  padding : 2px;
+  border-radius : 18px;
   position : absolute;
-  top : -13px;
+  top : -14px;
   left : 10px;
   display : flex;
   justify-content : center;
@@ -34,67 +38,86 @@ background-color : blue;
 }
 
 .commentDisplayedUserData p {
-  font-size : 10px;
-  margin : 0 5px 0 5px;
-  color : white;
+  max-width : 90px;
+  overflow : hidden;
+  text-overflow : ellipsis;
+  font-size : 14px;
+  margin : 0 10px 0 10px;
+  color : #46485b;
 }
 
 .commentDisplayedUserData img {
   height : 20px;
   width : 20px;
   border-radius : 50%;
-  margin : 0 5px 0 0;
-}
-
-.icon {
-  font-size : 20px;
-  margin : 5px;
 }
 
 .commentDisplayedReactions {
   display : flex;
   position : absolute;
   top : -15px;
-  right : -10px;
+  right : 20px;
 }
 
 .commentDisplayedReaction {
   position : relative;
+  margin-right : -10px;
 }
 
-.iconCommentDisplayedReaction {
+.commentDisplayedHeartPosition {
+  z-index : 5;
+}
+
+.commentDisplayedThumbsUpPosition {
+  z-index : 4;
+}
+
+.commentDisplayedFaceGrinTearsPosition {
+  z-index : 3;
+}
+
+.commentDisplayedFaceSurprisePosition {
+  z-index : 2;
+}
+
+.commentDisplayedFaceAngryPosition {
+  z-index : 1;
+}
+
+.commentDisplayedReactionIcon {
   margin : 0;
   font-size : 20px;
 }
 
-.iconCommentDisplayedReactionBackground {
-  height : 30px;
-  width : 30px;
+.commentDisplayedReactionIconBackground {
+  height : 28px;
+  width : 28px;
   border-radius : 50%;
+  border : outset 1px white;
   background-color : white;
   display : flex;
   justify-content : center;
   align-items : center;
 }
 
-.heart {
-  color : red;
+.commentDisplayedHeart {
+  color : ${colors.primary};
 }
 
-.thumbsUp {
+.commentDisplayedThumbsUp {
   color : blue;
 }
 
-.faceGrinTears {
-  color : orange;
+.commentDisplayedFaceGrinTears {
+  color : #f5a742;
 }
 
-.faceSurprise {
-  color : orange;
+.commentDisplayedFaceSurprise {
+  color : #f5a742;
 }
 
-.faceAngry {
-  color : orange;
+.commentDisplayedFaceAngry {
+  color : #f56042;
 }
 
 .commentDisplayedReactionNumber {
@@ -116,23 +139,18 @@ background-color : blue;
   font-size : 8px;
 }
 
-.commentDisplayedUserReaction {
-  background-color : white;
-  border-radius : 15px;
-  position : absolute;
-  right : -15px;
-  bottom : -15px;
-}
-
 .changeCommentDisplayed {
   position : absolute;
-  left : 30px;
-  bottom : -15px;
+  left : 10px;
+  bottom : -12px;
+  display : flex;
 }
 
 .modifyCommentDisplayedButton {
-  background-color : white;
-  height : 30px;
+  background-color : #ffebeb;
+  border : outset 2px ${colors.secondary};
+  cursor : pointer;
+  height : 18px;
   border-radius : 15px;
   display : flex;
   justify-content : center;
@@ -140,28 +158,22 @@ background-color : blue;
 }
 
 .modifyCommentDisplayedButton p {
-  margin : 0 15px 0 15px;
-}
-
-.modifyCommentDisplayedButton:hover {
-  color : green;
+  color : #46485b;
+  margin : 0 13px 0 13px;
+  font-size : 12px;
 }
 
 .deleteCommentDisplayedButton {
-  position : absolute;
-  left : 160px;
-  bottom : 0;
-  width : 30px;
-  height : 30px;
+  margin-left : 20px;
+  cursor : pointer;
+  width : 18px;
+  height : 18px;
   border-radius : 50%;
-  background-color : red;
+  background-color : ${colors.primary};
+  border : outset 2px ${colors.primary};
   display : flex;
   justify-content : center;
   align-items : center;
-}
-
-.deleteCommentDisplayedButton:hover {
-  background-color : green;
 }
 
 .crossDeleteCommentDisplayedButton {
@@ -170,20 +182,30 @@ background-color : blue;
 }
 
 .confirmDeleteCommentDisplayed{
-  width : 600px;
-  heigth : 100px;
   display : flex;
   justify-content : center;
   align-items : center;
-  margin-top: 50px;
+  margin-top: 30px;
+  padding : 20px;
+  border-radius : 20px;
+  background-color : white;
+  border : outset 3px ${colors.primary};
+}
+
+.confirmDeleteCommentDisplayed p {
+  margin : 0;
+  font-size : 20px;
+  color : #46485b;
 }
 
 .confirmDeleteCommentDisplayed button{
-  margin-left: 30px;
+  cursor : pointer;
+  color : #46485b;
+  border : outset 2px ${colors.primary};
+  border-radius : 5px;
+  margin-left: 20px;
   height : 30px;
-}
-`
-
+}`
 
 function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments, postComments, setPostComments, commentsLimit}) {
   const {token, userData} = useContext(Context);
@@ -281,48 +303,48 @@ function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments
           <p>{commentData["userData"].pseudo}</p>
         </div>
         <div className="commentDisplayedReactions">
-          {commentReactions.heart !== 0 && (<div className="commentDisplayedReaction">
-            <div className="iconCommentDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconCommentDisplayedReaction heart" icon={solid("heart")} />
+          {commentReactions.heart !== 0 && (<div className="commentDisplayedReaction commentDisplayedHeartPosition">
+            <div className="commentDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="commentDisplayedReactionIcon commentDisplayedHeart" icon={solid("heart")} />
             </div>
             <div className="commentDisplayedReactionNumber">
               <p>{commentReactions.heart}</p>
             </div>
           </div>)}
-          {commentReactions.thumbsUp !== 0 && (<div className="commentDisplayedReaction">
-            <div className="iconCommentDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconCommentDisplayedReaction thumbsUp" icon={solid("thumbs-up")} />
+          {commentReactions.thumbsUp !== 0 && (<div className="commentDisplayedReaction commentDisplayedThumbsUpPosition">
+            <div className="commentDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="commentDisplayedReactionIcon commentDisplayedThumbsUp" icon={solid("thumbs-up")} />
             </div>
             <div className="commentDisplayedReactionNumber">
               <p>{commentReactions.thumbsUp}</p>
             </div>
           </div>)}
-          {commentReactions.faceGrinTears !== 0 && (<div className="commentDisplayedReaction">
-            <div className="iconCommentDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconCommentDisplayedReaction faceGrinTears" icon={solid("face-grin-tears")} />
+          {commentReactions.faceGrinTears !== 0 && (<div className="commentDisplayedReaction commentDisplayedFaceGrinTearsPosition">
+            <div className="commentDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="commentDisplayedReactionIcon commentDisplayedFaceGrinTears" icon={solid("face-grin-tears")} />
             </div>
             <div className="commentDisplayedReactionNumber">
               <p>{commentReactions.faceGrinTears}</p>
             </div>
           </div>)}
-          {commentReactions.faceSurprise !== 0 && (<div className="commentDisplayedReaction">
-            <div className="iconCommentDisplayedReactionBackground">
-              <FontAwesomeIcon className="iconCommentDisplayedReaction faceSurprise" icon={solid("face-surprise")} />
+          {commentReactions.faceSurprise !== 0 && (<div className="commentDisplayedReaction commentDisplayedFaceSurprisePosition">
+            <div className="commentDisplayedReactionIconBackground">
+              <FontAwesomeIcon className="commentDisplayedReactionIcon commentDisplayedFaceSurprise" icon={solid("face-surprise")} />
             </div>
             <div className="commentDisplayedReactionNumber">
               <p>{commentReactions.faceSurprise}</p>
             </div>
           </div>)}
-          {commentReactions.faceAngry !== 0 && (<div className="commentDisplayedReaction">
-            <div className="iconCommentDisplayedReactionBackground">
-            <FontAwesomeIcon className="iconCommentDisplayedReaction faceAngry" icon={solid("face-angry")} />
+          {commentReactions.faceAngry !== 0 && (<div className="commentDisplayedReaction commentDisplayedFaceAngryPosition">
+            <div className="commentDisplayedReactionIconBackground">
+            <FontAwesomeIcon className="commentDisplayedReactionIcon commentDisplayedFaceAngry" icon={solid("face-angry")} />
             </div>
             <div className="commentDisplayedReactionNumber">
               <p>{commentReactions.faceAngry}</p>
             </div>
           </div>)}
         </div>
-        <p>{commentContent}</p>
+        <p className="commentDisplayedContent" >{commentContent}</p>
         {changeComment && (<div className="changeCommentDisplayed" >
           <div className="modifyCommentDisplayedButton" onClick={handleModifyComment} >
             <p>Modify comment</p>

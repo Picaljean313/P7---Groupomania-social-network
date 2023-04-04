@@ -4,33 +4,148 @@ import { Context } from '../../utils/Context';
 import basePath from '../../utils/basePath';
 import Post from '../molecules/Post';
 import Header from '../organisms/Header';
+import colors from '../../utils/colors';
 
 const StyledHome = styled.div`
 display: flex;
 flex-direction: column;
 align-items : center;
-with : 100%;
+position : relative;
+width : 100%;
 height: 100%;
 
 .mainHome {
-  position : relative;
   overflow : scroll;
+  width : 100%;
+  flex : 1;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
 }
 
 .mainRefreshButton {
   position : absolute;
-  right : 20px;
-  height : 50px;
+  left : 45px;
+  top : 40%;
+  height : 60px;
+  width : 140px;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 18px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  border-width : 3px;
+  cursor : pointer;
 }
 
 .homePageButtonsContainer {
   display : flex;
-  justify-content : space-around;
+  justify-content : center;
 }
 
 .homePageButton {
+  height : 40px;
+  width : 160px;
+  margin : 40px 0 40px 0;
+  border-radius : 10px;
+  background-color :  white;
+  font-size : 18px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  border-width : 3px;
+  cursor : pointer;
+}
+
+.mainHomeForm {
+  display : flex;
+  flex-direction: column;
+  justify-content : center;
+  align-items : center;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  padding : 10px;
+  border-radius : 20px;
+  margin-top : 20px;
+}
+
+.newPostContent {
+  display : flex;
+  align-items : center;
+  margin : 10px;
+  width : 450px;
+  height : 60px;
+}
+
+.newPostContent label {
+  display : block;
+  width : 140px;
+  font-size : 18px;
+  color : ${colors.secondary};
+}
+
+.newPostContent textarea {
+  display : block;
+  flex :1;
+  max-height : 80px;
+  font-size : 18px;
+  color : ${colors.tertiary};
+}
+
+.newPostImage {
+  display : flex;
+  align-items : center;
+  width : 450px;
+  margin : 10px;
+}
+
+.newPostImage label {
+  display : block;
+  width : 130px;
+  font-size : 18px;
+  color : ${colors.secondary};
+}
+
+.newPostImage input {
+  width : 300px;
+  margin-left : 15px;
+  font-size : 16px;
+  color : ${colors.secondary};
+}
+
+.newPostImage input::file-selector-button {
+  cursor : pointer;
+  color : ${colors.tertiary};
+}
+
+.mainHomeForm button {
   height : 30px;
-  width : 200px;
+  border-radius : 10px;
+  width : 80px;
+  margin : 10px;
+  background-color :  white;
+  font-size : 16px;
+  color : ${colors.primary};
+  border-color : ${colors.primary}; 
+  cursor : pointer;
+}
+
+.homePageNoPosts {
+  margin : 40px 0 40px 0;
+  width : 490px;
+  height : 70px;
+  background-color : ${colors.tertiary};
+  box-shadow : 10px 5px 2px #46485b;
+  border-radius : 25px;
+  display : flex;
+  flex-direction : column;
+  align-items: center;
+  justify-content : center;
+}
+
+.homePageNoPosts p {
+  color : ${colors.secondary};
+  font-size : 20px;
+  margin : 0;
 }
 `
 
@@ -194,30 +309,32 @@ function Home () {
         <button className="mainRefreshButton" onClick = {handleRefreshPostsOnClick}>
           Refresh posts
         </button>
-        <form onSubmit = { handleNewPostSubmit }>
+        <form className="mainHomeForm" onSubmit = { handleNewPostSubmit }>
           <div className="newPostContent" >
             <label htmlFor = "userNewPostContent" >Write your post : </label>
             <textarea id = "userNewPostContent" name = "userNewPostContent" type = "text" maxLength = "1000" />
           </div>
           <div className="newPostImage">
-            <label htmlFor = "userNewPostImage" >Choose post image : </label>
+            <label htmlFor = "userNewPostImage" >Choose image : </label>
             <input id = "userNewPostImage" name= "userNewPostImage" type="file" accept= "image/png, image/jpeg, image/jpg" />
           </div>
-          <button type="submit">Envoyer</button>
+          <button type="submit">Send</button>
         </form>
         <div className="homePosts" >
           {(Array.isArray(homePosts) && homePosts.length !== 0) ? homePosts.map(e => 
             <Post key={e._id} _id ={e._id} content={e.content} imageUrl={e.imageUrl} postUserData={e.userData} reactions={e.reactions} comments={e.comments} />
-            ) : <p>No posts to show</p>}
+            ) :  
+            <div className="homePageNoPosts" >
+              <p>No posts to show</p>
+            </div>}
           <div className="homePageButtonsContainer" >
             {Array.isArray(homePosts) && (isMorePostsToShow ?
             <button className="homePageButton" onClick={handleMorePostsOnClick}>
               View more posts
             </button> : 
-            <p>No more posts to show</p>)}
-            <button className="homePageButton" onClick = {handleRefreshPostsOnClick}>
-              Refresh posts
-            </button>
+            <div className="homePageNoPosts" >
+              <p>No more posts to show</p>
+            </div>)}
           </div>  
         </div>
       </div>

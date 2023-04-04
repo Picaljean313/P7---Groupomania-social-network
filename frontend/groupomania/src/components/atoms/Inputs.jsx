@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import colors from "../../utils/colors";
 
 const StyledInput = styled.div`
 img {
@@ -7,18 +8,19 @@ img {
   width : 300px;
   object-fit : cover;
 }
-${props => props.className === "signUp" && `
-background-color : yellow;
-`}
-${props => props.inputIsValid && `
-color : green;
+${props => props.inputIsValid ? `
+color : #90ee90;
 select {
-  color : blue;
+  cursor : pointer;
+  color : ${colors.tertiary};
 }
 input::file-selector-button {
-  background-color : blue;
+  cursor : pointer;
+  color : ${colors.tertiary};
 }
-`}
+` : 
+`color : ${colors.secondary};
+cursor : pointer;`}
 `
 
 function ErrorInput ({className}) {

@@ -17,7 +17,6 @@ const reqQueries = require('../validation/data/reqQueries');
 const id = require ('../validation/data/id');
 const url = require ('url');
 const fs = require ('fs');
-const { findOne } = require('../models/Users');
 
 exports.signup = async function (req, res, next) {
   const includedFile = req.file ? true : false;
@@ -508,7 +507,7 @@ exports.modifyOneUser = async function (req, res, next) {
       console.log("Can't find user.");
       return functions.response(res, 500);
     }
-    if (user === null) return functions.response(res, 401);
+    if (user === null) return functions.response(res, 400);
 
     if (!req.auth.isAdmin && req.auth.userId !== req.params.userId) return functions.response(res, 401);
 

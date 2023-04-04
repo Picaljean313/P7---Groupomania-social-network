@@ -3,29 +3,33 @@ import { useNavigate } from "react-router-dom";
 import basePath from '../../utils/basePath';
 import { useContext } from "react";
 import { Context } from "../../utils/Context";
+import colors from "../../utils/colors";
 
 const StyledButton = styled.button`
 ${props => props.className === "isWelcome" && `
-color : red;
-height : 100px;
-width : 400px;
-background-color : blue;
+color : ${colors.secondary};
+padding : 30px;
+width : 300px;
+font-size : 20px;
+background-color : ${colors.tertiary};
 border-radius : 30px;
 display: flex;
 justify-content : center;
 align-items : center;
 margin : 10px;
+cursor : pointer;
 `}
 ${props => props.className === "isNav" && `
-color : red;
+color : ${colors.secondary};
 height : 30px;
-width : 150px;
-background-color : blue;
+width : 100px;
+background-color : ${colors.tertiary};
 border-radius : 10px;
 display: flex;
 justify-content : center;
 align-items : center;
-margin : 10px;
+margin : 5px;
+cursor : pointer;
 `}
 `
 

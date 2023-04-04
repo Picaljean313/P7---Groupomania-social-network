@@ -63,14 +63,16 @@ exports.createOneReport = async function (req, res, next) {
     commentId : req.body.commentId,
     userId : req.auth.userId
   });
+
+  let report;
   try {
-    await reportCreated.save()
+    report = await reportCreated.save();
   } catch {
     console.log("Can't save report.");
     return functions.response(res, 500);
   }
   
-  return res.status(201).json({ message : "report created." });
+  return res.status(201).json({ report : report });
 };
 
 exports.getAllReports = async function (req, res, next) {
