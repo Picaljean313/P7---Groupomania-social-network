@@ -7,6 +7,7 @@ const commentsRoutes = require('./routes/comments');
 const reactionsRoutes = require('./routes/reactions');
 const reportsRoutes = require('./routes/reports');
 const path = require ('path');
+require('dotenv').config();
 
 app.use (express.json());
 app.use((req, res, next) => {
@@ -16,7 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb+srv://Picaljean:Picaljean@cluster0.ydibcla.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(process.env.DB_CONNECT)
   .then(() => console.log('Vous êtes bien connectés à MungoDB !'))
   .catch(() => console.log('Échec de la connexion à MungoDB'));
 
