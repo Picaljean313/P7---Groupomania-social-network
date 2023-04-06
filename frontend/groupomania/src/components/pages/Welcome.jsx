@@ -31,6 +31,18 @@ height: 100%;
   font-size : 40px;
   text-shadow : 1px 1px 1px #3f4051;
 }
+
+@media screen and (min-width: 400px) and (max-width: 519px) {
+  .mainWelcome h2 {
+    font-size : 30px;
+  }
+}
+
+@media screen and (max-width: 399px) {
+  .mainWelcome h2 {
+    font-size : 24px;
+  }
+}
 `
 
 function Welcome () {

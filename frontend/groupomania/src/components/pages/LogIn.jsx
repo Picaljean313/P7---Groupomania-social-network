@@ -69,6 +69,38 @@ height: 100%;
   border-color : ${colors.primary}; 
   cursor : pointer;
 }
+
+@media screen and (min-width: 400px) and (max-width: 519px) {
+  .loginForm {
+    width : 370px;
+  }
+
+  .loginTextInput {
+    width : 330px;
+  }
+  
+  .loginTextInput label {
+    width : 80px;
+    font-size : 16px;
+  }
+}
+
+@media screen and (max-width: 399px) {
+  .loginForm {
+    width : 90%;
+  }
+
+  .loginTextInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .loginTextInput label {
+    width : 80px;
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+}
 `
 
 function LogIn () {

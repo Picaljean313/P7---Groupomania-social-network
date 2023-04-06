@@ -26,7 +26,7 @@ height: 100%;
 .mainRefreshButton {
   position : absolute;
   left : 45px;
-  top : 40%;
+  top : 200px;
   height : 60px;
   width : 140px;
   border-radius : 10px;
@@ -38,6 +38,14 @@ height: 100%;
   cursor : pointer;
 }
 
+.mainRefreshButton830-1000 {
+  display : none;
+}
+
+.mainRefreshButton829 {
+  display : none;
+}
+
 .homePageButtonsContainer {
   display : flex;
   justify-content : center;
@@ -46,7 +54,7 @@ height: 100%;
 .homePageButton {
   height : 40px;
   width : 160px;
-  margin : 40px 0 40px 0;
+  margin : 40px 5px 40px 5px;
   border-radius : 10px;
   background-color :  white;
   font-size : 18px;
@@ -77,7 +85,6 @@ height: 100%;
 }
 
 .newPostContent label {
-  display : block;
   width : 140px;
   font-size : 18px;
   color : ${colors.secondary};
@@ -146,6 +153,104 @@ height: 100%;
   color : ${colors.secondary};
   font-size : 20px;
   margin : 0;
+}
+
+@media screen and (min-width: 830px) and (max-width: 1000px) {
+  .mainRefreshButton {
+    display : none;
+  }
+
+  .mainRefreshButton830-1000 {
+    display : block;
+    position : absolute;
+    left : 25px;
+    top : 200px;
+    height : 60px;
+    width : 120px;
+    border-radius : 10px;
+    background-color :  white;
+    font-size : 18px;
+    color : ${colors.primary};
+    border-color : ${colors.primary}; 
+    border-width : 3px;
+    cursor : pointer;
+  }
+}
+
+@media screen and (min-width: 520px) and (max-width: 829px) {
+  .mainRefreshButton830-1000 {
+    display : none;
+  }
+
+  .mainRefreshButton {
+    display : none;
+  }
+
+  .mainRefreshButton829 {
+    display : block;
+  }
+}
+
+@media screen and (max-width: 519px) {
+  .mainRefreshButton {
+    display : none;
+  }
+
+  .mainHomeForm {
+    width : 80%;
+  }
+
+  .newPostContent {
+    flex-direction : column;
+    justify-content : center;
+    height : 100px;
+  }
+  
+  .newPostContent label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .newPostContent textarea {
+    flex : none;
+    max-height : 80px;
+    max-width : 280px;
+    font-size : 14px;
+  }
+
+  .newPostImage {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .newPostImage label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .newPostImage input {
+    font-size : 14px;
+  }
+
+  .homePageButton {
+    height : 35px;
+    width : 140px;
+    font-size : 16px;
+  }
+
+  .homePageButtonsContainer {
+    flex-direction : column;
+    align-items : center;
+  }
+
+  .mainRefreshButton829 {
+    display : block;
+    margin : 0 0 40px 0;
+  }
+
+  .homePosts {
+    width : 80%;
+  }
 }
 `
 
@@ -309,6 +414,9 @@ function Home () {
         <button className="mainRefreshButton" onClick = {handleRefreshPostsOnClick}>
           Refresh posts
         </button>
+        <button className="mainRefreshButton830-1000" onClick = {handleRefreshPostsOnClick}>
+          Refresh
+        </button>
         <form className="mainHomeForm" onSubmit = { handleNewPostSubmit }>
           <div className="newPostContent" >
             <label htmlFor = "userNewPostContent" >Write your post : </label>
@@ -320,7 +428,7 @@ function Home () {
           </div>
           <button type="submit">Send</button>
         </form>
-        <div className="homePosts" >
+        <div className="homePosts">
           {(Array.isArray(homePosts) && homePosts.length !== 0) ? homePosts.map(e => 
             <Post key={e._id} _id ={e._id} content={e.content} imageUrl={e.imageUrl} postUserData={e.userData} reactions={e.reactions} comments={e.comments} />
             ) :  
@@ -335,6 +443,9 @@ function Home () {
             <div className="homePageNoPosts" >
               <p>No more posts to show</p>
             </div>)}
+            <button className="homePageButton mainRefreshButton829" onClick = {handleRefreshPostsOnClick}>
+              Refresh
+            </button>
           </div>  
         </div>
       </div>

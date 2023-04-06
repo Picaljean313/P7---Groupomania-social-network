@@ -125,6 +125,44 @@ height: 100%;
 .myProfileButtonsContainer {
   margin-top : 30px;
 }
+
+@media screen and (max-width: 579px) {
+  .myProfileContainer {
+    width : 80%;
+  }
+
+  .myProfileDataBlock {
+    flex-direction : column;
+  }
+
+  .myProfileDataBlock div {
+    padding : 0;
+    margin-left : 50px;
+  }
+
+  .myProfileActivityContainer {    
+    margin-left : 50px;
+  }
+
+  .myProfileAvatarAndPseudo img {
+    height : 80px;
+    width : 80px;
+  }
+  
+  .myProfileAvatarAndPseudo p {
+    font-size : 22px;
+    flex : 1;
+    overflow : hidden;
+    text-overflow : ellipsis;
+    padding-left : 10px;
+  }
+  
+  .myProfileButton {
+    font-size : 14px;
+    margin : 0 10px 0 10px;
+    width : auto;
+  }
+}
 `
 
 function MyProfile () {

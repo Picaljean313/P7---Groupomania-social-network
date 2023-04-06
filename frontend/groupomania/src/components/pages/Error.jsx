@@ -36,7 +36,7 @@ function Error () {
 
   return (<React.Fragment>
       <StyledBackground></StyledBackground>
-      <StyledMessage>Oups, impossible de charger la page !<br /><br />Profitez de la vue ou bien vérifiez votre url 🤨</StyledMessage>
+      <StyledMessage>Oups, impossible de charger la page !<br /><br />Profitez de la vue <br />ou bien vérifiez votre url 🤨</StyledMessage>
     </React.Fragment>)
 }
 export default Error;

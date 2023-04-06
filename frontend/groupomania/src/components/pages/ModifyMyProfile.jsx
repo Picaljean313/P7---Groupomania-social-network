@@ -148,6 +148,76 @@ height: 100%;
   border-color : ${colors.primary}; 
   cursor : pointer;
 }
+
+@media screen and (max-width: 519px) {
+  .modifyMyProfileForm h2 {
+    font-size : 20px;
+  }
+
+  .modifyMyProfileForm {
+    width : 90%;
+  }
+
+  .modifyMyProfileTextInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .modifyMyProfileTextInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+
+  .modifyMyProfileTextInput input {
+    width : 280px;
+    font-size : 14px;
+  }
+
+  .modifyMyProfileSelectInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .modifyMyProfileSelectInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .modifyMyProfileSelectInput select {
+    width : 280px;
+    font-size : 14px;
+  }
+  
+  .modifyMyProfileFileInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .modifyMyProfileFileInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .modifyMyProfileFileInput input {
+    width : 280px;
+    font-size : 14px;
+  }
+  
+  .modifyMyProfileConfirmPasswordInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .modifyMyProfileConfirmPasswordInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .modifyMyProfileConfirmPasswordInput input {
+    width : 280px;
+    font-size : 14px;
+  }
+}
 `
 
 function ModifyMyProfile () {

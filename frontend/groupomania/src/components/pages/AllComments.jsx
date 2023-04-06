@@ -28,6 +28,7 @@ height: 100%;
   flex-direction: column;
   align-items : center;
   margin : 40px 0 40px 0;
+  width : 100%;
 }
 
 .allCommentsButton {
@@ -60,6 +61,28 @@ height: 100%;
   color : ${colors.secondary};
   font-size : 20px;
   margin : 0;
+}
+
+@media screen and (max-width: 519px) {
+  .allCommentsButton {
+    height : 35px;
+    width : 180px;
+    font-size : 16px;
+    border-width : 2px;
+  }
+}
+
+@media screen and (max-width : 649px) {
+  .allCommentsNoComments {
+    width : 70%;
+    padding : 20px;
+    height : 30px;
+  }
+  
+  .allCommentsNoComments p {
+    font-size : 16px;
+    margin : 0;
+  }
 }
 `
 

@@ -198,14 +198,17 @@ exports.deleteOneReport = async function (req, res, next) {
 
   let report;
   try {
-    report = await ReportsModel.findOne({ _id : req.params.reportId });
+    if (!req.auth.isAdmin){
+      report = await ReportsModel.findOne({ _id : req.params.reportId, userId : req.auth.userId });
+    }
+    else {
+      report = await ReportsModel.findOne({ _id : req.params.reportId });
+    }
   } catch {
     console.log("Can't find report.");
     return functions.response(res, 500);
   }
   if (report === null) return functions.response(res, 400);
-
-  if (!req.auth.isAdmin && req.auth.userId !== report.userId) return functions.response(res, 401);
 
   try {
     await ReportsModel.deleteOne({ _id : req.params.reportId });

@@ -20,20 +20,27 @@ align-items : center;
 justify-content : space-between;
 
 .commentOverviewContainer {
+  display : flex;
+}
+
+.commentOverviewCommentContainer {
   background-color : #ececf0;
   border : outset 2px #ececf0;
   padding : 10px;
   border-radius : 10px;
   display : flex;
   flex-direction : column;
+  justify-content : center;
   width : 170px;
+  height : 100px;
 }
 
-.commentOverviewContainer p {
+.commentOverviewCommentContainer p {
   margin : 5px 0 5px 0;
   max-width : 170px;
-  max-height : 89px;
+  max-height : 90px;
   overflow : scroll;
+  word-break : break-all;
   font-size : 14px;
   color : #46485b;
   cursor : default;
@@ -48,6 +55,7 @@ justify-content : space-between;
   display : flex;
   flex-direction : column;
   width : 210px;
+  height :100px;
 }
 
 .commentOverviewUserDataContainer {
@@ -141,6 +149,67 @@ justify-content : space-between;
   top : 0;
   z-index : 2;
 }
+
+@media screen and (max-width : 659px) {
+  width : 80%;
+
+  .commentOverviewButtonsContainer button {
+    height : 25px;
+    width : 100px;
+    font-size : 14px;
+  }
+} 
+
+@media screen and (min-width : 550px) and (max-width : 659px) {
+  flex-direction : column;
+
+  .commentOverviewDataContainer {
+    margin : 0 0 0 10px;
+  }
+
+  .commentOverviewButtonsContainer {
+    flex-direction : row;
+  }
+
+  .commentOverviewButtonsContainer button {
+    margin : 20px 10px 10px 10px;
+  }
+}
+
+@media screen and (max-width : 549px) {
+  flex-direction : column;
+  width : 70%;
+
+  .commentOverviewContainer {
+    flex-direction : column;
+    align-items : center;
+  }
+
+  .commentOverviewCommentContainer {
+    width : 210px;
+  }
+  
+  .commentOverviewCommentContainer img {
+    width : 150px;
+    height : 120px;
+  }
+  
+  .commentOverviewCommentContainer p {
+    max-width : 210px;
+  }
+
+  .commentOverviewDataContainer {
+    margin : 10px 0 0 0;
+  }
+
+  .commentOverviewButtonsContainer {
+    flex-direction : row;
+  }
+
+  .commentOverviewButtonsContainer button {
+    margin : 20px 10px 10px 10px;
+  }
+}
 `
 
 function CommentOverview ({commentData, userData}) {
@@ -184,19 +253,21 @@ function CommentOverview ({commentData, userData}) {
   return (
     <StyledCommentOverview>
       <div className="commentOverviewContainer">
-        <p>{commentData.content}</p>
-      </div>
-      <div className="commentOverviewDataContainer">
-        <div className="commentOverviewUserDataContainer" >
-          <p className="commentOverviewLabel">From : </p>
-          <div className="commentOverviewUserData" >
-            <img src={userData.imageUrl} alt='User avatar'/>
-            <p>{userData.pseudo}</p>
-          </div>
+        <div className="commentOverviewCommentContainer">
+          <p>{commentData.content}</p>
         </div>
-        <div className="commentOverviewActivityContainer" >
-          <p className="commentOverviewLabel">Activity : </p>
-          <p className="commentOverviewReactions">{`${commentData.reactions.length} reactions`}</p>
+        <div className="commentOverviewDataContainer">
+          <div className="commentOverviewUserDataContainer" >
+            <p className="commentOverviewLabel">From : </p>
+            <div className="commentOverviewUserData" >
+              <img src={userData.imageUrl} alt='User avatar'/>
+              <p>{userData.pseudo}</p>
+            </div>
+          </div>
+          <div className="commentOverviewActivityContainer" >
+            <p className="commentOverviewLabel">Activity : </p>
+            <p className="commentOverviewReactions">{`${commentData.reactions.length} reactions`}</p>
+          </div>
         </div>
       </div>
       <div className="commentOverviewButtonsContainer" >

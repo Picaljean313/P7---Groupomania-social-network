@@ -124,6 +124,72 @@ height: 100%;
   border-color : ${colors.primary}; 
   cursor : pointer;
 }
+
+@media screen and (max-width: 519px) {
+  .createUserForm {
+    width :90%;
+  }
+  
+  .createUserTextInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .createUserTextInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .createUserTextInput input {
+    width : 272px;
+    font-size : 14px;
+  }
+  
+  .createUserSelectInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .createUserSelectInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .createUserSelectInput select {
+    width : 280px;
+    font-size : 14px;
+  }
+  
+  .createUserFileInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .createUserFileInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .createUserFileInput input {
+    width : 280px;
+    font-size : 14px;
+  }
+  
+  .createUserConfirmPasswordInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .createUserConfirmPasswordInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .createUserConfirmPasswordInput input {
+    width : 272px;
+    font-size : 14px;
+  }
+}
 `
 
 function CreateUser () {

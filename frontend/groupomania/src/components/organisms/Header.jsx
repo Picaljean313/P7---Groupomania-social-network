@@ -5,14 +5,14 @@ import colors from '../../utils/colors';
 
 const StyledHeader = styled.div`
   position : relative;
-  height: 100px;
+  height: 110px;
   width : 100%;
 
   .headerTitle {
     display : flex;
     align-items : center;
     justify-content : center;
-    height : 100px;
+    height : 110px;
   }
 
   h1 {
@@ -21,6 +21,14 @@ const StyledHeader = styled.div`
     font-size : 50px;
     text-shadow : 2px 2px 2px #ca2400;
   }
+
+@media screen and (max-width : 850px) {
+  height: 220px;
+
+  .headerTitle {
+    margin-top : 110px;
+  }
+}
 `
 
 function Header() {

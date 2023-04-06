@@ -198,16 +198,76 @@ padding : 40px 20px 40px 20px;
   color : #46485b;
 }
 
-.confirmDeleteCommentDisplayed button{
+.confirmDeleteCommentDisplayedButtonsContainer {
+  display : flex;
+}
+
+.confirmDeleteCommentDisplayedButtonsContainer button{
   cursor : pointer;
   color : #46485b;
   border : outset 2px ${colors.primary};
   border-radius : 5px;
   margin-left: 20px;
   height : 30px;
-}`
+}
 
-function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments, postComments, setPostComments, commentsLimit}) {
+@media screen and (max-width: 549px) {
+  width : 80%;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  
+  .commentDisplayedContent {
+    width : 100%;
+    margin-left : 10px;
+    font-size : 14px;
+  }
+  
+  .changeCommentDisplayed {
+    left : 5px;
+    bottom : -12px;
+  }
+  
+  .modifyCommentDisplayedButton {
+    height : 20px;
+    border-radius : 12px;
+  }
+  
+  .modifyCommentDisplayedButton p {
+    margin : 0 10px 0 10px;
+    font-size: 14px;
+  }
+  
+  .deleteCommentDisplayedButton {
+    margin-left : 10px;
+    width : 20px;
+    height : 20px;
+    border : outset 2px ${colors.primary};
+  }
+  
+  .crossDeleteCommentDisplayedButton {
+    font-size : 20px;
+  }
+  
+  .confirmDeleteCommentDisplayed{
+    width : 100%;
+    padding : 0;
+    border-radius : 20px;
+    background-color : white;
+    border : outset 3px ${colors.primary};
+  }
+  
+  .confirmDeleteCommentDisplayed p {
+    margin : 10px 0 10px 10px;
+    font-size : 18px;
+  }
+  
+  .confirmDeleteCommentDisplayedButtonsContainer button{
+    margin: 5px;
+  }
+`
+
+function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments, postComments, setPostComments}) {
   const {token, userData} = useContext(Context);
 
   const [commentContent, setCommentContent] = useState(commentData.content);
@@ -273,14 +333,10 @@ function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments
       }
 
       const newPostComments = [];
-      if (newTotalPostComments.length > commentsLimit) {
-        let i = 0;
-        while (i < commentsLimit) {
-          newPostComments.push(newTotalPostComments[i]);
-          i++;
+      for (let comment of postComments){
+        if (comment._id !== commentData._id){
+          newPostComments.push(comment);
         }
-      } else {
-        newPostComments = newTotalPostComments;
       }
 
       setTotalPostComments(newTotalPostComments);
@@ -347,7 +403,7 @@ function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments
         <p className="commentDisplayedContent" >{commentContent}</p>
         {changeComment && (<div className="changeCommentDisplayed" >
           <div className="modifyCommentDisplayedButton" onClick={handleModifyComment} >
-            <p>Modify comment</p>
+            <p>Modify</p>
           </div>
           <div className="deleteCommentDisplayedButton" onClick={handleDeleteCommentButtonOnClick} >
             <FontAwesomeIcon className="crossDeleteCommentDisplayedButton" icon={solid("xmark")} />
@@ -358,9 +414,11 @@ function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments
       <ModifyComment commentId={commentData._id} content={commentContent} setIsModifyComment={setIsModifyComment} setCommentContent={setCommentContent} totalPostComments={totalPostComments} setTotalPostComments={setTotalPostComments} postComments={postComments} setPostComments={setPostComments} />}
       {confirmDeleteComment && 
       <div className="confirmDeleteCommentDisplayed" >
-        <p>Confirm comment deletion : </p>
-        <button onClick={handleDeleteComment} >Yes</button>
-        <button onClick={handleCancelDeleteComment}>No</button>
+        <p>Confirm deletion : </p>
+        <div className="confirmDeleteCommentDisplayedButtonsContainer" >
+          <button onClick={handleDeleteComment} >Yes</button>
+          <button onClick={handleCancelDeleteComment}>No</button>
+        </div>
       </div>}
     </StyledCommentDisplayed>
   );

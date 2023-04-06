@@ -48,6 +48,25 @@ box-shadow : 10px 5px 2px #46485b;
   border-radius : 50%;
   margin-right : 10px;
 }
+
+@media screen and (min-width : 600px) and (max-width : 849px) {
+  left : 50px;
+}
+
+@media screen and (max-width : 599px) {
+  width : 200px;
+  
+  .informationUser p {
+    max-width : 140px;
+  }
+  
+  .avatar {
+    height : 30px;
+    width : 30px;
+    border-radius : 50%;
+    margin-right : 10px;
+  }
+}
 `
 
 function Informations() {

@@ -27,6 +27,7 @@ height: 100%;
   display : flex;
   flex-direction: column;
   align-items : center;
+  width : 100%;
   margin : 40px 0 40px 0;
 }
 
@@ -60,6 +61,28 @@ height: 100%;
   color : ${colors.secondary};
   font-size : 20px;
   margin : 0;
+}
+
+@media screen and (max-width: 519px) {
+  .allReportsButton {
+    height : 35px;
+    width : 180px;
+    font-size : 16px;
+    border-width : 2px;
+  }
+}
+
+@media screen and (max-width : 649px) {
+  .allReportsNoReports {
+    width : 70%;
+    padding : 20px;
+    height : 30px;
+  }
+  
+  .allReportsNoReports p {
+    font-size : 16px;
+    margin : 0;
+  }
 }
 `
 

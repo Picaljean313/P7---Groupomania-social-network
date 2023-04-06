@@ -126,6 +126,45 @@ height: 100%;
 
 .userProfileButtonsContainer {
   margin-top : 30px;
+}
+
+@media screen and (max-width: 579px) {
+  .userProfileContainer {
+    width : 80%;
+  }
+
+  .userProfileDataBlock {
+    flex-direction : column;
+  }
+
+  .userProfileDataBlock div {
+    padding : 0;
+    margin-left : 50px;
+  }
+
+  .userProfileActivityContainer {    
+    margin-left : 50px;
+  }
+
+  .userProfileAvatarAndPseudo img {
+    height : 80px;
+    width : 80px;
+  }
+  
+  .userProfileAvatarAndPseudo p {
+    font-size : 22px;
+    flex : 1;
+    overflow : hidden;
+    text-overflow : ellipsis;
+    padding-left : 10px;
+  }
+  
+  .userProfileButton {
+    font-size : 14px;
+    margin : 0 10px 0 10px;
+    width : auto;
+  }
+}
 `
 
 function UserProfile () {

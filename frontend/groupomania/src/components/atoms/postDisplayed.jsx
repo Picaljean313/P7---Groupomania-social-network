@@ -281,6 +281,26 @@ align-items: center;
   font-size : 18px;
 }
 
+.closePostDisplayedContainer {
+  position : absolute;
+  right : -23px;
+  top : 20px;
+  width : 40px;
+  height : 40px;
+  border-radius : 50%;
+  background-color : white;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  border : outset 3px ${colors.primary};
+  cursor : pointer;
+}
+
+.crossClosePostDisplayedButton {
+  color : ${colors.primary};
+  font-size : 20px;
+}
+  
 .postDisplayedHandleCommentsButton {
   height : 30px;
   border-radius : 10px;
@@ -292,24 +312,86 @@ align-items: center;
   margin : 20px;
 }
 
-.closePostDisplayedContainer {
-  position : absolute;
-  right : -34px;
-  top : 10px;
-  width : 60px;
-  height : 40px;
-  border-radius : 20px;
-  background-color : white;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  border : outset 4px ${colors.primary};
-  cursor : pointer;
-}
-
-.closePostDisplayedContainer p {
-  color : ${colors.primary};
-  font-size : 20px;
+@media screen and (max-width: 549px) {
+  width : 85%;
+  
+  .postDisplayedImageWithContent {
+    width : 90%;
+  }
+  
+  .postDisplayedImageWithoutContent {
+    width : 90%;
+  }
+  
+  .postDisplayedContentWithImage {
+    width : 90%;
+    padding : 10px 0 10px 0;
+    font-size : 18px;
+  }
+  
+  .postDisplayedContentWithoutImage {
+    width : 90%;
+    padding : 10px 0 10px 0;
+    font-size : 18px;
+  }
+  
+  .changePostDisplayed {
+    left : 25px;
+    bottom : -12px;
+  }
+  
+  .modifyPostDisplayedButton {
+    cursor : pointer;
+    height : 20px;
+    border-radius : 12px;
+  }
+  
+  .modifyPostDisplayedButton p {
+    margin : 0 10px 0 10px;
+    font-size: 14px;
+  }
+  
+  .deletePostDisplayedButton {
+    margin-left : 10px;
+    width : 20px;
+    height : 20px;
+    border : outset 2px ${colors.primary};
+  }
+  
+  .crossDeletePostDisplayedButton {
+    font-size : 20px;
+  }
+  
+  .postDisplayedConfirmDeletePost{
+    width : 90%;
+    padding : 0;
+    border-radius : 20px;
+    background-color : white;
+    border : outset 3px ${colors.primary};
+  }
+  
+  .postDisplayedConfirmDeletePost p {
+    margin : 20px 0 20px 20px;
+    font-size : 18px;
+  }
+  
+  .postDisplayedConfirmDeletePost button{
+    margin: 10px;
+  }
+  
+  .postDisplayedComments {
+    width : 90%;
+    padding : 20px 0 20px 0;
+  }
+  
+  .postDisplayedNoCommentsToShow {
+    font-size : 16px;
+  }
+  
+  .postDisplayedHandleCommentsButton {
+    height : 25px;
+    font-size : 14px;
+  }
 }
 `
 
@@ -480,13 +562,13 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
           </div>)}
         </div>
         <div onClick={handleClosePostDisplayed} className="closePostDisplayedContainer" >
-          <p>Close</p>
+          <FontAwesomeIcon className="crossClosePostDisplayedButton" icon={solid("xmark")} />
         </div>
         {postContent && (postImageUrl ? <p className="postDisplayedContentWithImage">{postContent}</p> : <p className="postDisplayedContentWithoutImage">{postContent}</p>)}
         {postImageUrl && (postContent ? <img className="postDisplayedImageWithContent" src={postImageUrl} alt={`Post from ${postDisplayedData["userData"].pseudo}`}/> : <img className="postDisplayedImageWithoutContent" src={postImageUrl} alt={`Post from ${postDisplayedData["userData"].pseudo}`}/>)}
         {changePost && (<div className="changePostDisplayed" >
           <div className="modifyPostDisplayedButton" onClick={handleModifyPost} >
-            <p>Modify post</p>
+            <p>Modify</p>
           </div>
           <div className="deletePostDisplayedButton" onClick={handleDeletePostButtonOnClick} >
             <FontAwesomeIcon className="crossDeletePostDisplayedButton" icon={solid("xmark")} />
@@ -497,7 +579,7 @@ function PostDisplayed ({postDisplayedData, setIsPostDisplayed}) {
       <ModifyPost postId={postDisplayedData._id} content={postContent} imageUrl={postImageUrl} setIsModifyPost={setIsModifyPost} setPostContent={setPostContent} setPostImageUrl={setPostImageUrl} />}
       {confirmDeletePost && 
       <div className="postDisplayedConfirmDeletePost" >
-        <p>Confirm post deletion : </p>
+        <p>Confirm deletion : </p>
         <button onClick={handleDeletePost} >Yes</button>
         <button onClick={handleCancelDeletePost}>No</button>
       </div>}

@@ -121,6 +121,72 @@ height: 100%;
   border-color : ${colors.primary}; 
   cursor : pointer;
 }
+
+@media screen and (max-width: 519px) {
+  .signupForm {
+    width : 90%;
+  }
+
+  .signupTextInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .signupTextInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+
+  .signupTextInput input {
+    width : 272px;
+    font-size : 14px;
+  }
+
+  .signupSelectInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .signupSelectInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .signupSelectInput select {
+    width : 280px;
+    font-size : 14px;
+  }
+  
+  .signupFileInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .signupFileInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .signupFileInput input {
+    width : 280px;
+    font-size : 14px;
+  }
+  
+  .signupConfirmPasswordInput {
+    flex-direction : column;
+    justify-content : center;
+  }
+  
+  .signupConfirmPasswordInput label {
+    font-size : 16px;
+    margin-bottom : 10px;
+  }
+  
+  .signupConfirmPasswordInput input {
+    width : 280px;
+    font-size : 14px;
+  }
+}
 `
 
 function SignUp () {

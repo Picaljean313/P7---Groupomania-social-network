@@ -119,10 +119,6 @@ padding : 40px 20px 40px 20px;
   border-radius : 18px;
 }
 
-.commentUserReactionIcon:hover {
-  animation : ${reactionHover} 1000ms linear;
-}
-
 .commentIsSelected {
   color : green;
 }
@@ -214,14 +210,6 @@ padding : 40px 20px 40px 20px;
   font-size : 8px;
 }
 
-.commentUserReaction {
-  background-color : white;
-  border-radius : 15px;
-  position : absolute;
-  right : -15px;
-  bottom : -15px;
-}
-
 .changeComment {
   position : absolute;
   left : 10px;
@@ -281,7 +269,11 @@ padding : 40px 20px 40px 20px;
   color : #46485b;
 }
 
-.confirmDeleteComment button{
+.confirmDeleteCommentButtonsContainer {
+  display : flex;
+}
+
+.confirmDeleteCommentButtonsContainer button{
   cursor : pointer;
   color : #46485b;
   border : outset 2px ${colors.primary};
@@ -289,10 +281,112 @@ padding : 40px 20px 40px 20px;
   margin-left: 20px;
   height : 30px;
 }
+
+@media screen and (min-width: 520px) {
+  .commentUserReactionIcon:hover {
+    animation : ${reactionHover} 1000ms linear;
+  }
+}
+
+@media screen and (max-width: 519px) {
+  width : 80%;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  
+  .commentContent {
+    width : 100%;
+    margin-left : 10px;
+    font-size : 14px;
+  }
+  
+  .commentUserReactions {
+    border-radius : 12px;
+    right : 5px;
+    bottom : -12px;
+  }
+  
+  .commentUserReactionIcon {
+    font-size : 14px;
+    margin : 2px 1px 2px 1px;
+    vertical-align : -2.5px;
+  }
+  
+  .commentReport {
+    height : 20px;
+    width : 20px;
+    border-radius : 12px;
+    right : 105px;
+    bottom : -12px;
+    font-size : 12px;
+  }
+  
+  .isCommentReported {
+    border : outset 2px ${colors.primary};
+    font-size : 14px;
+    width: 26px;
+    height : 26px;
+    bottom : -15px;
+    right : 125px;
+    border-radius : 15px;
+  }
+  
+  .commentReactionIcon {
+    font-size : 16px;
+  }
+  
+  .commentReactionIconBackground {
+    height : 24px;
+    width : 24px;
+  }
+  
+  .changeComment {
+    left : 5px;
+    bottom : -12px;
+  }
+  
+  .modifyCommentButton {
+    height : 20px;
+    border-radius : 12px;
+  }
+  
+  .modifyCommentButton p {
+    margin : 0 10px 0 10px;
+    font-size: 14px;
+  }
+  
+  .deleteCommentButton {
+    margin-left : 10px;
+    width : 20px;
+    height : 20px;
+    border : outset 2px ${colors.primary};
+  }
+  
+  .crossDeleteCommentButton {
+    font-size : 20px;
+  }
+  
+  .confirmDeleteComment{
+    width : 100%;
+    padding : 0;
+    border-radius : 20px;
+    background-color : white;
+    border : outset 3px ${colors.primary};
+  }
+  
+  .confirmDeleteComment p {
+    margin : 10px 0 10px 10px;
+    font-size : 18px;
+  }
+  
+  .confirmDeleteCommentButtonsContainer button{
+    margin: 5px;
+  }
+}
 `
 
 
-function Comment ({_id, content, commentUserData, reactions, totalPostComments, setTotalPostComments, postComments, setPostComments, commentsLimit}) {
+function Comment ({_id, content, commentUserData, reactions, totalPostComments, setTotalPostComments, postComments, setPostComments}) {
   const {token, userData} = useContext(Context);
 
   const [commentContent, setCommentContent] = useState(content);
@@ -577,7 +671,9 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
   };
 
   useEffect(()=> {
-    hasUserReportedComment();
+    if (commentUserData._id !== userData._id) {
+      hasUserReportedComment();
+    }
   },[]);
 
   const handleCommentReportOnClick = async function () {
@@ -674,7 +770,7 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
       <p className="commentContent ">{commentContent}</p>
       {changeComment && (<div className="changeComment" >
         <div className="modifyCommentButton" onClick={handleModifyComment} >
-          <p>Modify comment</p>
+          <p>Modify</p>
         </div>
         <div className="deleteCommentButton" onClick={handleDeleteCommentButtonOnClick} >
           <FontAwesomeIcon className="crossDeleteCommentButton" icon={solid("xmark")} />
@@ -696,8 +792,10 @@ function Comment ({_id, content, commentUserData, reactions, totalPostComments, 
       {confirmDeleteComment && 
       <div className="confirmDeleteComment" >
         <p>Confirm deletion : </p>
-        <button onClick={handleDeleteComment} >Yes</button>
-        <button onClick={handleCancelDeleteComment}>Cancel</button>
+        <div className="confirmDeleteCommentButtonsContainer" >
+          <button onClick={handleDeleteComment} >Yes</button>
+          <button onClick={handleCancelDeleteComment}>Cancel</button>
+        </div>
       </div>}
     </StyledComment>
   );

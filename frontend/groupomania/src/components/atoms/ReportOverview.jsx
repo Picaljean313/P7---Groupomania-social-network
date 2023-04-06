@@ -43,6 +43,7 @@ justify-content : space-between;
   max-height : 50px;
   display : block;
   overflow : scroll;
+  word-break : break-all;
   font-size : 14px;
   color : #46485b;
   cursor : default;
@@ -70,6 +71,7 @@ justify-content : space-between;
   max-width : 170px;
   max-height : 50px;
   overflow : scroll;
+  word-break : break-all;
   font-size : 14px;
   color : #46485b;
   cursor : default;
@@ -157,7 +159,76 @@ justify-content : space-between;
   overflow : scroll;
   top : 0;
   z-index : 2;
-}`
+}
+
+@media screen and (max-width : 649px) {
+  width : 70%;
+
+  .reportOverviewUserDataContainer {
+    display : none;
+  }
+
+  .reportOverviewButtonsContainer button {
+    height : 25px;
+    width : 100px;
+    font-size : 14px;
+  }
+}
+
+@media screen and (min-width : 550px) and (max-width : 649px) {
+  .reportOverviewPostContainer {
+    width : 220px;
+  }
+  
+  .reportOverviewPostContainer img {
+    width : 140px;
+    height : 100px;
+  }
+  
+  .reportOverviewPostContainer p {
+    max-width : 220px;
+  }
+  
+  .reportOverviewCommentContainer {
+    width : 220px;
+  }
+  
+  .reportOverviewCommentContent {
+    max-width : 220px;
+  }
+}
+
+@media screen and (max-width : 449px) {
+  .reportOverviewPostContainer {
+    padding : 10px 5px 10px 5px;
+  }
+  
+  .reportOverviewCommentContainer {
+    padding : 10px 5px 10px 5px;
+  }
+
+  .reportOverviewPostContainer {
+    width : 130px;
+  }
+  
+  .reportOverviewPostContainer img {
+    width : 100px;
+    height : 80px;
+  }
+  
+  .reportOverviewPostContainer p {
+    max-width : 130px;
+  }
+  
+  .reportOverviewCommentContainer {
+    width : 130px;
+  }
+  
+  .reportOverviewCommentContent {
+    max-width : 130px;
+  }
+}
+`
 
 function ReportOverview ({reportId, type, postOrCommentId, reportUserData, allReports, setAllReports}) {
   const navigate = useNavigate();

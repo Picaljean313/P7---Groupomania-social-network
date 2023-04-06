@@ -75,6 +75,29 @@ margin-top : 30px;
   border-color : ${colors.primary}; 
   cursor : pointer;
 }
+
+@media screen and (max-width: 519px) {
+  width : 90%;
+  
+  .modifyPostSelectContainer {
+    width : 90%;
+    flex-direction : column;
+  }
+  
+  .modifyPostSelectContainer label {
+    margin-bottom : 10px;
+  }
+  
+  .modifyPostForm textarea {
+    min-width : 250px;
+    max-width : 250px;
+  }
+  
+  .modifyPostButtonsContainer button {
+    height : 25px;
+    font-size : 14px;
+  }
+}
 `
 
 function ModifyPost ({postId, content, imageUrl, setIsModifyPost, setPostContent, setPostImageUrl}) {

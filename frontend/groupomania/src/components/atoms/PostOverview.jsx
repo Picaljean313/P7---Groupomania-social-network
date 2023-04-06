@@ -15,6 +15,10 @@ display : flex;
 align-items : center;
 justify-content : space-between;
 
+.postOverviewContainer {
+  display : flex;
+}
+
 .postOverviewPostContainer {
   background-color : #ececf0;
   border : outset 2px #ececf0;
@@ -22,6 +26,7 @@ justify-content : space-between;
   border-radius : 10px;
   display : flex;
   flex-direction : column;
+  justify-content : center;
   align-items : center;
   width : 170px;
 }
@@ -51,6 +56,7 @@ justify-content : space-between;
   margin : 0 10px 0 10px;
   display : flex;
   flex-direction : column;
+  justify-content : center;
   width : 210px;
 }
 
@@ -145,6 +151,67 @@ justify-content : space-between;
   top : 0;
   z-index : 2;
 }
+
+@media screen and (max-width : 659px) {
+  width : 80%;
+
+  .postOverviewButtonsContainer button {
+    height : 25px;
+    width : 100px;
+    font-size : 14px;
+  }
+} 
+
+@media screen and (min-width : 550px) and (max-width : 659px) {
+  flex-direction : column;
+
+  .postOverviewDataContainer {
+    margin : 0 0 0 10px;
+  }
+
+  .postOverviewButtonsContainer {
+    flex-direction : row;
+  }
+
+  .postOverviewButtonsContainer button {
+    margin : 20px 10px 10px 10px;
+  }
+}
+
+@media screen and (max-width : 549px) {
+  flex-direction : column;
+  width : 70%;
+
+  .postOverviewContainer {
+    flex-direction : column;
+    align-items : center;
+  }
+
+  .postOverviewPostContainer {
+    width : 210px;
+  }
+  
+  .postOverviewPostContainer img {
+    width : 150px;
+    height : 120px;
+  }
+  
+  .postOverviewPostContainer p {
+    max-width : 210px;
+  }
+
+  .postOverviewDataContainer {
+    margin : 10px 0 0 0;
+  }
+
+  .postOverviewButtonsContainer {
+    flex-direction : row;
+  }
+
+  .postOverviewButtonsContainer button {
+    margin : 20px 10px 10px 10px;
+  }
+}
 `
 
 function PostOverview ({postData, userData}) {
@@ -163,26 +230,28 @@ function PostOverview ({postData, userData}) {
   
   return (
     <StyledPostOverview>
-      <div className="postOverviewPostContainer">
-        {postData.imageUrl && <img src={postData.imageUrl} alt='Post image'/>}
-        {postData.content && <p>{postData.content}</p>}
-      </div>
-      <div className="postOverviewDataContainer">
-        <div className="postOverviewUserDataContainer" >
-          <p className="postOverviewLabel">From : </p>
-          <div className="postOverviewUserData">
-            <img src={userData.imageUrl} alt='User avatar'/>
-            <p>{userData.pseudo}</p>
+      <div className="postOverviewContainer">
+        <div className="postOverviewPostContainer">
+          {postData.imageUrl && <img src={postData.imageUrl} alt='Post image'/>}
+          {postData.content && <p>{postData.content}</p>}
+        </div>
+        <div className="postOverviewDataContainer">
+          <div className="postOverviewUserDataContainer" >
+            <p className="postOverviewLabel">From : </p>
+            <div className="postOverviewUserData">
+              <img src={userData.imageUrl} alt='User avatar'/>
+              <p>{userData.pseudo}</p>
+            </div>
+          </div>
+          <div className="postOverviewActivityContainer" >
+            <p className="postOverviewLabel">Activity : </p>
+            <div className="postOverviewActivity">
+              <p>{`${postData.reactions.length} reactions`}</p>
+              <p>{`${postData.comments.length} comments`}</p>
+            </div>
           </div>
         </div>
-        <div className="postOverviewActivityContainer" >
-          <p className="postOverviewLabel">Activity : </p>
-          <div className="postOverviewActivity">
-            <p>{`${postData.reactions.length} reactions`}</p>
-            <p>{`${postData.comments.length} comments`}</p>
-          </div>
         </div>
-      </div>
       <div className="postOverviewButtonsContainer" >
         <button onClick={handleShowPostOnClick} >Show post</button>
         <button onClick={handleShowUserOnClick} >Show user</button>

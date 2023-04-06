@@ -136,11 +136,6 @@ align-items: center;
   vertical-align : -3.5px;
 }
 
-.postUserReactionsIcon:hover {
-  cursor : pointer;
-  animation : ${reactionHover} 1000ms linear;
-}
-
 .postReport {
   border : outset 2px ${colors.secondary};
   background-color : #ffebeb;
@@ -344,6 +339,11 @@ align-items: center;
   border: outset 3px #ececf0;
 }
 
+.postCreateCommentInput {
+  display : flex;
+  align-items : center;
+}
+
 .postCreateComment label {
   display : block;
   margin-right : 15px;
@@ -355,6 +355,7 @@ align-items: center;
   flex :1;
   min-height : 20px;
   max-height : 150px;
+  max-width : 210px;
   font-size : 14px;
   color : ${colors.tertiary};
 }
@@ -400,6 +401,167 @@ align-items: center;
   border-color : ${colors.primary}; 
   cursor : pointer;
   margin : 20px;
+}
+
+@media screen and (min-width: 520px) {
+  .postUserReactionsIcon:hover {
+    cursor : pointer;
+    animation : ${reactionHover} 1000ms linear;
+  }
+}
+
+@media screen and (max-width: 519px) {
+  width : 100%;
+
+  .postImageWithContent {
+    width : 90%;
+  }
+  
+  .postImageWithoutContent {
+    width : 90%;
+  }
+  
+  .postContentWithImage {
+    width : 90%;
+    padding : 10px 0 10px 0;
+    font-size : 18px;
+  }
+  
+  .postContentWithoutImage {
+    width : 90%;
+    padding : 10px 0 10px 0;
+    font-size : 18px;
+  }
+
+  .postComments {
+    width : 90%;
+    padding : 20px 0 20px 0;
+  }
+
+  .postCreateComment {
+    width : 90%;
+    padding : 20px 0 20px 0;
+    flex-direction : column;
+  }
+  
+  .postCreateComment textarea {
+    max-height : 120px;
+    max-width : 160px;
+  }
+  
+  .postCreateComment button {
+    margin-top : 15px;
+    font-size : 14px;
+    height : 25px;
+  }
+
+  .postNoCommentsToShow {
+    font-size : 16px;
+  }
+
+  .postUserReactions {
+    border-radius : 12px;
+    right : 25px;
+    bottom : -12px;
+  }
+
+  .postUserReactionsIcon {
+    font-size : 14px;
+    margin : 2px 1px 2px 1px;
+    vertical-align : -2.5px;
+  }
+
+  .postReport {
+    height : 20px;
+    width : 20px;
+    border-radius : 12px;
+    right : 125px;
+    bottom : -12px;
+    font-size : 12px;
+  }
+  
+  .isPostReported {
+    border : outset 2px ${colors.primary};
+    font-size : 14px;
+    width: 26px;
+    height : 26px;
+    bottom : -15px;
+    right : 125px;
+    border-radius : 15px;
+  }
+
+  .changePost {
+    left : 25px;
+    bottom : -12px;
+  }
+
+  .modifyPostButton {
+    cursor : pointer;
+    height : 20px;
+    border-radius : 12px;
+  }
+
+  .modifyPostButton p {
+    margin : 0 10px 0 10px;
+    font-size: 14px;
+  }
+
+  .deletePostButton {
+    margin-left : 10px;
+    width : 20px;
+    height : 20px;
+    border : outset 2px ${colors.primary};
+  }
+
+  .crossDeletePostButton {
+    font-size : 20px;
+  }
+
+  .postConfirmDeletePost{
+    width : 90%;
+    padding : 0;
+    border-radius : 20px;
+    background-color : white;
+    border : outset 3px ${colors.primary};
+  }
+  
+  .postConfirmDeletePost p {
+    margin : 20px 0 20px 20px;
+    font-size : 18px;
+  }
+  
+  .postConfirmDeletePost button{
+    margin: 10px;
+  }
+
+  .postReactionIcon {
+    font-size : 16px;
+  }
+  
+  .postReactionIconBackground {
+    height : 24px;
+    width : 24px;
+  }
+}
+
+@media screen and (min-width: 450px) and (max-width: 519px) {
+  .postImageWithContent {
+    height : 247px;
+  }
+  
+  .postImageWithoutContent {
+    height : 250px;
+  }
+}
+
+@media screen and (max-width: 449px) {
+  .postImageWithContent {
+    height : 197px;
+  }
+  
+  .postImageWithoutContent {
+    height : 200px;
+  }
 }
 `
 
@@ -716,7 +878,9 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
   };
 
   useEffect(()=> {
-    hasUserReportedPost();
+    if (postUserData._id !== userData._id) {
+      hasUserReportedPost();
+    }
   },[]);
 
   const handlePostReportOnClick = async function () {
@@ -815,7 +979,7 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
         {postImageUrl && (postContent ? <img className="postImageWithContent" src={postImageUrl} alt={`Post from ${postUserData.pseudo}`}/> : <img className="postImageWithoutContent" src={postImageUrl} alt={`Post from ${postUserData.pseudo}`}/>)}
         {changePost && (<div className="changePost" >
           <div className="modifyPostButton" onClick={handleModifyPost} >
-            <p>Modify post</p>
+            <p>Modify</p>
           </div>
           <div className="deletePostButton" onClick={handleDeletePostButtonOnClick} >
             <FontAwesomeIcon className="crossDeletePostButton" icon={solid("xmark")} />
@@ -837,13 +1001,15 @@ function Post ({_id, content, imageUrl, postUserData, reactions, comments}) {
       <ModifyPost postId={_id} content={postContent} imageUrl={postImageUrl} setIsModifyPost={setIsModifyPost} setPostContent={setPostContent} setPostImageUrl={setPostImageUrl} />}
       {confirmDeletePost && 
       <div className="postConfirmDeletePost" >
-        <p>Confirm post deletion : </p>
+        <p>Confirm deletion : </p>
         <button onClick={handleDeletePost} >Yes</button>
         <button onClick={handleCancelDeletePost}>Cancel</button>
       </div>}
       <form onSubmit = { handleCommentSubmit } className="postCreateComment" >
-        <label htmlFor = {`userComment-${_id}`} >Comment : </label>
-        <textarea id = {`userComment-${_id}`} type = "text" maxLength = "1000" />
+        <div className="postCreateCommentInput">
+          <label htmlFor = {`userComment-${_id}`} >Comment : </label>
+          <textarea id = {`userComment-${_id}`} type = "text" maxLength = "1000" />
+        </div>
         <button type="submit">Send</button>
       </form>
       <div className="postComments" >

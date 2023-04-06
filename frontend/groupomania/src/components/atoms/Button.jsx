@@ -18,6 +18,20 @@ justify-content : center;
 align-items : center;
 margin : 10px;
 cursor : pointer;
+
+@media screen and (min-width: 400px) and (max-width: 519px) {
+  font-size : 16px;
+  padding : 24px;
+  width : 260px;
+  border-radius : 30px;
+}
+
+@media screen and (max-width: 399px) {
+  font-size : 14px;
+  padding : 22px;
+  width : 230px;
+  border-radius : 30px;
+}
 `}
 ${props => props.className === "isNav" && `
 color : ${colors.secondary};

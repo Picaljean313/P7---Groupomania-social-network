@@ -44,6 +44,23 @@ padding : 20px;
   border-color : ${colors.primary}; 
   cursor : pointer;
 }
+
+@media screen and (max-width: 519px) {
+  width : 80%;
+  
+  .modifyCommentForm textarea {
+    min-width : 90%;
+    max-width : 90%;
+    max-height : 120px;
+  }
+  
+  .modifyCommentButtonsContainer button {
+    height : 25px;
+    width : 70px;
+    margin : 20px 5px 0 5px;
+    font-size : 14px;
+  }
+}
 `
 
 function ModifyComment ({commentId, content, setIsModifyComment, setCommentContent, totalPostComments, postComments, setTotalPostComments, setPostComments}) {
