@@ -44,7 +44,7 @@ function TextInput ({name, defaultValue, className, inputsValidationStatus, setI
     email : {
       label : "Email : ",
       type : "email", 
-      regex : /^[^\s@]{1,25}@[^\s\.@]{1,18}\.[^\s\.@]{1,5}$/, 
+      regex : /^[^\s@]{1,25}@[^\s.@]{1,18}\.[^\s.@]{1,5}$/, 
       minLength : 4,
       maxLength : 50
     },

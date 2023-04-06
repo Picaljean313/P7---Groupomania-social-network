@@ -116,7 +116,7 @@ function Nav() {
     case "/logIn" : navButtons = [welcomeButton]; break;
     case "/home" : navButtons = [logOutButton, myProfileButton]; break;
     case "/myProfile" : navButtons = [logOutButton, homeButton]; break;
-    case "/modifyMyProfile" : navButtons = [logOutButton, homeButton, myProfileButton];
+    case "/modifyMyProfile" : navButtons = [logOutButton, homeButton, myProfileButton]; break;
     case "/createUser" : navButtons = [logOutButton, homeButton];  break;
     case "/allProfiles" : navButtons = [logOutButton, homeButton];  break;
     case "/allPosts" : navButtons = [logOutButton, homeButton];  break;

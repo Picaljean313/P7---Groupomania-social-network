@@ -298,7 +298,7 @@ function CommentDisplayed ({commentData, totalPostComments, setTotalPostComments
     }
   };
 
-  const [commentReactions, setCommentReactions] = useState(initialCommentReactions);
+  const [commentReactions] = useState(initialCommentReactions);
 
 
   const changeComment = userData.isAdmin === true; 
