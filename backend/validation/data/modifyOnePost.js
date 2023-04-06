@@ -31,7 +31,7 @@ exports.postJsonDataToValidate = (post) => {
         expectedType : "string",
         required : false,
         minLength : 1,
-        maxLength : 10000
+        maxLength : 1000
       },
       {
         value : post.deletePostImage,

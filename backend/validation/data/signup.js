@@ -30,7 +30,7 @@ exports.userJsonDataToValidate = (user) => {
         value : user.pseudo,
         expectedType : "string",
         mask : /^[a-zA-Z0-9][a-zA-Z0-9 \-']*[a-zA-Z0-9]$/,
-        maxLength : 20
+        maxLength : 12
       },
       {
         value : user.theme,
@@ -42,14 +42,14 @@ exports.userJsonDataToValidate = (user) => {
       {
         value : user.email,
         expectedType : "string",
-        mask : /^[^\s\.@]{1,50}@[^\s\.@]{1,50}\.[^\s\.@]{1,10}$/
+        mask : /^[^\s@]{1,25}@[^\s\.@]{1,18}\.[^\s\.@]{1,5}$/
       },
       {
         value : user.password,
         expectedType : "string",
         mask : /^\S+$/,
         minLength : 3,
-        maxLength : 20
+        maxLength : 10
       }
     ]
   }

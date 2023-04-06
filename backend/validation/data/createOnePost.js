@@ -30,7 +30,7 @@ exports.postJsonDataToValidate = (post) => {
         value : post.content,
         expectedType : "string",
         minLength : 1,
-        maxLength : 10000
+        maxLength : 1000
       }
     ]
   }

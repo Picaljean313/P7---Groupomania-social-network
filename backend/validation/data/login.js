@@ -11,7 +11,7 @@ exports.loginDataToValidate = (login) => {
         expectedType : "string",
         mask : /^\S+$/,
         minLength : 3,
-        maxLength : 20
+        maxLength : 10
       }
     ];
   }

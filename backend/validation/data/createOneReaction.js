@@ -5,7 +5,7 @@ exports.reactionJsonDataToValidate = (reaction) => {
         value : reaction.type,
         expectedType : "string",
         minLength : 1,
-        maxLength : 10000
+        maxLength : 100
       }, {
         value : reaction.postId,
         required : false,

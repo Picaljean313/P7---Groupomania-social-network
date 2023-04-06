@@ -39,7 +39,7 @@ function TextInput ({name, defaultValue, className, inputsValidationStatus, setI
       type : "text", 
       regex : /^[a-zA-Z0-9][a-zA-Z0-9 \-']*[a-zA-Z0-9]$/, 
       minLength : 2,
-      maxLength : 15
+      maxLength : 12
     },
     email : {
       label : "Email : ",
@@ -53,7 +53,7 @@ function TextInput ({name, defaultValue, className, inputsValidationStatus, setI
       type : "password", 
       regex : /^\S+$/, 
       minLength : 3,
-      maxLength : 20
+      maxLength : 10
     }
   };
 
@@ -224,7 +224,7 @@ function ConfirmPasswordInput ({name, className, inputsValidationStatus, setInpu
     password : {
       regex : /^\S+$/, 
       minLength : 3,
-      maxLength : 20
+      maxLength : 10
     }
   };
 
@@ -353,7 +353,7 @@ function ChangePasswordInput  ({name, className, inputsValidationStatus, setInpu
     password : {
       regex : /^\S+$/, 
       minLength : 3,
-      maxLength : 20
+      maxLength : 10
     }
   };
 
