@@ -19,7 +19,7 @@
     "url": "http://localhost:{port}/{basePath}",
     "variables": {
       "port": {
-        "default": "3000"
+        "default": "3001"
       },
       "basePath": {
         "default": "api"
@@ -103,7 +103,7 @@
         },
         "responses": {
           "200": {
-            "description": "Ok.",
+            "description": "Ok",
             "content": {
               "application/json": {
                 "schema": {
@@ -139,8 +139,11 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "Token to revoke created."
+          "200": {
+            "description": "Ok"
+          },
+          "400": {
+            "description": "Bad request."
           },
           "401": {
             "description": "Unauthorized request."
@@ -274,6 +277,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "403": {
             "description": "Forbidden request."
           },
@@ -301,6 +307,9 @@
         "responses": {
           "200": {
             "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
           },
           "403": {
             "description": "Forbidden request."
@@ -330,10 +339,10 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "Id of user to return.",
+            "description": "Id of user to return, or 'me' for his own account.",
             "schema": {
               "type": "string",
-              "example": "632dc722c75414645a459eb2"
+              "example": "'632dc722c75414645a459eb2' or 'me'"
             },
             "required": true
           },
@@ -358,11 +367,11 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -413,16 +422,20 @@
         },
         "responses": {
           "200": {
-            "description": "Ok."
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad request."
           },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -459,11 +472,11 @@
           "200": {
             "description": "Ok."
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -621,6 +634,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
           },
@@ -648,6 +664,9 @@
         "responses": {
           "200": {
             "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
           },
           "403": {
             "description": "Forbidden request."
@@ -723,11 +742,11 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -778,16 +797,20 @@
         },
         "responses": {
           "200": {
-            "description": "Ok."
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/post"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad request."
           },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -824,11 +847,11 @@
           "200": {
             "description": "Ok."
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -972,6 +995,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
           },
@@ -999,6 +1025,9 @@
         "responses": {
           "200": {
             "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
           },
           "403": {
             "description": "Forbidden request."
@@ -1056,11 +1085,11 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -1106,16 +1135,20 @@
         },
         "responses": {
           "200": {
-            "description": "Ok."
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/comment"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad request."
           },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -1152,11 +1185,11 @@
           "200": {
             "description": "Ok."
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -1300,6 +1333,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
           },
@@ -1327,6 +1363,9 @@
         "responses": {
           "200": {
             "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
           },
           "403": {
             "description": "Forbidden request."
@@ -1375,11 +1414,11 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -1425,16 +1464,20 @@
         },
         "responses": {
           "200": {
-            "description": "Ok."
+            "description": "Ok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/reaction"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad request."
           },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -1471,11 +1514,11 @@
           "200": {
             "description": "Ok."
           },
+          "400": {
+            "description": "Bad request."
+          },
           "401": {
             "description": "Unauthorized request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -1619,6 +1662,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "403": {
             "description": "Forbidden request."
           },
@@ -1646,6 +1692,9 @@
         "responses": {
           "200": {
             "description": "Ok."
+          },
+          "400": {
+            "description": "Bad request."
           },
           "403": {
             "description": "Forbidden request."
@@ -1694,11 +1743,11 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request."
+          },
           "403": {
             "description": "Forbidden request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
@@ -1735,11 +1784,11 @@
           "200": {
             "description": "Ok."
           },
+          "400": {
+            "description": "Bad request."
+          },
           "403": {
             "description": "Forbidden request."
-          },
-          "404": {
-            "description": "Invalid Id."
           },
           "500": {
             "description": "Server error."
