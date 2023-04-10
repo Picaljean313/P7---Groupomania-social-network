@@ -436,7 +436,7 @@ function Home () {
               <p>No posts to show</p>
             </div>}
           <div className="homePageButtonsContainer" >
-            {Array.isArray(homePosts) && (isMorePostsToShow ?
+            {(Array.isArray(homePosts) && homePosts.length !== 0) && (isMorePostsToShow ?
             <button className="homePageButton" onClick={handleMorePostsOnClick}>
               View more posts
             </button> : 
