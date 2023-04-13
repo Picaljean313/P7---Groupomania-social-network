@@ -1,5 +1,13 @@
 Install Groupomania Social Network :
 
+- Node JS is necessary : downoload it on https://nodejs.org/en/download
+    (this project runs on version v16.15.1)
+
+- Groupomania Social Network uses MongoDB data base. 
+    Sign in on https://www.mongodb.com/atlas/database and create one cluster.
+
+- replace <process.env.DB_CONNECT> variable in backend/app.js with your identification (example : <'mongodb+srv://<YOUR_NAME>:<YOUR_PASSWORD>@cluster0.ydibcla.mongodb.net/?retryWrites=true&w=majority'>)
+
 - clone code of the app : https://github.com/Picaljean313/P7---Groupomania-social-network
   (code -> downlaod zip)
 

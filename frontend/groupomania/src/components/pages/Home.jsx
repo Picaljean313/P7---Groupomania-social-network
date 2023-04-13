@@ -178,6 +178,10 @@ height: 100%;
 }
 
 @media screen and (min-width: 520px) and (max-width: 829px) {
+  .homePosts {
+    align-items : center;
+  }
+
   .mainRefreshButton830-1000 {
     display : none;
   }
