@@ -1,6 +1,6 @@
 Install Groupomania Social Network :
 
-- Node JS is necessary : downoload it on https://nodejs.org/en/download
+- Node JS is necessary : download it on https://nodejs.org/en/download
     (this project runs on version v16.15.1)
 
 - Groupomania Social Network uses MongoDB data base. 
